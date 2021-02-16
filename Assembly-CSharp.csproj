@@ -1,0 +1,1464 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace></RootNamespace>
+    <ProjectGuid>{70133E30-9DFE-C013-32B1-9BC5F7823E97}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <BaseDirectory>.</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;UNITY_2019_3_7;UNITY_2019_3;UNITY_2019;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE;PLATFORM_STANDALONE_WIN;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;ENABLE_VSTU;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Temp\bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoConfig>true</NoConfig>
+    <NoStdLib>true</NoStdLib>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+    <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
+    <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
+    <UnityProjectGeneratorVersion>4.8.2.0</UnityProjectGeneratorVersion>
+    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
+    <UnityVersion>2019.3.7f1</UnityVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>C:\Program Files\Unity\Editor\Data\Managed/UnityEngine/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor">
+      <HintPath>C:\Program Files\Unity\Editor\Data\Managed/UnityEditor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Awesome Charts\Core\Examples\BarChart 1\BarChartController1.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Examples\BarChart 2\BarChartController2.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Examples\LineChart 1\LineChartController1.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Examples\LineChart 2\LineChartController2.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Examples\PieChart 2\PieChartController.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Axis\AxisBase.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Axis\AxisBounds.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Axis\AxisRendererBase.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Axis\XAxis.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Axis\XAxisBarChartRenderer.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Axis\XAxisRenderer.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Axis\YAxis.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Axis\YAxisRenderer.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Base\ACMonoBehaviour.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\AxisBaseChart.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\BarChart\Bar.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\BarChart\BarCharPositioner.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\BarChart\BarChart.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\BarChart\BarChartConfig.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\BarChart\BarSizingMethod.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\BaseChart.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\ChartValuePopup.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\LineChart\LineChart.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\LineChart\LineChartBackground.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\LineChart\LineChartConfig.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\LineChart\LineEntryIndicator.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\PieChart\PieChart.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\PieChart\PieChartClickSelectionBehaviour.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\PieChart\PieChartConfig.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\PieChart\PieChartEntryView.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Chart\PieChart\PieChartValueIndicator.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\AxisChartData.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\BarData.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\BarDataSet.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\BarEntry.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\ChartData.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\DataSet.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\Entry.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\LineData.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\LineDataSet.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\LineEntry.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\PieData.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\PieDataSet.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Data\PieEntry.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Legend\LegendEntry.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Legend\LegendEntryView.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Legend\LegendView.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\UI\IValueFormatter.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\UI\PivotValue.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\UI\SimpleValueFormatter.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\UI\ViewCreator.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\UI\XAxisBarChartValueFormatter.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Utils\BezierUtils.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Utils\Defaults.cs" />
+    <Compile Include="Assets\Awesome Charts\Core\Scripts\Utils\MathUtils.cs" />
+    <Compile Include="Assets\Awesome Charts\Dependencies\unity-ui-extensions\Scripts\Primitives\UILineRenderer.cs" />
+    <Compile Include="Assets\Awesome Charts\Dependencies\unity-ui-extensions\Scripts\Primitives\UIPrimitiveBase.cs" />
+    <Compile Include="Assets\Awesome Charts\Dependencies\unity-ui-extensions\Scripts\Utilities\BezierPath.cs" />
+    <Compile Include="Assets\Awesome Charts\Dependencies\unity-ui-extensions\Scripts\Utilities\CableCurve.cs" />
+    <Compile Include="Assets\Awesome Charts\Dependencies\unity-ui-extensions\Scripts\Utilities\SetPropertyUtility.cs" />
+    <Compile Include="Assets\FighterInterceptor\Script\FighterSurfacesControl.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\AnimatedButton.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\BlurManager.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\CheckButton.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\CustomInputField.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\DropdownSubMenu.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\ExitToSystem.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\FeedbackSystem.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\FriendsPanelAnim.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\HoldKeyEvent.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\HorizontalSelector.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\LaunchURL.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\LayoutGroupPositionFix.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\ListContentSizeFix.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\LoadScene.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\LoadingScreen.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\LoadingStyle.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\PressKey.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\ReorderableList.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\ReorderableListContent.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\ReorderableListElement.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\SliderManager.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\SplashScreenManager.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\SwitchManager.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\TimedAction.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\TimedProgressBar.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\ToggleAnim.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\TooltipContent.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\TooltipManager.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\TopPanelButton.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\TopPanelManager.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\UIElementSound.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\UIGradient.cs" />
+    <Compile Include="Assets\Frost UI\Scripts\WeaponSelectionAnim.cs" />
+    <Compile Include="Assets\Fx Explosion Pack\Script\DestroyEffect.cs" />
+    <Compile Include="Assets\Fx Explosion Pack\Script\csDemoScenceControl.cs" />
+    <Compile Include="Assets\Fx Explosion Pack\Script\csLightControl.cs" />
+    <Compile Include="Assets\Fx Explosion Pack\Script\csMouseOrbit.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\CFX_AutoStopLoopedEffect.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\CFX_Demo_RandomDir.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\CFX_Demo_RotateCamera.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\CFX_Demo_Translate.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\WFX_Demo.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\WFX_Demo_DeleteAfterDelay.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\WFX_Demo_New.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\WFX_Demo_RandomDir.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\WFX_Demo_Wall.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Scripts\CFX_AutoDestructShuriken.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Scripts\CFX_LightIntensityFade.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Scripts\WFX_BulletHoleDecal.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Scripts\WFX_LightFlicker.cs" />
+    <Compile Include="Assets\JMO Assets\WarFX\Spawn System\CFX_SpawnSystem.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Scripts\CameraControl.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Scripts\Logo.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Scripts\OrbitCamera.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Antialiasing.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Bloom.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\BloomAndFlares.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\BloomOptimized.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Blur.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\BlurOptimized.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\CameraMotionBlur.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ColorCorrectionCurves.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ColorCorrectionLookup.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ColorCorrectionRamp.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ContrastEnhance.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ContrastStretch.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\CreaseShading.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\DepthOfField.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\DepthOfFieldDeprecated.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\EdgeDetection.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Fisheye.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\GlobalFog.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Grayscale.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ImageEffectBase.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ImageEffects.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\MotionBlur.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\NoiseAndGrain.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\NoiseAndScratches.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\PostEffectsBase.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\PostEffectsHelper.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Quads.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ScreenOverlay.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ScreenSpaceAmbientObscurance.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\ScreenSpaceAmbientOcclusion.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\SepiaTone.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\SunShafts.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\TiltShift.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Tonemapping.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Triangles.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Twirl.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\VignetteAndChromaticAberration.cs" />
+    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Vortex.cs" />
+    <Compile Include="Assets\Planet Earth Free\SpinFree.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Attributes\BitMaskAttribute.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Attributes\ResourcePathAttribute.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Color Scheme\ColorScheme.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Color Scheme\ColorSchemeElement.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Color Scheme\ColorSchemeElementType.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Color Scheme\ColorSchemeManager.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Color Scheme\ColorSchemeShade.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Character Create\Demo_CharacterCreateMgr.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Character Select\3D\Demo_CharacterSelectChar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Character Select\3D\Demo_CharacterSelectMgr.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Character Select\Demo_CharacterInfo.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Character Select\List\Demo_CharacterSelectList.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Character Select\List\Demo_CharacterSelectList_Character.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Chat\Demo_AddChatMessage.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Chat\Demo_AddChatTestMessages.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Chat\Demo_Chat.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Demo_CastManager.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Demo_LoadScene.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Demo_LookAtCamera.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Demo_QuestTrackerCollapse.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Demo_Quit.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Demo_SceneButton.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Demo\Demo_XPTooltip.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Miscellaneous\BreakPrefabConnection.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Miscellaneous\CommonColorBuffer.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_CastBar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_CompassTester.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_FadeInOut.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_Fill.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_SelectAddOption.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UIBulletBar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UIEquipSlot_Assign.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UIItemSlot_Assign.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UIItemSlot_AssignAll.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UIProgressBar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UISlotBase_Assign.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UISpellSlot_Assign.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UISpellSlot_AssignAll.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\Test Scripts\Test_UITalentSlot_Assign.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Audio\UIAudioSource.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Audio\UIPlayAudio.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Bars\IUIProgressBar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Bars\UIBulletBar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Bars\UICastBar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Bars\UIProgressBar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Bars\UIStepBar.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Buttons\UIButtonExtended.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Buttons\UIButtonExtended_Target.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\Select Field\UISelectField.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\Select Field\UISelectField_List.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\Select Field\UISelectField_Option.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\Select Field\UISelectField_OptionOverlay.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\Select Field\UISelectField_Transition.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\UIJoystick.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\UISliderExtended.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\UISwitchSelect.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\UITab.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Controls\UIToggle_OnOff.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\Serializables\UIEquipmentType.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\Serializables\UIItemInfo.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\Serializables\UIItemQuality.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\Serializables\UISpellInfo.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\Serializables\UISpellInfo_Flags.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\Serializables\UITalentInfo.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\UIItemDatabase.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\UISpellDatabase.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Databases\UITalentDatabase.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Effects\Gradient.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Effects\LetterSpacing.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Effects\NicerOutline.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\Interfaces\IUIItemSlot.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\Interfaces\IUISlotHasCooldown.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\Interfaces\IUISpellSlot.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UIEquipReceiver.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UIEquipSlot.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UIItemSlot.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UIItemSlot_Group.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UIItemSlot_SetColorFromQuality.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UISlotBase.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UISlotCooldown.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UISpellSlot.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UISpellSlot_Group.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Icon Slot System\UITalentSlot.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Loading Overlay\UILoadScene.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Loading Overlay\UILoadingOverlay.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Loading Overlay\UILoadingOverlayManager.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Mesh Modifiers\UIDrawVertices.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Mesh Modifiers\UIFlippable.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UICanvasAnchorToCamera.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UICanvasAspectResize.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UIGlobeFillInverter.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UIInputCaretOffset.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UIScrollRectExpander.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UISliderDisplayValue.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UIStatsAdd.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UITextSetValue.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UIToggleWindowAndTab.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Miscellaneous\UIWorldCanvasScaleByCamera.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Modal Box\UIModalBox.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Modal Box\UIModalBoxCreate.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Modal Box\UIModalBoxManager.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Raycast Filters\UICircularRaycastFilter.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Raycast Filters\UIIgnoreRaycast.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Raycast Filters\UIMaskRaycastFilter.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Raycast Filters\UIRectangularRaycastFilter.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Scene System\UIScene.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Scene System\UISceneManager.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Scene System\UISceneOpen.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Scene System\UISceneRegistry.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Serializables\AnimationTriggersExtended.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Serializables\ColorBlockExtended.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Serializables\SpriteStateExtended.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tooltips\UITooltip.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tooltips\UITooltipLineContent.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tooltips\UITooltipLineStyle.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tooltips\UITooltipLines.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tooltips\UITooltipManager.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tooltips\UITooltipShow.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Transitions\UIEffectTransition.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Transitions\UIHighlightTransition.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Transitions\UIPressTransition.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tweening\ColorTween.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tweening\FloatTween.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tweening\ITweenValue.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tweening\TweenEasing.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tweening\TweenEasingHandler.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tweening\TweenRunner.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tweening\Vector2Tween.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Tweening\Vector3Tween.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\UIAlwaysOnTop.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\UIDragObject.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\UIInputEvent.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\UIPagination.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\UIUtility.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Window\UIBlackOverlay.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Window\UIBlackOverlayManager.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Window\UICloseAndShowWindow.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Window\UIWindow.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Window\UIWindowID.cs" />
+    <Compile Include="Assets\RPG and MMO UI 5\Scripts\UI\Window\UIWindowManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Buttons\ChapterButton.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Buttons\FavoriteButton.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Buttons\MainButton.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Buttons\MainPanelButton.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Buttons\QuickMatchButton.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Buttons\SettingsButton.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Buttons\ShortcutButton.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Buttons\SpotlightButton.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Event\HoldKeyEvent.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Event\PointerEnterEvents.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Event\PressKeyEvent.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Event\TimedEvent.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Fix\LayoutGroupPositionFix.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Fix\UIElementInFront.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Input\GamepadChecker.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Input\ScrollGamepadManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Input\SliderGamepadManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Input\VirtualCursor.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Input\VirtualCursorAnimate.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Other\CanvasManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Other\ExitToSystem.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Other\LaunchURL.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Other\QualityManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Other\ScrollForMore.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Panel\FriendsPanelManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Panel\MainPanelButtonParent.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Panel\MainPanelManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Panel\ModalWindowManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Panel\ServerBrowserManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Panel\SplashScreenManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Rendering\BlurManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Rendering\GradientEffect.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\Rendering\UIParticleRenderer.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Element\CustomInputField.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Element\HorizontalSelector.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Element\SliderManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Element\SwitchManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Element\UIElementSound.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Manager\UIManager.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Manager\UIManagerBGMusic.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Manager\UIManagerBackground.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Manager\UIManagerGameLogo.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Manager\UIManagerImage.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Manager\UIManagerParticle.cs" />
+    <Compile Include="Assets\Shift - Complete Sci-Fi UI\Scripts\UI Manager\UIManagerText.cs" />
+    <Compile Include="Assets\Simple Tooltip\Assets\Scripts\STController.cs" />
+    <Compile Include="Assets\Simple Tooltip\Assets\Scripts\STDynamicExample.cs" />
+    <Compile Include="Assets\Simple Tooltip\Assets\Scripts\SimpleTooltip.cs" />
+    <Compile Include="Assets\Simple Tooltip\Assets\Scripts\SimpleTooltipStyle.cs" />
+    <Compile Include="Assets\Simple Warships\Demo Scene\Rotate.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Army.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Building.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Division.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\DivisionTemplate.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\EnumList.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\GameSettings.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\IntelligenceAgency.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\MilitaryForces.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Organization.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Player.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Policy.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Production.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Research.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\SelectCountry.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Sounds.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Weapon.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\WeaponTemplate.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\AudioManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\BuildingManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\DivisionManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\GameEventHandler.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\GameSetup.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\HUDManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\LocalizationManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\MapManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\NotificationManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\OrganizationManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\SaveLoadManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\UIManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\WeaponManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Patterns\Singleton.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\ArmyPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\CityInfoPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\DivisionManagerPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\EconomyPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\GovernmentPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\IntelligenceAgencyPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\OrganizationPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\PolicyPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\ProductionPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\ResearchPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\Statistics.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SimpleScript.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_DigitValidator.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_FrameRateCounter.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshSpawner.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
+    <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\001 Standalone\ColorHSV.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\001 Standalone\ColorPicker.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\001 Standalone\DemoStandAlone.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\001 Standalone\GUIResizer.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\002 Provinces\DemoProvinces.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\003 Hexagonal Grid\DemoHexGrid.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\004 Hex Map\HexMapProcedural.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\005 Country Extrusion\DemoExtrusion.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\006 Slippy Map\DemoSlippyMap2D.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\101 Custom Attributes\DemoCustomAttributes.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\102 Country Expansion\DemoCountryExpansion.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\103 Province Expansion\DemoProvinceExpansion.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\104 Loading and Saving\DemoLoadSave.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\105 Create Map Procedurally\ProceduralMap.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\106 Provinces Pool\ProvincesPool.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\107 Custom Country Borders\CustomBorders.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\108 Erase Country\EraseCountry.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\201 PathFinding Intro\DemoPathFinding.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\202 PathFinding by Country\DemoCountryPathFinding.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\203 PathFinding by Provinces\DemoProvincePathFinding.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\204 PathFinding by Cells\DemoCellsPathFinding.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\205 PathFinding and HeightMap\DemoPathFindingHeightMap.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Terrain Examples\301 Terrain Intro\DemoTerrainFunctions.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Terrain Examples\301 Terrain Intro\FreeCameraMove.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Terrain Examples\302 Frontiers Overlay\DemoOverlayFunctions.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\401 MiniMap Non Canvas\DemoMiniMap.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\403 UI Population\GameManager.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\404 UI InputData SaveLoad\GameLogicExample.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\405 UI Panel Info 2D\UIPanelDemo2D.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\406 UI Panel Info Viewport\UIPanelDemoViewport.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\501 Viewport Intro\DemoViewport.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\502 FogOfWar\DemoFoW.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\503 MapPopulation\DemoMapPopulation.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\504 PathAndLines\DemoLines.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\505 SunCycle\DemoSun.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\506 Hexagonal Grid\DemoHexGridViewport.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\507 Infinite Scroll\DemoInfiniteScroll.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\508 Viewport Change\DemoViewportChange.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\509 Unit Selection\DemoUnitSelection.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\510 Unit Firing\DemoUnitFiring.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\511 Rectangle Selection\DemoRectangleSelection.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\512 Nuclear War\DemoNuclearWar.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\513 Region Elevation\DemoElevation.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\514 Slippy Map\DemoSlippyMapViewport.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\515 Curved Map\DemoCurvedMap.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\SQLiter\Scripts\Example.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\SQLiter\Scripts\LoomManager.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\SQLiter\Scripts\SQLite.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Calculator\WMSK_Calculator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\CityScaler.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\CloudLayerAnimator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\ExtrudedRegionInteraction.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\GameObjectAnimator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\MarkerClickHandler.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\MiniMapTrigger.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\MountPointScaler.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\PointerTrigger.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\RectangleSelection.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\TileAnimator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Drawing\CityBlinker.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Drawing\Drawing.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Drawing\LineMarkerAnimator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Drawing\LineRenderer2.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Drawing\MarkerBlinker.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Drawing\SurfaceBlinker.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Drawing\SurfaceFader.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Drawing\Triangulator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\AdminEntity.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\Cell.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\CellCosts.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\CellSegment.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\City.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\Country.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\IAdminEntity.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\IExtendableAttribute.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\IFader.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\MountPoint.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\Province.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\Region.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\RegionCell.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Entities\TileInfo.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivCities.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivCountry.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivCountryLabels.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivGrid.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivIAdmin.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivModding.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivMountPoints.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivPathFinder.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivProvince.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivProvinceLabels.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivRegion.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivTiles.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivVGOs.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivViewport.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Internal\WMSKPrivate.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Testing\TestRunner.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Testing\Tests.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\ArrayExtensions.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\CustomWWW.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\DisposalManager.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\FastBitArray.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\FastVector.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\GeometryUtilityNonAlloc.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\Lerp.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\Misc.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\SRP.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Utility\ViewportHelper.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Decorator\CountryDecorator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Decorator\CountryDecoratorGroupInfo.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Decorator\WMSK_Decorator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\Hexify\HexifyCommon.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\Hexify\HexifyCountries.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\Hexify\HexifyProvinces.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Core\MapCity.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Core\MapCountry.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Core\MapEntity.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Core\MapProvince.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Core\MapRegion.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\Point.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\Connector.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\Contour.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\EventQueue.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\PointChain.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\Polygon.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\PolygonClipper.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\Rectangle.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\SweepEvent.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\PolygonClipping\SweepEventSet.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\Segment.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\Voronoi\Arc.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\Voronoi\Event.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\Voronoi\VoronoiCell.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\Geom\Voronoi\VoronoiFortune.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\MapGen.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\MapGenNameGenerator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\MapGenPrivHeightMap.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\MapGenerator\MapGenPrivate.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\PolygonClipping\Geom\Line2D.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\PolygonClipping\Geom\PolygonSanitizer.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\WMSK_Editor.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\WMSK_EditorAttribGroup.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\WMSK_EditorCities.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\WMSK_EditorCountry.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\WMSK_EditorMountPoints.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\WMSK_EditorProvince.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\MapEditor\WMSK_TextureImporter.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\Clipper\Clipper.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\Clipper\ClipperExt.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\JSONObject-master\JSONObject.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\JSONObject-master\JSONTemplates.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\JSONObject-master\VectorTemplates.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PathFinding\IPathFinder.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PathFinding\PathFinder.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PathFinding\PathFinderAdminEntity.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PathFinding\PathFinderCells.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PathFinding\PathFinderFast.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PathFinding\Point.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PathFinding\PriorityQueueB.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\P2T.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\DelaunayTriangle.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\AdvancingFront.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\AdvancingFrontNode.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\DTSweep.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\DTSweepBasin.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\DTSweepConstraint.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\DTSweepContext.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\DTSweepDebugContext.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\DTSweepEdgeEvent.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\DTSweepPointComparator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Delaunay\Sweep\PointOnEdgeException.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\ITriangulatable.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Orientation.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Polygon\Contour.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Polygon\Polygon.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Polygon\PolygonPoint.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Polygon\PolygonSet.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Polygon\PolygonUtil.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Sets\ConstrainedPointSet.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Sets\PointSet.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\TriangulationAlgorithm.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\TriangulationConstraint.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\TriangulationContext.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\TriangulationDebugContext.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\TriangulationMode.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\TriangulationPoint.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Util\PointGenerator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Util\PolygonGenerator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Triangulation\Util\TriangulationUtil.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Utility\FixedArray3.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Utility\FixedBitArray3.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Utility\MathUtil.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Utility\Point2D.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Utility\Point2DList.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\Utility\Rect2D.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Tickers\TickerBand.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Tickers\TickerText.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Tickers\TickerTextAnimator.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\Tickers\WMSK_Ticker.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSK.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKCities.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKConversion.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKCountries.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKEarth.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKFogOfWar.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKGameObjectExtensions.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKGrid.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKInteraction.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKMarkersAndLines.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKMiniMap.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKModding.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKMountPoints.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKPathFinding.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKProvinces.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKRegion.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKTileServers.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKTiles.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKViewport.cs" />
+    <Compile Include="Assets\WorldMapStrategyKit\Scripts\WMSKViewportGameObjects.cs" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\Tonemapper.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthScenicPlus16K.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
+    <None Include="Assets\Extreme Vehicle Pack\README.txt" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Multiply Soft.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\GlobalFog.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\VortexEffect.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\NoiseAndGrain.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Multiply Soft Scroll.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\DLAA.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Demos\General Examples\108 Erase Country\README.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSingleColorHexGrid.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitOutlineTex.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\frag_ao.cginc" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSurfacesTexture.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Font\TextMeshPro\IMPORTANT README.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\FXAAPreset3.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSingleColorOrder1.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\CameraMotionBlurDX11.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Geodata\provinces10.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\README.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\LitViewport.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\VignettingShader.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ColorCorrectionCurves.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthTexture16K.shader" />
+    <None Include="Assets\Shift - Complete Sci-Fi UI\Shaders\Masked UI Blur.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\LitCloudLayer.shader" />
+    <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Oswald-Bold - OFL.txt" />
+    <None Include="Assets\_www.unityassetcollection.com.txt" />
+    <None Include="Assets\JMO Assets\WarFX\_Effects\MuzzleFlashes\!MuzzleFlash Differences.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\MultiPassHollywoodFlares.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\Blur.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\SSAOShader.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ColorCorrectionCurvesSimple.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthScenic.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\Blend.shader" />
+    <None Include="Assets\Frost UI\Read Me.txt" />
+    <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Anton OFL.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthScenicPlusAlt1.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\SSAA.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Alpha-Specular TintColor.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\SunShaftsComposite.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\TerrainShaders\WMSKTerrain-AddPass.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Demos\General Examples\107 Custom Country Borders\README.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSingleColorImaginaryLines.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ConvertDepth.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitTileTrans.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitGUIText.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\Clipper\ClipperLibrary_License.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\TwirlEffect.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Add Scroll.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitAlphaSingleColorShadow.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitTileOverlayAlpha.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\Apply.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\Adaptation.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitProvinceBordersOrder2Thick.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthScenicPlus.shader" />
+    <None Include="Assets\JMO Assets\Cartoon FX Easy Editor\CartoonFX Easy Editor Readme.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\LensFlareCreate.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\CameraMotionBlur.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ScreenSpaceAmbientObscurance.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Geodata\countries10.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\CreaseApply.shader" />
+    <None Include="Assets\Frost UI\Shaders\Masked UI Blur.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\FXAA3Console.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ColorCorrectionSelective.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\RadialBlur.shader" />
+    <None Include="Assets\JMO Assets\WarFX\_Effects (Mobile)\MuzzleFlashes\!MuzzleFlash Differences.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ScreenSpaceRaytrace.cginc" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitExtrudedRegion.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitTileOverlay.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\VignetteShader.shader" />
+    <None Include="Assets\Shift - Complete Sci-Fi UI\Shaders\Fast UI Blur.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Demos\General Examples\106 Provinces Pool\README.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitAlphaTextureColor.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Particle Add A8.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\MotionBlurClear.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\SepiaToneEffect.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ColorCorrection3DLut.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSurfacesColorAlpha.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\SimpleClear.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Smoke Scroll.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ContrastComposite.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitOutline.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Particle Multiply A8.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitOverlay.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\MinMaxReduction.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\BlurEffectConeTaps.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\Bokeh34.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ColorCorrectionEffect.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\FisheyeShader.shader" />
+    <None Include="Assets\Simple Warships\Demo Scene\ReadMe.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
+    <None Include="Assets\Shift - Complete Sci-Fi UI\Shaders\UI Particle Additive.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitTileTransAlpha.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BrightPassFilter.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\TerrainShaders\WMSKTerrainSplatmapCommon.cginc" />
+    <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\MobileBloom.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF.shader" />
+    <None Include="Assets\Shift - Complete Sci-Fi UI\Read Me.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitCutoutOverlay.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Geodata\countries110.txt" />
+    <None Include="Assets\Frost UI\Shaders\UI Blur.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendForBloom.shader" />
+    <None Include="Assets\SpaceGUI\fonts\LICENSE.txt" />
+    <None Include="Assets\Simple Tooltip\Assets\Sprites\license.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\DepthOfField34.shader" />
+    <None Include="Assets\SimpleMilitary\Materials\UnlitVertexColour_Alpha.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\DepthOfFieldDX11.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S AlphaBlend Scroll.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSingleTexture.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\SeparableBlurPlus.shader" />
+    <None Include="Assets\Simple Tooltip\Assets\Font\OFL.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitCountryFrontiersGeom.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\MotionBlur.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableBlur.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\MobileBlur.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BrightPassFilter2.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Geodata\cities10.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\PrepareSunShaftsBlur.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\TerrainShaders\WMSKTerrain-FirstPass.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ShowAlphaChannel.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\GrayscaleEffect.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ChromaticAberrationShader.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Demos\README.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitHighlightCell.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\P2T_AUTHORS.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\NoiseAndGrainDX11.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSurfacesColor.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\SeparableWeightedBlurDof34.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitHighlight.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitCountryFrontiersOrder3.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\P2T_LICENSE.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthTexture.shader" />
+    <None Include="Assets\SimpleMilitary\Changelog.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\LitFogOfWar.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\DepthOfFieldScatter.shader" />
+    <None Include="Assets\SimpleMilitary\ReadMe.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitMarkerLine.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\EdgeDetectNormals.shader" />
+    <None Include="Assets\WorldMapStrategyKit\SQLiter\README.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Particle AddSoft A8.shader" />
+    <None Include="Assets\JMO Assets\WarFX\!WarFX Readme.txt" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\LitViewportWrapped.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\FXAA2.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Alpha-Diffuse TintColor.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderYUV.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
+    <None Include="Assets\Shift - Complete Sci-Fi UI\Shaders\UI Blur.shader" />
+    <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+    <None Include="Assets\Frost UI\Shaders\Fast UI Blur.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSingleColorCursor.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\Luminance.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlurAndFlares.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\Blur5Tap.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitAlphaSingleColor.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\NFAA.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthSolidColor.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\TerrainShaders\WMSKTerrain-Base.shader" />
+    <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S AlphaBlend NoSoftParticles.shader" />
+    <None Include="Assets\WorldMapStrategyKit\README.txt" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\FXAAPreset2.shader" />
+    <None Include="Assets\Frost UI\Shaders\Dissolve.shader" />
+    <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\TiltShiftHdrLensBlur.shader" />
+    <None Include="Assets\WorldMapStrategyKit\Demos\General Examples\105 Create Map Procedurally\README.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
+    <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Bangers - OFL.txt" />
+    <Reference Include="Unity.Timeline.Editor">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VSCode.Editor">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.CollabProxy.Editor">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Rider.Editor">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>D:/Steel Nations 2021/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AIModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.ARModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AccessibilityModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AndroidJNIModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AndroidJNIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterInputModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.ClusterInputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterRendererModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.ClusterRendererModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashReportingModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.CrashReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DSPGraphModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.DSPGraphModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DirectorModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GameCenterModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.GameCenterModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.GridModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HotReloadModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.HotReloadModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.LocalizationModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.LocalizationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PerformanceReportingModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.PerformanceReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ProfilerModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.ProfilerModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.ScreenCaptureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.SharedInternalsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.SpriteMaskModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteShapeModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.SpriteShapeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StreamingModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.StreamingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubstanceModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.SubstanceModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubsystemsModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.SubsystemsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TLSModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.TLSModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.TerrainPhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UNETModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UNETModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UmbraModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UmbraModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityTestProtocolModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UnityTestProtocolModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.VFXModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Data.SqliteClient">
+      <HintPath>D:/Steel Nations 2021/Assets/WorldMapStrategyKit/SQLiter/DLLs/Mono.Data.SqliteClient.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>D:/Steel Nations 2021/Assets/WorldMapStrategyKit/SQLiter/DLLs/System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/System.Runtime.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/System.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/System.Xml.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/System.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Microsoft.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/Microsoft.Win32.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="netstandard">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/netstandard.dll</HintPath>
+    </Reference>
+    <Reference Include="System.AppContext">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.AppContext.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Concurrent">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Collections.Concurrent.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.NonGeneric">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Collections.NonGeneric.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Specialized">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Collections.Specialized.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ComponentModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.EventBasedAsync">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ComponentModel.EventBasedAsync.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ComponentModel.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.TypeConverter">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ComponentModel.TypeConverter.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Console">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.Common">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Data.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Contracts">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Diagnostics.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Debug">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Diagnostics.Debug.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.FileVersionInfo">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Diagnostics.FileVersionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Process">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Diagnostics.Process.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.StackTrace">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Diagnostics.StackTrace.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.TextWriterTraceListener">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Diagnostics.TextWriterTraceListener.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Tools">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Diagnostics.Tools.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.TraceSource">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Diagnostics.TraceSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Drawing.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Dynamic.Runtime">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Dynamic.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization.Calendars">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Globalization.Calendars.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Globalization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Globalization.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.ZipFile">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.Compression.ZipFile.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.DriveInfo">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.FileSystem.DriveInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.FileSystem.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Watcher">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.FileSystem.Watcher.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.IsolatedStorage">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.IsolatedStorage.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.MemoryMappedFiles">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.MemoryMappedFiles.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Pipes">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.Pipes.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.UnmanagedMemoryStream">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.IO.UnmanagedMemoryStream.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Expressions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Linq.Expressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Parallel">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Linq.Parallel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Queryable">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Linq.Queryable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Rtc">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.Http.Rtc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.NameResolution">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.NameResolution.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.NetworkInformation">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.NetworkInformation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Ping">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.Ping.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Requests">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.Requests.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Security">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Sockets">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.Sockets.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.WebHeaderCollection">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.WebHeaderCollection.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.WebSockets.Client">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.WebSockets.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.WebSockets">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Net.WebSockets.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ObjectModel">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Reflection.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Emit">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Reflection.Emit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Emit.ILGeneration">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Reflection.Emit.ILGeneration.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Emit.Lightweight">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Reflection.Emit.Lightweight.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Reflection.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Reflection.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Resources.Reader">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Resources.Reader.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Resources.ResourceManager">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Resources.ResourceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Resources.Writer">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Resources.Writer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.VisualC">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.CompilerServices.VisualC.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Handles">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.Handles.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.InteropServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.WindowsRuntime">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.InteropServices.WindowsRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Numerics">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Formatters">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.Serialization.Formatters.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Json">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.Serialization.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.Serialization.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Xml">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Runtime.Serialization.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Claims">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Security.Claims.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Security.Cryptography.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Csp">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Security.Cryptography.Csp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Security.Cryptography.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Security.Cryptography.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Security.Cryptography.X509Certificates.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Security.Principal.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.SecureString">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Security.SecureString.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Duplex">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ServiceModel.Duplex.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Http">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ServiceModel.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.NetTcp">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ServiceModel.NetTcp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Primitives">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ServiceModel.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Security">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ServiceModel.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Text.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Text.Encoding.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.RegularExpressions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Text.RegularExpressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Threading.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Overlapped">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Threading.Overlapped.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Parallel">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Threading.Tasks.Parallel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Thread">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Threading.Thread.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.ThreadPool">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Threading.ThreadPool.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Timer">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Threading.Timer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.ReaderWriter">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.ReaderWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XDocument">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XDocument.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XmlDocument">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XmlDocument.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XmlSerializer">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XmlSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XPath">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XPath.XDocument">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityScript">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/unityscript/UnityScript.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityScript.Lang">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/unityscript/UnityScript.Lang.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang">
+      <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/unityscript/Boo.Lang.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{1FC0BDD7-CBD0-D422-F309-8D20EA54DAE3}</Project>
+      <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="GenerateTargetFrameworkMonikerAttribute" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

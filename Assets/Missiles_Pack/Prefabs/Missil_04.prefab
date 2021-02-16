@@ -1,0 +1,144 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &198090
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 471500}
+  - component: {fileID: 3335922}
+  - component: {fileID: 2399200}
+  - component: {fileID: 9140084120426613857}
+  - component: {fileID: 2039989870182841529}
+  m_Layer: 0
+  m_Name: Missil_04
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &471500
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198090}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1000, y: -1000, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &3335922
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198090}
+  m_Mesh: {fileID: 4300006, guid: a90544ebf3b75f448b7c5050d823ee4d, type: 3}
+--- !u!23 &2399200
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198090}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 3b62b7f6cf83b444a9efcdf896d83ffe, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!114 &9140084120426613857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cce9e3e4a8a124816931e8ff352e36f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  group: 0
+  player: 0
+  updateWhenOffScreen: 0
+  isVisibleInViewport: 0
+  destination: {x: 0, y: 0}
+  duration: 0
+  easeType: 0
+  isMoving: 1
+  _currentMap2DLocation: {x: 0.03633822, y: 0.29026178}
+  altitudeStart: 0.3789988
+  altitudeEnd: 0
+  heightMode: 1
+  autoScale: 1
+  followZoomLevel: 0.1
+  followDuration: 1
+  autoRotation: 0
+  preserveOriginalRotation: 0
+  rotationSpeed: 0.1
+  terrainCapability: 1
+  minAltitude: 0
+  maxAltitude: 1
+  maxSearchCost: -1
+  maxSearchSteps: -1
+  _uniqueId: 0
+  pivotY: 0
+  enableBuoyancyEffect: 1
+  arcMultiplier: 1.1
+  isStatic: 0
+  startingMap2DLocation: {x: 0.0075259716, y: 0.27223572}
+  endingMap2DLocation: {x: 0.03633822, y: 0.29026178}
+  originalScale: {x: 0, y: 0, z: 0}
+  blocksRayCast: 0
+  mouseIsOver: 0
+  managedRenderers:
+  - {fileID: 2399200}
+--- !u!65 &2039989870182841529
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198090}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.73753786, y: 0.6387273, z: 3.1810946}
+  m_Center: {x: 0.0000006109476, y: 0.10645409, z: 0.122400224}
