@@ -13,44 +13,25 @@ namespace WorldMapStrategyKit
         }
 
         WMSK map;
-        //public Button declareWarButton;
 
         public GameObject weaponItem;
+        public GameObject organizationItem;
+        public GameObject organizationFlag;
+
+        public GameObject overviewContent;
+        public GameObject mineralContent;
         public GameObject militaryContent;
         public GameObject diplomacyContent;
+        public GameObject buildingContent;
 
         public GameObject governmentPanel;
-        public TextMeshProUGUI countryName;
-        public TextMeshProUGUI govermentSystem;
-        public TextMeshProUGUI religion;
-        public TextMeshProUGUI financialStatus;
-        public TextMeshProUGUI unemploymentRate;
-        public TextMeshProUGUI natality;
-        public TextMeshProUGUI nuclear_power;
+        public GameObject governmentItem;
 
         public GameObject flag_country;
 
-        public TextMeshProUGUI manpower;
-        public TextMeshProUGUI oil_rafinery;
-        public TextMeshProUGUI port;
-        public TextMeshProUGUI military_factory;
-        public TextMeshProUGUI mining_factory;
-        public TextMeshProUGUI airport;
-        public TextMeshProUGUI rank;
-        public TextMeshProUGUI hospital;
-        public TextMeshProUGUI civil_factory;
-        public TextMeshProUGUI university;
-        public TextMeshProUGUI nuclear_facility;
-        public TextMeshProUGUI tension;
-        public TextMeshProUGUI defenseBudget;
-
-        public TextMeshProUGUI oil;
-        public TextMeshProUGUI iron;
-        public TextMeshProUGUI steel;
-        public TextMeshProUGUI aluminium;
-        public TextMeshProUGUI uranium;
-
         public GameObject diplomacyButton;
+
+        public TextMeshProUGUI countryName;
 
         public TextMeshProUGUI leftCountryText;
         public TextMeshProUGUI rightCountryText;
@@ -64,7 +45,21 @@ namespace WorldMapStrategyKit
         public GameObject declareWarButton;
 
         Country selectedCountry;
+        bool IsMyCountry = false;
 
+        public GameObject founderContent;
+        public GameObject fullMemberContent;
+        public GameObject observerContent;
+        public GameObject dialoguePartner;
+        public GameObject appliedFullMemberContent;
+        public GameObject appliedObserverContent;
+        public GameObject appliedDialoguePartner;
+
+        public TextMeshProUGUI OilText;
+        public TextMeshProUGUI IronText;
+        public TextMeshProUGUI SteelText;
+        public TextMeshProUGUI UraniumText;
+        public TextMeshProUGUI AluminiumText;
         private void Start()
         {
             instance = this;
@@ -78,14 +73,7 @@ namespace WorldMapStrategyKit
 
             GameEventHandler.Instance.GetPlayer().SetSelectedCountry(null);
 
-            foreach (Transform child in militaryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            foreach (Transform eachChild in diplomacyContent.transform)
-            {
-                Destroy(eachChild.gameObject);
-            }
+            ClearAllContents();
         }
         public void ShowSelectCountryPanel(Country country)
         {
@@ -95,151 +83,263 @@ namespace WorldMapStrategyKit
             countryName.text = country.name;
             flag_country.GetComponent<RawImage>().texture = country.GetCountryFlag();
 
-            manpower.text = string.Format("{0:#,0}", country.GetAvailableManpower());
-            tension.text = country.GetTension().ToString();
-            defenseBudget.text = "$ " + string.Format("{0:#,0}", float.Parse(country.GetArmy().GetDefenseBudget().ToString())) + " M";
-            oil.text = country.GetTotalOilReserves().ToString();
-            uranium.text = country.GetTotalUraniumReserves().ToString();
-            iron.text = country.GetTotalIronReserves().ToString();
-            steel.text = country.GetTotalSteelReserves().ToString();
-            aluminium.text = country.GetTotalAluminiumReserves().ToString();
+            ClearAllContents();
 
-            religion.text = country.GetReligion();
-            govermentSystem.text = country.GetSystemOfGovernment();
-            financialStatus.text = country.attrib["Financial Status"];
-            unemploymentRate.text = country.GetUnemploymentRate().ToString();
-            natality.text = country.GetFertilityRatePerWeek().ToString();
+            CreateOverviewButton("Manpower", string.Format("{0:#,0}", country.GetAvailableManpower()));
+            CreateOverviewButton("Tension", country.GetTension().ToString());
+            CreateOverviewButton("Defense Budget", "$ " + string.Format("{0:#,0}", float.Parse(country.GetArmy().GetDefenseBudget().ToString())) + " M");
+            CreateOverviewButton("Religion", country.GetReligion());
+            CreateOverviewButton("System Of Government", country.GetSystemOfGovernment());
+            CreateOverviewButton("Unemployment Rate", country.GetUnemploymentRate().ToString());
+            CreateOverviewButton("Birth Rate", country.GetFertilityRatePerWeek().ToString());
+            CreateOverviewButton("Rank", country.GetMilitaryRank().ToString());
+            /*
+            CreateMineralButton("Oil", country.GetTotalOilReserves().ToString());
+            CreateMineralButton("Uranium", country.GetTotalUraniumReserves().ToString());
+            CreateMineralButton("Iron", country.GetTotalIronReserves().ToString());
+            CreateMineralButton("Steel", country.GetTotalSteelReserves().ToString());
+            CreateMineralButton("Aluminium", country.GetTotalAluminiumReserves().ToString());
+            */
 
-            oil_rafinery.text = country.GetTotalBuildings(BUILDING_TYPE.OIL_RAFINERY).ToString();
-            university.text = country.GetTotalBuildings(BUILDING_TYPE.UNIVERSITY).ToString();
-            nuclear_facility.text = country.GetTotalBuildings(BUILDING_TYPE.NUCLEAR_FACILITY).ToString();
-            port.text = country.GetTotalBuildings(BUILDING_TYPE.TRADE_PORT).ToString();
-            airport.text = country.GetTotalBuildings(BUILDING_TYPE.AIRPORT).ToString();
-            hospital.text = country.GetTotalBuildings(BUILDING_TYPE.HOSPITAL).ToString();
-            civil_factory.text = country.GetTotalBuildings(BUILDING_TYPE.FACTORY).ToString();
-            military_factory.text = country.GetTotalBuildings(BUILDING_TYPE.MILITARY_FACTORY).ToString();
-            mining_factory.text = country.GetTotalBuildings(BUILDING_TYPE.MINERAL_FACTORY).ToString();
+            SetMinerals();
 
-            rank.text = country.GetMilitaryRank().ToString();
+            CreateMilitaryButton("Land Attack Power", string.Format("{0:#,0}", country.GetArmy().GetLandForces().GetMilitaryPower()));
+            CreateMilitaryButton("Air Attack Power", string.Format("{0:#,0}", country.GetArmy().GetAirForces().GetMilitaryPower()));
+            CreateMilitaryButton("Naval Attack Power", string.Format("{0:#,0}", country.GetArmy().GetNavalForces().GetMilitaryPower()));
 
+            CreateBuildingButton("Oil Rafinery", country.GetTotalBuildings(BUILDING_TYPE.OIL_RAFINERY).ToString());
+            CreateBuildingButton("University", country.GetTotalBuildings(BUILDING_TYPE.UNIVERSITY).ToString());
+            CreateBuildingButton("Nuclear Facility", country.GetTotalBuildings(BUILDING_TYPE.NUCLEAR_FACILITY).ToString());
+            CreateBuildingButton("Trade Port", country.GetTotalBuildings(BUILDING_TYPE.TRADE_PORT).ToString());
+            CreateBuildingButton("Airport", country.GetTotalBuildings(BUILDING_TYPE.AIRPORT).ToString());
+            CreateBuildingButton("Hospital", country.GetTotalBuildings(BUILDING_TYPE.HOSPITAL).ToString());
+            CreateBuildingButton("Factory", country.GetTotalBuildings(BUILDING_TYPE.FACTORY).ToString());
+            CreateBuildingButton("Military Factory", country.GetTotalBuildings(BUILDING_TYPE.MILITARY_FACTORY).ToString());
+            CreateBuildingButton("Mineral Factory", country.GetTotalBuildings(BUILDING_TYPE.MINERAL_FACTORY).ToString());
+
+            CreateOrganizations();
+        }
+
+        void SetMinerals()
+        {
+            OilText.text = selectedCountry.GetOil().ToString();
+            IronText.text = selectedCountry.GetIron().ToString();
+            SteelText.text = selectedCountry.GetSteel().ToString();
+            AluminiumText.text = selectedCountry.GetAluminium().ToString();
+            UraniumText.text = selectedCountry.GetUranium().ToString();
+        }
+        void ClearAllContents()
+        {
+            ClearBuildingContent();
+            ClearDiplomacyContent();
+            ClearMineralContent();
+            ClearOverviewContent();
+            ClearMilitaryContent();
+            ClearOrganizationContent();
+        }
+
+
+        void ClearOverviewContent()
+        {
+            foreach (Transform child in overviewContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        void ClearMineralContent()
+        {
+            foreach (Transform child in mineralContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        void ClearMilitaryContent()
+        {
             foreach (Transform child in militaryContent.transform)
             {
                 Destroy(child.gameObject);
             }
-            foreach (Transform eachChild in diplomacyContent.transform)
+        }
+        void ClearDiplomacyContent()
+        {
+            foreach (Transform child in diplomacyContent.transform)
             {
-                Destroy(eachChild.gameObject);
+                Destroy(child.gameObject);
+            }
+        }
+        void ClearBuildingContent()
+        {
+            foreach (Transform child in buildingContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        void ClearOrganizationContent()
+        {
+            foreach (Transform child in founderContent.transform.GetChild(4))
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in fullMemberContent.transform.GetChild(4))
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in observerContent.transform.GetChild(4))
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in dialoguePartner.transform.GetChild(4))
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in appliedFullMemberContent.transform.GetChild(4))
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in appliedObserverContent.transform.GetChild(4))
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in appliedDialoguePartner.transform.GetChild(4))
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        public void CreateOrganizations()
+        {
+            foreach (Organization org in OrganizationManager.Instance.GetAllOrganizations())
+            {
+                GameObject flag = null;
+
+                if (org.GetObserverList().Contains(selectedCountry))
+                {
+                    flag = Instantiate(organizationFlag, observerContent.transform.GetChild(4));
+                }
+
+                if (org.GetFullMemberList().Contains(selectedCountry))
+                {
+                    flag = Instantiate(organizationFlag, fullMemberContent.transform.GetChild(4));
+                }
+
+                if (org.GetFounderList().Contains(selectedCountry))
+                {
+                    flag = Instantiate(organizationFlag, founderContent.transform.GetChild(4));
+                }
+
+                if (org.GetDialoguePartnerList().Contains(selectedCountry))
+                {
+                    flag = Instantiate(organizationFlag, dialoguePartner.transform.GetChild(4));
+                }
+
+                if (org.GetApplyForFullMemberList().Contains(selectedCountry))
+                {
+                    flag = Instantiate(organizationFlag, appliedFullMemberContent.transform.GetChild(4));
+                }
+
+                if (org.GetApplyForObserverList().Contains(selectedCountry))
+                {
+                    flag = Instantiate(organizationFlag, appliedObserverContent.transform.GetChild(4));
+                }
+
+                if (org.GetApplyForDialoguePartnerList().Contains(selectedCountry))
+                {
+                    flag = Instantiate(organizationFlag, appliedDialoguePartner.transform.GetChild(4));
+                }
+
+                if (flag != null)
+                {
+                    flag.transform.GetChild(0).GetComponent<RawImage>().texture = org.organizationLogo;
+                    flag.GetComponent<SimpleTooltip>().infoLeft = org.organizationName;
+                }
             }
         }
         public void ShowGovernmentPanel()
         {
             selectedCountry = GameEventHandler.Instance.GetPlayer().GetSelectedCountry();
 
+            if (selectedCountry == GameEventHandler.Instance.GetPlayer().GetMyCountry())
+                IsMyCountry = true;
+
             ShowSelectCountryPanel(selectedCountry);
 
-            SelectCountry.Instance.startButton.SetActive(false);
+            SelectCountry.Instance.startButton.SetActive(false); 
+            
 
-            /*
-            foreach (Transform child in organizationContent.transform)
+            if(IsMyCountry == true)
             {
-                Destroy(child.gameObject);
+                CreateDiplomacyButton("Change System Of Government").GetComponent<Button>().onClick.AddListener(() => PlaceArmsEmbargo());
             }
-
-            foreach (Organization org in OrganizationManager.Instance.GetAllOrganizations())
+            else
             {
-                if (org.isFullMemberCountry(selectedCountry))
+                if (GameEventHandler.Instance.IsGameStarted() == true)
                 {
-                    GameObject flag = Instantiate(organizationFlag, organizationContent.transform);
-                    flag.transform.GetChild(0).GetComponent<RawImage>().texture = org.organizationLogo;
-                    flag.GetComponent<SimpleTooltip>().infoLeft = org.organizationName;
-                }
-            }
-            */
-            foreach (var weapon in selectedCountry.GetArmy().GetAllWeaponsInArmyInventory())
-            {
-                GameObject temp = Instantiate(weaponItem, militaryContent.transform);
-
-                temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = weapon.Key.weaponName;
-                temp.gameObject.transform.GetChild(3).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(weapon.Key.weaponID);
-                temp.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = weapon.Value.ToString();
-
-                temp.SetActive(true);
-            }
-
-            if (GameEventHandler.Instance.IsGameStarted() == true)
-            {
-                if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetIntelligenceAgency() != null)
-                {
-                    CreateDiplomacyButton("Assassination of President").GetComponent<Button>().onClick.AddListener(() => AssassinationOfPresident());
-                    CreateDiplomacyButton("Steal Technology").GetComponent<Button>().onClick.AddListener(() => StealTechnology());
-                    CreateDiplomacyButton("Make A Military Coup").GetComponent<Button>().onClick.AddListener(() => MakeMilitaryCoup());
-                }
-
-
-                if (GameEventHandler.Instance.GetPlayer().GetMyCountry().AtWar(selectedCountry))
-                {
-                    CreateDiplomacyButton("Sign a peace treaty").GetComponent<Button>().onClick.AddListener(() => SignPeaceTreaty());
-
-                    if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetNuclearWarHead() > 0)
+                    if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetIntelligenceAgency() != null)
                     {
-                        CreateDiplomacyButton("Begin Nuclear War").GetComponent<Button>().onClick.AddListener(() => BeginNuclearWar());
+                        CreateDiplomacyButton("Assassination of President").GetComponent<Button>().onClick.AddListener(() => AssassinationOfPresident());
+                        CreateDiplomacyButton("Steal Technology").GetComponent<Button>().onClick.AddListener(() => StealTechnology());
+                        CreateDiplomacyButton("Make A Military Coup").GetComponent<Button>().onClick.AddListener(() => MakeMilitaryCoup());
                     }
-                }
-                else
-                {
-                    CreateDiplomacyButton("Declare War").GetComponent<Button>().onClick.AddListener(() => ShowDeclareWarPanel());
 
-                    if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetBudget() < selectedCountry.GetBudget())
+
+                    if (GameEventHandler.Instance.GetPlayer().GetMyCountry().AtWar(selectedCountry))
                     {
-                        CreateDiplomacyButton("Ask For Money Support").GetComponent<Button>().onClick.AddListener(() => AskForMoneySupport());
+                        CreateDiplomacyButton("Sign a peace treaty").GetComponent<Button>().onClick.AddListener(() => SignPeaceTreaty());
+
+                        if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetNuclearWarHead() > 0)
+                        {
+                            CreateDiplomacyButton("Begin Nuclear War").GetComponent<Button>().onClick.AddListener(() => BeginNuclearWar());
+                        }
                     }
                     else
                     {
-                        CreateDiplomacyButton("Give Money Support").GetComponent<Button>().onClick.AddListener(() => GiveMoneySupport());
+                        CreateDiplomacyButton("Declare War").GetComponent<Button>().onClick.AddListener(() => ShowDeclareWarPanel());
+
+                        if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetBudget() < selectedCountry.GetBudget())
+                        {
+                            CreateDiplomacyButton("Ask For Money Support").GetComponent<Button>().onClick.AddListener(() => AskForMoneySupport());
+                        }
+                        else
+                        {
+                            CreateDiplomacyButton("Give Money Support").GetComponent<Button>().onClick.AddListener(() => GiveMoneySupport());
+                        }
+
+                        if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetLeftMilitaryAccess(selectedCountry) > 0)
+                        {
+                            CreateDiplomacyButton("Cancel military access").GetComponent<Button>().onClick.AddListener(() => CancelMilitaryAccess());
+                        }
+                        else
+                        {
+                            CreateDiplomacyButton("Give military access").GetComponent<Button>().onClick.AddListener(() => GiveMilitaryAccess());
+                        }
+
+                        if (selectedCountry.GetLeftMilitaryAccess(GameEventHandler.Instance.GetPlayer().GetMyCountry()) > 0)
+                        {
+                            CreateDiplomacyButton("Cancel military access").GetComponent<Button>().onClick.AddListener(() => CancelMilitaryAccess());
+                        }
+
+                        if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetCountryListAtWar().Count > 0)
+                        {
+                            CreateDiplomacyButton("Request Garrison support").GetComponent<Button>().onClick.AddListener(() => RequestGarrisonSupport());
+                        }
+
+                        if (selectedCountry.GetCountryListAtWar().Count > 0)
+                        {
+                            CreateDiplomacyButton("Give Garrison support").GetComponent<Button>().onClick.AddListener(() => GiveGarrisonSupport());
+                        }
+
+                        CreateDiplomacyButton("Give Gun Support").GetComponent<Button>().onClick.AddListener(() => GiveGunSupport());
+                        CreateDiplomacyButton("Ask For Gun Support").GetComponent<Button>().onClick.AddListener(() => AskForGunSupport());
+                        CreateDiplomacyButton("Request License Production").GetComponent<Button>().onClick.AddListener(() => RequestLicenseProduction());
                     }
 
-                    if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetLeftMilitaryAccess(selectedCountry) > 0)
-                    {
-                        CreateDiplomacyButton("Cancel military access").GetComponent<Button>().onClick.AddListener(() => CancelMilitaryAccess());
-                    }
-                    else
-                    {
-                        CreateDiplomacyButton("Give military access").GetComponent<Button>().onClick.AddListener(() => GiveMilitaryAccess());
-                    }
-
-                    if (selectedCountry.GetLeftMilitaryAccess(GameEventHandler.Instance.GetPlayer().GetMyCountry()) > 0)
-                    {
-                        CreateDiplomacyButton("Cancel military access").GetComponent<Button>().onClick.AddListener(() => CancelMilitaryAccess());
-                    }
-
-                    if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetCountryListAtWar().Count > 0)
-                    {
-                        CreateDiplomacyButton("Request Garrison support").GetComponent<Button>().onClick.AddListener(() => RequestGarrisonSupport());
-                    }
-
-                    if (selectedCountry.GetCountryListAtWar().Count > 0)
-                    {
-                        CreateDiplomacyButton("Give Garrison support").GetComponent<Button>().onClick.AddListener(() => GiveGarrisonSupport());
-                    }
-
-                    CreateDiplomacyButton("Give Gun Support").GetComponent<Button>().onClick.AddListener(() => GiveGunSupport());
-                    CreateDiplomacyButton("Ask For Gun Support").GetComponent<Button>().onClick.AddListener(() => AskForGunSupport());
-                    CreateDiplomacyButton("Request License Production").GetComponent<Button>().onClick.AddListener(() => RequestLicenseProduction());
+                    CreateDiplomacyButton("Place Arms Embargo").GetComponent<Button>().onClick.AddListener(() => PlaceArmsEmbargo());
+                    CreateDiplomacyButton("Place Trade Embargo").GetComponent<Button>().onClick.AddListener(() => PlaceTradeEmbargo());
+                    CreateDiplomacyButton("Ask for control of state").GetComponent<Button>().onClick.AddListener(() => AskForControlOfState());
+                    CreateDiplomacyButton("Give control of state").GetComponent<Button>().onClick.AddListener(() => GiveControlOfState());
                 }
-
-                CreateDiplomacyButton("Place Arms Embargo").GetComponent<Button>().onClick.AddListener(() => PlaceArmsEmbargo());
-                CreateDiplomacyButton("Place Trade Embargo").GetComponent<Button>().onClick.AddListener(() => PlaceTradeEmbargo());
-                CreateDiplomacyButton("Ask for control of state").GetComponent<Button>().onClick.AddListener(() => AskForControlOfState());
-                CreateDiplomacyButton("Give control of state").GetComponent<Button>().onClick.AddListener(() => GiveControlOfState());
             }
-        }
-
-        GameObject CreateDiplomacyButton(string text)
-        {
-            GameObject GO = Instantiate(diplomacyButton, diplomacyContent.transform);
-            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = text;
-
-            return GO;
+            
         }
 
         public void AssassinationOfPresident()
@@ -336,7 +436,7 @@ namespace WorldMapStrategyKit
         }
         public void BeginNuclearWar()
         {
-            GameEventHandler.Instance.GetPlayer().GetMyCountry().AddNuclearWar(GameEventHandler.Instance.GetPlayer().GetSelectedCountry());
+            GameEventHandler.Instance.GetPlayer().GetMyCountry().BeginNuclearWar(GameEventHandler.Instance.GetPlayer().GetSelectedCountry());
         }
 
         public void SignPeaceTreaty()
@@ -365,7 +465,7 @@ namespace WorldMapStrategyKit
                 Destroy(child.gameObject);
             }
 
-            foreach (Country country in GameEventHandler.Instance.GetAllCountries())
+            foreach (Country country in CountryManager.Instance.GetAllCountries())
             {
                 if (country != GameEventHandler.Instance.GetPlayer().GetMyCountry() && GameEventHandler.Instance.GetPlayer().GetMyCountry().attrib[country.name] >= 50)
                 {
@@ -378,7 +478,7 @@ namespace WorldMapStrategyKit
                 }
             }
 
-            foreach (Country country in GameEventHandler.Instance.GetAllCountries())
+            foreach (Country country in CountryManager.Instance.GetAllCountries())
             {
                 if (country != GameEventHandler.Instance.GetPlayer().GetMyCountry() && GameEventHandler.Instance.GetPlayer().GetMyCountry().attrib[country.name] >= 50)
                 {
@@ -391,5 +491,50 @@ namespace WorldMapStrategyKit
                 }
             }
         }
+
+
+
+        GameObject CreateOverviewButton(string text, string value)
+        {
+            GameObject GO = Instantiate(governmentItem, overviewContent.transform);
+            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = text;
+            GO.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = value;
+
+            return GO;
+        }
+
+        GameObject CreateDiplomacyButton(string text)
+        {
+            GameObject GO = Instantiate(diplomacyButton, diplomacyContent.transform);
+            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = text;
+
+            return GO;
+        }
+
+        GameObject CreateMineralButton(string text, string value)
+        {
+            GameObject GO = Instantiate(governmentItem, mineralContent.transform);
+            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = text;
+            GO.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = value;
+
+            return GO;
+        }
+        GameObject CreateBuildingButton(string text, string value)
+        {
+            GameObject GO = Instantiate(governmentItem, buildingContent.transform);
+            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = text;
+            GO.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = value;
+
+            return GO;
+        }
+        GameObject CreateMilitaryButton(string text, string value)
+        {
+            GameObject GO = Instantiate(governmentItem, militaryContent.transform);
+            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = text;
+            GO.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = value;
+
+            return GO;
+        }
+        
     }
 }

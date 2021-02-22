@@ -6,18 +6,19 @@ namespace WorldMapStrategyKit
 {
     public class Player
     {
-        List<GameObjectAnimator> selectedUnits;
+        List<GameObjectAnimator> selectedDivisions;
         Country MyCountry = null;
 
-        GameObjectAnimator selectedDivision;
         GameObjectAnimator selectedBuilding;
         GameObjectAnimator mouseOverUnit;
         City selectedCity;
+        City mouseOverCity;
+
         Country selectedCountry;
 
         public Player()
         {
-            selectedUnits = new List<GameObjectAnimator>();
+            selectedDivisions = new List<GameObjectAnimator>();
         }
 
         public Country GetMyCountry()
@@ -29,16 +30,6 @@ namespace WorldMapStrategyKit
             MyCountry = country;
         }
 
-        public GameObjectAnimator GetSelectedDivision()
-        {
-            return selectedDivision;
-        }
-        public void SelectDivision(GameObjectAnimator GOA)
-        {
-            selectedDivision = GOA;
-        }
-
-
         public GameObjectAnimator GetMouseOverUnit()
         {
             return mouseOverUnit;
@@ -49,16 +40,30 @@ namespace WorldMapStrategyKit
         }
 
 
-        public List<GameObjectAnimator> GetSelectedUnits()
+        public List<GameObjectAnimator> GetSelectedDivisions()
         {
-            return selectedUnits;
+            return selectedDivisions;
         }
-        public void SetSelectedUnits(List<GameObjectAnimator> GOA)
+        public void AddSelectedDivisions(GameObjectAnimator GOA)
         {
-            selectedUnits = GOA;
+            selectedDivisions.Add(GOA);
+        }
+        public void ClearSelectedDivisions()
+        {
+            selectedDivisions.Clear(); ;
         }
 
-
+        public int GetSelectedDivisionNumber()
+        {
+            return selectedDivisions.Count;
+        }
+        public bool IsMyDivision(GameObjectAnimator GOA)
+        {
+            foreach (GameObjectAnimator division in MyCountry.GetArmy().GetAllDivisionInArmy())
+                if (GOA == division)
+                    return true;
+            return false;
+        }
         public GameObjectAnimator GetSelectedBuilding()
         {
             return selectedBuilding;
@@ -87,6 +92,13 @@ namespace WorldMapStrategyKit
             selectedCity = city;
         }
 
-
+        public City GetMouseOverCity()
+        {
+            return mouseOverCity;
+        }
+        public void SetMouseOverCity(City city)
+        {
+            mouseOverCity = city;
+        }
     }
 }

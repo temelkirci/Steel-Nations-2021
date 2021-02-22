@@ -23,9 +23,12 @@ namespace WorldMapStrategyKit
         public int GetMilitaryPower()
         {
             int power = 0;
-            foreach(Weapon weapon in allWeaponsInMilitaryForces)
+            if (allWeaponsInMilitaryForces.Count > 0)
             {
-                power += WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponAttack;
+                foreach (Weapon weapon in allWeaponsInMilitaryForces)
+                {
+                    power = power + WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponAttack;
+                }
             }
 
             return power;
@@ -105,12 +108,12 @@ namespace WorldMapStrategyKit
                 
                 for (int i = 0; i < secondUnitNumber; i++)
                 {
-                    militaryDivision.AddWeaponToDivision(mainUnitList[i]);
+                    militaryDivision.AddWeaponToDivision(secondUnitList[i]);
                 }
 
                 for (int i = 0; i < thirdUnitNumber; i++)
                 {
-                    militaryDivision.AddWeaponToDivision(mainUnitList[i]);
+                    militaryDivision.AddWeaponToDivision(thirdUnitList[i]);
                 }
 
                 AddDivisionToMilitaryForces(tempDivision);

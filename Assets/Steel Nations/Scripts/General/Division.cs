@@ -34,6 +34,21 @@ public class Division
         return tempWeaponList;
     }
 
+    public List<Weapon> GetWeaponNumberByWeaponNameInDivision(string weaponName)
+    {
+        List<Weapon> tempWeaponList = new List<Weapon>();
+
+        foreach (Weapon weapon in GetWeaponsInDivision())
+        {
+            if (WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponName == weaponName)
+            {
+                tempWeaponList.Add(weapon);
+            }
+        }
+
+        return tempWeaponList;
+    }
+
     public void DeleteWeaponInDivision(Weapon weapon)
     {
         weaponsInDivision.Remove(weapon);
@@ -53,6 +68,7 @@ public class Division
             speed += WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponSpeed;
         }
 
+        speed = (speed / weaponsInDivision.Count);
         return speed;
     }
 

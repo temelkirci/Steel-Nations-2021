@@ -26,7 +26,7 @@ namespace WorldMapStrategyKit
         public GameObject flagLogo;
 
         public GameObject fullMemberContent;
-        public GameObject halfMemberContent;
+        public GameObject dialoguePartnerContent;
         public GameObject observationContent;
 
         public Button applyButton;
@@ -75,7 +75,7 @@ namespace WorldMapStrategyKit
             {
                 Destroy(child.gameObject);
             }
-            foreach (Transform child in halfMemberContent.transform)
+            foreach (Transform child in dialoguePartnerContent.transform)
             {
                 Destroy(child.gameObject);
             }
@@ -101,7 +101,7 @@ namespace WorldMapStrategyKit
 
             foreach (Country country in organization.GetObserverList())
             {
-                GameObject temp = Instantiate(flagLogo, halfMemberContent.transform);
+                GameObject temp = Instantiate(flagLogo, observationContent.transform);
                 temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
 
                 //if (country == GameEventHandler.MyCountry)
@@ -110,7 +110,7 @@ namespace WorldMapStrategyKit
 
             foreach (Country country in organization.GetDialoguePartnerList())
             {
-                GameObject temp = Instantiate(flagLogo, observationContent.transform);
+                GameObject temp = Instantiate(flagLogo, dialoguePartnerContent.transform);
                 temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
 
                 //if (country == GameEventHandler.MyCountry)
@@ -126,7 +126,8 @@ namespace WorldMapStrategyKit
         public void ApplyForOrganization(Country country)
         {
             Organization org = OrganizationManager.Instance.GetOrganizationByName(organizationName.text);
-            org.ApplyForFullMember(country);
+
+            org.ApplyForFullMember(country, true);
         }
     }
 }

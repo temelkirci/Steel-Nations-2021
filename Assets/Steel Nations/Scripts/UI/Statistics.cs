@@ -35,7 +35,7 @@ namespace WorldMapStrategyKit
                 Destroy(child.gameObject);
             }
 
-            foreach(Country country in GameEventHandler.Instance.GetAllCountries())
+            foreach(Country country in CountryManager.Instance.GetAllCountries())
             {
                 if(country != null)
                 {

@@ -21,6 +21,7 @@ namespace WorldMapStrategyKit
             navalForces = null;
 
             defenseBudget = 0;
+            soldierNumber = 0;
 
             CreateArmy();
         }
@@ -54,6 +55,14 @@ namespace WorldMapStrategyKit
         }
         #endregion
 
+        public int GetArmyPower()
+        {
+            int landPower = landForces.GetMilitaryPower();
+            int airPower = airForces.GetMilitaryPower();
+            int navalPower = navalForces.GetMilitaryPower();
+
+            return landPower + airPower + navalPower;
+        }
         public void SetSoldierNumber(int number)
         {
             soldierNumber = number;

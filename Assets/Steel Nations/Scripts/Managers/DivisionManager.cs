@@ -33,22 +33,31 @@ namespace WorldMapStrategyKit
             return divisionTemplateList;
         }
 
-        public void CreateDivisions()
+        public void CreateDivisions(Country country)
         {
-            CreateLandDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), -1, DIVISION_TYPE.ARMORED_DIVISION);
-            CreateLandDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), -1, DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION);
-            CreateLandDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), -1, DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION);
+            CreateLandDivision(country, -1, DIVISION_TYPE.ARMORED_DIVISION);
+            CreateLandDivision(country, -1, DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION);
+            CreateLandDivision(country, -1, DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION);
 
-            CreateAirDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), -1, DIVISION_TYPE.AIR_DIVISION);
+            CreateAirDivision(country, -1, DIVISION_TYPE.AIR_DIVISION);
 
-            CreateNavalDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), -1, DIVISION_TYPE.CARRIER_DIVISION);
-            CreateNavalDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), -1, DIVISION_TYPE.SUBMARINE_DIVISION);
-            CreateNavalDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), -1, DIVISION_TYPE.DESTROYER_DIVISION);
+            CreateNavalDivision(country, -1, DIVISION_TYPE.CARRIER_DIVISION);
+            CreateNavalDivision(country, -1, DIVISION_TYPE.SUBMARINE_DIVISION);
+            CreateNavalDivision(country, -1, DIVISION_TYPE.DESTROYER_DIVISION);
         }
 
         public void CreateLandDivision(Country tempCountry, int number, DIVISION_TYPE divisionType)
         {
-            List<City> normalCity = map.GetCities(tempCountry, false, WMSK.CITY_CLASS_FILTER_ANY);
+            if (tempCountry == null)
+                return;
+
+            if (tempCountry.GetArmy() == null)
+                return;
+
+            if (tempCountry.GetArmy().GetLandForces() == null)
+                return;
+
+            List<City> normalCity = tempCountry.GetSortedCityListByPopulation();
             DivisionTemplate tempDivisionTemplate = DivisionManagerPanel.GetDivisionTemplateByType(divisionType);
             int landDivisionNumber = tempCountry.GetArmy().GetLandForces().PossibleDivisionNumber(tempDivisionTemplate);
 
@@ -70,22 +79,25 @@ namespace WorldMapStrategyKit
                 Vector2 regionCapitalCityPosition = normalCity[i].unity2DLocation;
                 GameObjectAnimator tank = CreateMilitaryUnit(TERRAIN_CAPABILITY.OnlyGround, regionCapitalCityPosition, divisionType, true);
                 tank.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter
+                tank.attrib["Color"] = tank.GetComponentInChildren<Renderer>().sharedMaterial.color;
+                tank.autoRotation = true;
 
-                if(divisionType == DIVISION_TYPE.ARMORED_DIVISION)
-                    tank.name = tempCountry.name + " Armored Division";
+                if (divisionType == DIVISION_TYPE.ARMORED_DIVISION)
+                    tank.name = (i+1) + "." + tempCountry.name + " Armored Division";
                 if (divisionType == DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION)
-                    tank.name = tempCountry.name + " Mechanized Infantry Division";
+                    tank.name = (i+1) + "." + tempCountry.name + " Mechanized Infantry Division";
                 if (divisionType == DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION)
-                    tank.name = tempCountry.name + " Motorized Infantry Division";
+                    tank.name = (i+1) + "." + tempCountry.name + " Motorized Infantry Division";
 
                 tempCountry.GetArmy().GetLandForces().CreateDivision(tank, tempDivisionTemplate);
+                normalCity[i].AddDivisionToCity(tank);
             }
         }
 
 
         public void CreateAirDivision(Country tempCountry, int number, DIVISION_TYPE divisionType)
         {
-            List<City> normalCity = map.GetCities(tempCountry, false, WMSK.CITY_CLASS_FILTER_ANY);
+            List<City> normalCity = tempCountry.GetSortedCityListByPopulation();
             DivisionTemplate airDivision = DivisionManagerPanel.GetDivisionTemplateByType(divisionType);
             int airDivisionNumber = tempCountry.GetArmy().GetAirForces().PossibleDivisionNumber(airDivision);
 
@@ -99,14 +111,20 @@ namespace WorldMapStrategyKit
                     number = airDivisionNumber;
             }
 
+            if (number > normalCity.Count)
+                number = normalCity.Count;
+
             for (int i = 0; i < number; i++)
             {
                 Vector2 cityPosition = normalCity[i].unity2DLocation;
                 GameObjectAnimator airPlane = CreateMilitaryUnit(TERRAIN_CAPABILITY.Any, cityPosition, divisionType, true);
-                airPlane.name = tempCountry.name + " Aviation";
+                airPlane.name = (i+1) + "." + tempCountry.name + " Aviation";
                 airPlane.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter  
+                airPlane.attrib["Color"] = airPlane.GetComponentInChildren<Renderer>().sharedMaterial.color;
+                airPlane.autoRotation = true;
 
                 tempCountry.GetArmy().GetAirForces().CreateDivision(airPlane, airDivision);
+                normalCity[i].AddDivisionToCity(airPlane);
             }
         }
 
@@ -126,18 +144,23 @@ namespace WorldMapStrategyKit
                     number = navalDivisionNumber;
             }
 
+            if (number > normalCity.Count)
+                number = normalCity.Count;
+
             for (int i = 0; i < number; i++)
             {
                 Vector2 cityPosition = normalCity[i];
                 GameObjectAnimator ship = CreateMilitaryUnit(TERRAIN_CAPABILITY.OnlyWater, cityPosition, divisionType, true);
                 ship.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter  
+                ship.attrib["Color"] = ship.GetComponentInChildren<Renderer>().sharedMaterial.color;
+                ship.autoRotation = true;
 
                 if (divisionType == DIVISION_TYPE.SUBMARINE_DIVISION)
-                    ship.name = tempCountry.name + " Submarine Fleet";
+                    ship.name = (i+1) + "." + tempCountry.name + " Submarine Fleet";
                 if (divisionType == DIVISION_TYPE.CARRIER_DIVISION)
-                    ship.name = tempCountry.name + " Aircraft Fleet";
+                    ship.name = (i+1) + "." + tempCountry.name + " Aircraft Fleet";
                 if (divisionType == DIVISION_TYPE.DESTROYER_DIVISION)
-                    ship.name = tempCountry.name + " Destroyer Fleet";
+                    ship.name = (i+1) + "." + tempCountry.name + " Destroyer Fleet";
 
                 tempCountry.GetArmy().GetNavalForces().CreateDivision(ship, navalDivision);
             }

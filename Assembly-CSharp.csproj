@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_2019_4_0;UNITY_2019_4;UNITY_2019;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE;PLATFORM_STANDALONE_WIN;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;ENABLE_VSTU;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_2019_4_0;UNITY_2019_4;UNITY_2019;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE;PLATFORM_STANDALONE_WIN;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_4_6;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;ENABLE_VSTU;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -49,7 +49,7 @@
     <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
     <UnityProjectGeneratorVersion>4.8.2.0</UnityProjectGeneratorVersion>
     <UnityProjectType>Game:1</UnityProjectType>
-    <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
+    <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>2019.4.0f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -159,9 +159,6 @@
     <Compile Include="Assets\Frost UI\Scripts\UIGradient.cs" />
     <Compile Include="Assets\Frost UI\Scripts\WeaponSelectionAnim.cs" />
     <Compile Include="Assets\Fx Explosion Pack\Script\DestroyEffect.cs" />
-    <Compile Include="Assets\Fx Explosion Pack\Script\csDemoScenceControl.cs" />
-    <Compile Include="Assets\Fx Explosion Pack\Script\csLightControl.cs" />
-    <Compile Include="Assets\Fx Explosion Pack\Script\csMouseOrbit.cs" />
     <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\CFX_AutoStopLoopedEffect.cs" />
     <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\CFX_Demo_RandomDir.cs" />
     <Compile Include="Assets\JMO Assets\WarFX\Demo\Assets\CFX_Demo_RotateCamera.cs" />
@@ -176,9 +173,6 @@
     <Compile Include="Assets\JMO Assets\WarFX\Scripts\WFX_BulletHoleDecal.cs" />
     <Compile Include="Assets\JMO Assets\WarFX\Scripts\WFX_LightFlicker.cs" />
     <Compile Include="Assets\JMO Assets\WarFX\Spawn System\CFX_SpawnSystem.cs" />
-    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Scripts\CameraControl.cs" />
-    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Scripts\Logo.cs" />
-    <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Scripts\OrbitCamera.cs" />
     <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Antialiasing.cs" />
     <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\Bloom.cs" />
     <Compile Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Scripts\BloomAndFlares.cs" />
@@ -407,7 +401,6 @@
     <Compile Include="Assets\Simple Tooltip\Assets\Scripts\STDynamicExample.cs" />
     <Compile Include="Assets\Simple Tooltip\Assets\Scripts\SimpleTooltip.cs" />
     <Compile Include="Assets\Simple Tooltip\Assets\Scripts\SimpleTooltipStyle.cs" />
-    <Compile Include="Assets\Simple Warships\Demo Scene\Rotate.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\General\Army.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\General\Building.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\General\Division.cs" />
@@ -427,6 +420,7 @@
     <Compile Include="Assets\Steel Nations\Scripts\General\WeaponTemplate.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\Managers\AudioManager.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\Managers\BuildingManager.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\Managers\CountryManager.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\Managers\DivisionManager.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\Managers\GameEventHandler.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\Managers\GameSetup.cs" />
@@ -442,6 +436,7 @@
     <Compile Include="Assets\Steel Nations\Scripts\UI\ArmyPanel.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\UI\CityInfoPanel.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\UI\DivisionManagerPanel.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\UI\DockyardPanel.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\UI\EconomyPanel.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\UI\GovernmentPanel.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\UI\IntelligenceAgencyPanel.cs" />
@@ -483,54 +478,6 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\001 Standalone\ColorHSV.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\001 Standalone\ColorPicker.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\001 Standalone\DemoStandAlone.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\001 Standalone\GUIResizer.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\002 Provinces\DemoProvinces.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\003 Hexagonal Grid\DemoHexGrid.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\004 Hex Map\HexMapProcedural.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\005 Country Extrusion\DemoExtrusion.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\2D Map Examples\006 Slippy Map\DemoSlippyMap2D.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\101 Custom Attributes\DemoCustomAttributes.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\102 Country Expansion\DemoCountryExpansion.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\103 Province Expansion\DemoProvinceExpansion.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\104 Loading and Saving\DemoLoadSave.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\105 Create Map Procedurally\ProceduralMap.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\106 Provinces Pool\ProvincesPool.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\107 Custom Country Borders\CustomBorders.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\General Examples\108 Erase Country\EraseCountry.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\201 PathFinding Intro\DemoPathFinding.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\202 PathFinding by Country\DemoCountryPathFinding.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\203 PathFinding by Provinces\DemoProvincePathFinding.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\204 PathFinding by Cells\DemoCellsPathFinding.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Path Finding Examples\205 PathFinding and HeightMap\DemoPathFindingHeightMap.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Terrain Examples\301 Terrain Intro\DemoTerrainFunctions.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Terrain Examples\301 Terrain Intro\FreeCameraMove.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Terrain Examples\302 Frontiers Overlay\DemoOverlayFunctions.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\401 MiniMap Non Canvas\DemoMiniMap.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\403 UI Population\GameManager.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\404 UI InputData SaveLoad\GameLogicExample.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\405 UI Panel Info 2D\UIPanelDemo2D.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\UI Examples\406 UI Panel Info Viewport\UIPanelDemoViewport.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\501 Viewport Intro\DemoViewport.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\502 FogOfWar\DemoFoW.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\503 MapPopulation\DemoMapPopulation.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\504 PathAndLines\DemoLines.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\505 SunCycle\DemoSun.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\506 Hexagonal Grid\DemoHexGridViewport.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\507 Infinite Scroll\DemoInfiniteScroll.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\508 Viewport Change\DemoViewportChange.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\509 Unit Selection\DemoUnitSelection.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\510 Unit Firing\DemoUnitFiring.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\511 Rectangle Selection\DemoRectangleSelection.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\512 Nuclear War\DemoNuclearWar.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\513 Region Elevation\DemoElevation.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\514 Slippy Map\DemoSlippyMapViewport.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\Demos\Viewport Examples\515 Curved Map\DemoCurvedMap.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\SQLiter\Scripts\Example.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\SQLiter\Scripts\LoomManager.cs" />
-    <Compile Include="Assets\WorldMapStrategyKit\SQLiter\Scripts\SQLite.cs" />
     <Compile Include="Assets\WorldMapStrategyKit\Scripts\Calculator\WMSK_Calculator.cs" />
     <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\CityScaler.cs" />
     <Compile Include="Assets\WorldMapStrategyKit\Scripts\Core\Behaviours\CloudLayerAnimator.cs" />
@@ -705,7 +652,6 @@
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\Tonemapper.shader" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthScenicPlus16K.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
-    <None Include="Assets\Extreme Vehicle Pack\README.txt" />
     <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Multiply Soft.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\GlobalFog.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\VortexEffect.shader" />
@@ -713,7 +659,6 @@
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\NoiseAndGrain.shader" />
     <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Multiply Soft Scroll.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\DLAA.shader" />
-    <None Include="Assets\WorldMapStrategyKit\Demos\General Examples\108 Erase Country\README.txt" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSingleColorHexGrid.shader" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitOutlineTex.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\frag_ao.cginc" />
@@ -746,7 +691,6 @@
     <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Alpha-Specular TintColor.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\SunShaftsComposite.shader" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\TerrainShaders\WMSKTerrain-AddPass.shader" />
-    <None Include="Assets\WorldMapStrategyKit\Demos\General Examples\107 Custom Country Borders\README.txt" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitSingleColorImaginaryLines.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ConvertDepth.shader" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitTileTrans.shader" />
@@ -760,7 +704,6 @@
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\Adaptation.shader" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitProvinceBordersOrder2Thick.shader" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitEarthScenicPlus.shader" />
-    <None Include="Assets\JMO Assets\Cartoon FX Easy Editor\CartoonFX Easy Editor Readme.txt" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\LensFlareCreate.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\CameraMotionBlur.shader" />
@@ -777,7 +720,6 @@
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitTileOverlay.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\VignetteShader.shader" />
     <None Include="Assets\Shift - Complete Sci-Fi UI\Shaders\Fast UI Blur.shader" />
-    <None Include="Assets\WorldMapStrategyKit\Demos\General Examples\106 Provinces Pool\README.txt" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitAlphaTextureColor.shader" />
     <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Particle Add A8.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\MotionBlurClear.shader" />
@@ -795,7 +737,6 @@
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\Bokeh34.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ColorCorrectionEffect.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\FisheyeShader.shader" />
-    <None Include="Assets\Simple Warships\Demo Scene\ReadMe.txt" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\Shift - Complete Sci-Fi UI\Shaders\UI Particle Additive.shader" />
@@ -811,7 +752,6 @@
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Geodata\countries110.txt" />
     <None Include="Assets\Frost UI\Shaders\UI Blur.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendForBloom.shader" />
-    <None Include="Assets\SpaceGUI\fonts\LICENSE.txt" />
     <None Include="Assets\Simple Tooltip\Assets\Sprites\license.txt" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\DepthOfField34.shader" />
     <None Include="Assets\SimpleMilitary\Materials\UnlitVertexColour_Alpha.shader" />
@@ -835,7 +775,6 @@
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\GrayscaleEffect.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\ChromaticAberrationShader.shader" />
-    <None Include="Assets\WorldMapStrategyKit\Demos\README.txt" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitHighlightCell.shader" />
     <None Include="Assets\WorldMapStrategyKit\Scripts\ThirdParty\PolyTri\P2T_AUTHORS.txt" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\NoiseAndGrainDX11.shader" />
@@ -853,7 +792,6 @@
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\WorldMapStrategyKit\Resources\WMSK\Shaders\UnlitMarkerLine.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\EdgeDetectNormals.shader" />
-    <None Include="Assets\WorldMapStrategyKit\SQLiter\README.txt" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />
     <None Include="Assets\JMO Assets\WarFX\Shaders\WFX_S Particle AddSoft A8.shader" />
     <None Include="Assets\JMO Assets\WarFX\!WarFX Readme.txt" />
@@ -880,7 +818,6 @@
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_Antialiasing\FXAAPreset2.shader" />
     <None Include="Assets\Frost UI\Shaders\Dissolve.shader" />
     <None Include="Assets\LPVP_-_Low_Polygon_Vehicles_Pack\Standard Assets\Effects\ImageEffects\Shaders\_DepthOfField\TiltShiftHdrLensBlur.shader" />
-    <None Include="Assets\WorldMapStrategyKit\Demos\General Examples\105 Create Map Procedurally\README.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Bangers - OFL.txt" />
     <Reference Include="UnityEngine">
@@ -1066,11 +1003,14 @@
     <Reference Include="UnityEditor">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.0f1/Editor/Data/Managed/UnityEditor.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>D:/Steel Nations 2021/Assets/Plugins/SQLiter/DLLs/Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Data.SqliteClient">
-      <HintPath>D:/Steel Nations 2021/Assets/WorldMapStrategyKit/SQLiter/DLLs/Mono.Data.SqliteClient.dll</HintPath>
+      <HintPath>D:/Steel Nations 2021/Assets/Plugins/SQLiter/DLLs/Mono.Data.SqliteClient.dll</HintPath>
     </Reference>
     <Reference Include="System.Data">
-      <HintPath>D:/Steel Nations 2021/Assets/WorldMapStrategyKit/SQLiter/DLLs/System.Data.dll</HintPath>
+      <HintPath>D:/Steel Nations 2021/Assets/Plugins/SQLiter/DLLs/System.Data.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.4.0f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

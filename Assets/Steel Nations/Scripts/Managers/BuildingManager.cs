@@ -16,7 +16,6 @@ namespace WorldMapStrategyKit
 
         public GameObject CapitalBuilding;
         public GameObject HarborBuilding;
-        public GameObject airportSprite;
 
         // Start is called before the first frame update
         void Start()
@@ -27,7 +26,7 @@ namespace WorldMapStrategyKit
 
         public void CreateBuildings()
         {
-            foreach (Country tempCountry in GameEventHandler.Instance.GetAllCountries())
+            foreach (Country tempCountry in CountryManager.Instance.GetAllCountries())
             {
                 int harborPopulation = 0;
 
@@ -43,23 +42,23 @@ namespace WorldMapStrategyKit
                         harborPopulation = 750000;
                     if (tempCountry.GetArmy().GetDefenseBudget() < 1000)
                         harborPopulation = 1000000;
-                }
 
-                foreach (City city in tempCountry.GetAllCitiesInCountry())
-                {
-                    if (city.GetConstructibleDockyardAreaNumber() > 0 && city.population > harborPopulation)
+                    foreach (City city in tempCountry.GetAllCitiesInCountry())
                     {
-                        //tempCountry.totalDockyard = tempCountry.totalDockyard + 1;
-                        city.SetCurrentBuildingNumberInCity(BUILDING_TYPE.DOCKYARD, 1);
+                        if (city.GetConstructibleDockyardAreaNumber() > 0 && city.GetPopulation() > harborPopulation)
+                        {
+                            //tempCountry.totalDockyard = tempCountry.totalDockyard + 1;
+                            city.SetCurrentBuildingNumberInCity(BUILDING_TYPE.DOCKYARD, 1);
 
-                        AddBuilding(city, MY_UNIT_TYPE.DOCKYARD);
+                            AddBuilding(city, MY_UNIT_TYPE.DOCKYARD);
+                        }
+
+                        if (city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
+                            AddBuilding(city, MY_UNIT_TYPE.COUNTRY_CAPITAL_BUILDING);
+
+                        //if (city.GetCurrentBuildingNumberInCity(BUILDING_TYPE.AIRPORT) > 0)
+                        //AddSpriteAtPosition(city);
                     }
-
-                    if (city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
-                        AddBuilding(city, MY_UNIT_TYPE.COUNTRY_CAPITAL_BUILDING);
-
-                    //if (city.GetCurrentBuildingNumberInCity(BUILDING_TYPE.AIRPORT) > 0)
-                    //AddSpriteAtPosition(city);
                 }
             }
         }
@@ -75,7 +74,7 @@ namespace WorldMapStrategyKit
                 go.transform.localScale = Misc.Vector3one * 0.0005f;
 
                 GameObjectAnimator anim = go.WMSK_MoveTo(city.unity2DLocation);
-                anim.name = city.name + " Harbor";
+                anim.name = city.name + " Dockyard";
                 anim.type = (int)unitType;
                 anim.pivotY = 0.5f;
 
@@ -90,7 +89,7 @@ namespace WorldMapStrategyKit
                 go.transform.localScale = Misc.Vector3one * 0.005f;
 
                 GameObjectAnimator anim = go.WMSK_MoveTo(city.unity2DLocation);
-                anim.name = city.name + " Country Capital";
+                anim.name = city.name + " Capital";
                 anim.type = (int)unitType;
                 anim.pivotY = 0.5f;
 

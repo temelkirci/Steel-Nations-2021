@@ -6,20 +6,19 @@
     public int leftConstructionDay;
     public int constructionCost;
     public int constructionTime;
-    public int incomePerWeek;
-    public int expensePerWeek;
+    public int incomeMonthly;
+    public int expenseMonthly;
     public string buildingDescription;
     public int buildingLevel;
     public BUILDING_TYPE buildingType;
     
-    public Building(string name, int level, BUILDING_TYPE type, int current, int max, int income, int expense, int cost, int time, string description)
+    public Building(string name, int level, BUILDING_TYPE type, int current, int income, int expense, int cost, int time, string description)
     {
         buildingName = name;
-        maxBuildingInCity = max;
         currentBuildingInCity = current;
         leftConstructionDay = 0;
-        incomePerWeek = income;
-        expensePerWeek = expense;
+        incomeMonthly = income;
+        expenseMonthly = expense;
         constructionCost = cost;
         constructionTime = time;
         buildingDescription = description;
@@ -29,7 +28,7 @@
 
     public Building Clone()
     {
-        Building building = new Building(buildingName, buildingLevel, buildingType, currentBuildingInCity, maxBuildingInCity, incomePerWeek, expensePerWeek, constructionCost, constructionTime, buildingDescription);
+        Building building = new Building(buildingName, buildingLevel, buildingType, currentBuildingInCity, incomeMonthly, expenseMonthly, constructionCost, constructionTime, buildingDescription);
         building.leftConstructionDay = 0;
 
         return building;

@@ -33,8 +33,6 @@ namespace WorldMapStrategyKit
         private IDbCommand _command = null;
         private IDataReader _reader = null;
     
-        private bool _createNewTable = false;
-
         /// <summary>
         /// Awake will initialize the connection.  
         /// RunAsyncInit is just for show.  You can do the normal SQLiteInit to ensure that it is
@@ -42,8 +40,8 @@ namespace WorldMapStrategyKit
         /// </summary>
         void Awake()
         {
-            instance = this;
             map = WMSK.instance;
+            instance = this;
 
             // here is where we set the file location
             // ------------ IMPORTANT ---------
@@ -51,6 +49,8 @@ namespace WorldMapStrategyKit
             // - during runtime (Windows at least), tempCountry is located in the SAME directory as the executable
             // you can play around with the path if you like, but build-vs-run locations need to be taken into account
             _sqlDBLocation = "URI=file:" + SQL_DB_NAME + ".db";
+
+            Debug.Log("_sqlDBLocation : " + _sqlDBLocation);
 
             SQLiteInitForNewGame();
         }
@@ -82,37 +82,41 @@ namespace WorldMapStrategyKit
         {
             Debug.Log( "SQLiter - Opening SQLite Connection" );
 
-            _connection = new SqliteConnection( _sqlDBLocation );
-            _command = _connection.CreateCommand();
-            _connection.Open();
+            try
+            {
+                _connection = new SqliteConnection(_sqlDBLocation);
+                _command = _connection.CreateCommand();
+                _connection.Open();
 
-            // WAL = write ahead logging, very huge speed increase
-            _command.CommandText = "PRAGMA journal_mode = WAL;";
-            _command.ExecuteNonQuery();
+                // WAL = write ahead logging, very huge speed increase
+                _command.CommandText = "PRAGMA journal_mode = WAL;";
+                _command.ExecuteNonQuery();
 
-            // journal mode = look it up on google, I don't remember
-            _command.CommandText = "PRAGMA journal_mode";
-            _reader = _command.ExecuteReader();
+                // journal mode = look it up on google, I don't remember
+                _command.CommandText = "PRAGMA journal_mode";
+                _reader = _command.ExecuteReader();
 
-            _reader.Close();
+                _reader.Close();
 
-            // more speed increases
-            _command.CommandText = "PRAGMA synchronous = OFF";
-            _command.ExecuteNonQuery();
+                // more speed increases
+                _command.CommandText = "PRAGMA synchronous = OFF";
+                _command.ExecuteNonQuery();
 
-            // and some more
-            _command.CommandText = "PRAGMA synchronous";
-            _reader = _command.ExecuteReader();
+                // and some more
+                _command.CommandText = "PRAGMA synchronous";
+                _reader = _command.ExecuteReader();
 
-            _reader.Close();
+                _reader.Close();
 
-            // close connection
-            _connection.Close();
-        }
+                // close connection
+                _connection.Close();
 
-        public void QuitGame()
-        {
-            Application.Quit();
+                Debug.Log("SQLiter - Opening SQLite succesfull");
+            }
+            catch
+            {
+                Debug.Log("SQLiter - Opening SQLite FAIL");
+            }
         }
 
         /// <summary>
@@ -120,6 +124,7 @@ namespace WorldMapStrategyKit
         /// </summary>
         public void NewGame()
         {
+            Debug.Log("NewGame");
             MapManager.Instance.ColorizeWorld();
 
             _connection.Open();
@@ -136,6 +141,8 @@ namespace WorldMapStrategyKit
                 GameSettings.SetGameSettings(key, value);
             }
 
+            Debug.Log("Settings Loaded");
+
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
             _command.CommandText = "SELECT * FROM Buildings";
             _reader = _command.ExecuteReader();
@@ -145,17 +152,17 @@ namespace WorldMapStrategyKit
                 string Building_Name = _reader.GetString(0);
                 int Construction_Time = _reader.GetInt32(1);
                 int Construction_Cost = _reader.GetInt32(2);
-                int Income_Per_Week = _reader.GetInt32(3);
-                int Expense_Per_Week = _reader.GetInt32(4);
-                int Maximum_Number_In_City = _reader.GetInt32(5);
-                string Description = _reader.GetString(6);
+                int Income_Monthly = _reader.GetInt32(3);
+                int Expense_Monthly = _reader.GetInt32(4);
+                string Description = _reader.GetString(5);
 
                 BUILDING_TYPE type = CityInfoPanel.Instance.GetBuildingTypeByBuildingName(Building_Name);
 
-                Building building = new Building(Building_Name, 1, type, 0, Maximum_Number_In_City, Income_Per_Week, Expense_Per_Week, Construction_Cost, Construction_Time, Description);
+                Building building = new Building(Building_Name, 1, type, 0, Income_Monthly, Expense_Monthly, Construction_Cost, Construction_Time, Description);
 
                 CityInfoPanel.Instance.AddBuilding(building);
             }
+            Debug.Log("Buildings Loaded");
 
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
             _command.CommandText = "SELECT * FROM Economy";
@@ -195,8 +202,10 @@ namespace WorldMapStrategyKit
 
                 tempCountry.SetPreviousGDPAnnualGrowthRate(1);
 
-                GameEventHandler.Instance.GetAllCountries().Add(tempCountry);
+                CountryManager.Instance.AddCountry(tempCountry);
             }
+
+            Debug.Log("Economy Loaded");
 
 
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
@@ -271,7 +280,7 @@ namespace WorldMapStrategyKit
                         enemyList.Add(map.GetCountry(index));
                     }
 
-                    foreach(Country temp in GameEventHandler.Instance.GetAllCountries())
+                    foreach(Country temp in CountryManager.Instance.GetAllCountries())
                     {
                         if(temp != tempCountry)
                         {
@@ -300,14 +309,14 @@ namespace WorldMapStrategyKit
 
                     tempCountry.SetProductionSpeed(0);
                     tempCountry.SetResearchSpeed(0);
-                    tempCountry.SetFertilityRatePerWeek(country_natality);
-                    tempCountry.SetPandemicDeathRatePerWeek(corona);
+                    tempCountry.SetFertilityRatePerWeek(country_natality*4);
+                    tempCountry.SetPandemicDeathRatePerWeek(corona*4);
                     tempCountry.SetSystemOfGovernment(system_government);
 
                     List<City> cities = map.GetCities(tempCountry, false, WMSK.CITY_CLASS_FILTER_ANY);
 
                     int totalMineral = iron + steel + aluminium;
-                    int totalFactory = tempCountry.GetExportMonthly () / 100;
+                    int totalFactory = tempCountry.GetPreviousExport() / 1000;
 
                     foreach (City tempCity in cities)
                     {                     
@@ -328,6 +337,7 @@ namespace WorldMapStrategyKit
                         */
 
                         tempCity.CalculateCityLevel();
+
                         float buildingNumber = (military_factory * tempCity.GetCityLevel()) / 100f;
                         tempCity.CreateBuilding(BUILDING_TYPE.MILITARY_FACTORY, Convert.ToInt32(buildingNumber), military_factory);
 
@@ -340,7 +350,8 @@ namespace WorldMapStrategyKit
                         buildingNumber = (totalMineral * tempCity.GetCityLevel()) / 100f;
                         tempCity.CreateBuilding(BUILDING_TYPE.MINERAL_FACTORY, Convert.ToInt32(buildingNumber), totalMineral);
 
-                        buildingNumber = (totalFactory * tempCity.GetCityLevel()) / 100f;
+
+                        buildingNumber = (totalFactory * tempCity.GetCityLevel()) / 100;
                         tempCity.CreateBuilding(BUILDING_TYPE.FACTORY, Convert.ToInt32(buildingNumber), totalFactory);
 
 
@@ -351,6 +362,7 @@ namespace WorldMapStrategyKit
                         tempCity.SetReserveResources(oil, iron, steel, aluminium, uranium);
 
                         tempCity.CreateBuilding(BUILDING_TYPE.HOSPITAL, (tempCity.population / 500000), (tempCity.population / 1000000));
+                        tempCity.CreateBuilding(BUILDING_TYPE.GARRISON, 5,5);
 
 
                         if (tempCity.GetOilReserves() > 0 && (tempCity.cityClass == CITY_CLASS.REGION_CAPITAL || tempCity.cityClass == CITY_CLASS.COUNTRY_CAPITAL))
@@ -368,7 +380,9 @@ namespace WorldMapStrategyKit
                     
                     tempCountry.GetCountryPerCapitaIncome();
                 }
-            }          
+            }
+
+            Debug.Log("Governments Loaded");
 
 
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
@@ -419,6 +433,8 @@ namespace WorldMapStrategyKit
 
             }
 
+            Debug.Log("Organizations Loaded");
+
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
             _command.CommandText = "SELECT * FROM Religion";
             _reader = _command.ExecuteReader();
@@ -468,6 +484,8 @@ namespace WorldMapStrategyKit
                     divisionType);
             }
 
+            Debug.Log("Divisions Loaded");
+
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
             _command.CommandText = "SELECT * FROM Doctrine";
             _reader = _command.ExecuteReader();
@@ -501,6 +519,8 @@ namespace WorldMapStrategyKit
 
                 PolicyPanel.Instance.AddPolicy(policy);
             }
+
+            Debug.Log("Politiks Loaded");
 
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
             _command.CommandText = "SELECT * FROM Weapon";
@@ -552,6 +572,8 @@ namespace WorldMapStrategyKit
                     weapon_required_steel,
                     weapon_required_aluminium);
             }
+
+            Debug.Log("Weapons Loaded");
 
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
             _command.CommandText = "SELECT * FROM Military";
@@ -654,13 +676,11 @@ namespace WorldMapStrategyKit
                 tempCountry.attrib["Anti Matter Bomb Tech"] = missile_tech;
 
                 tempCountry.UpdateWeaponTechnology();
-                //Debug.Log(tempCountry.name + " -> " + tempCountry.GetArmy().GetArmyExpenseMonthly());
             }
 
             _reader.Close();
             _connection.Close();
         }
-    
 
         /// <summary>
         /// Basic execute command - open, create command, execute, close

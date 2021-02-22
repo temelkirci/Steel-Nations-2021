@@ -7,11 +7,6 @@ namespace WorldMapStrategyKit
     {
         List<Organization> organizationList = new List<Organization>();
 
-        // Start is called before the first frame update
-        public void Start()
-        {
-        }
-
         public void CreateOrganization(string organizationName,
             int isActive,
             int isTradeBonus,
@@ -54,17 +49,32 @@ namespace WorldMapStrategyKit
             string[] appliedAsObserverList = appliedForObservor.Split('~');
             string[] appliedAsDialoguePartnerList = appliedForDialoguePartner.Split('~');
 
+            foreach(string countryName in founderList)
+            {
+                if (countryName != string.Empty)
+                {
+                    Country tempCountry = CountryManager.Instance.GetCountryByName(countryName);
+
+                    if (tempCountry != null)
+                    {
+                        organization.AddFounder(tempCountry, false);
+                    }
+                }
+            }
+
             foreach (string countryName in fullMemberList)
             {
                 if (countryName != string.Empty)
                 {
-                    Country tempCountry = GameEventHandler.Instance.GetCountryByName(countryName);
+                    Country tempCountry = CountryManager.Instance.GetCountryByName(countryName);
 
-                    organization.AddFullMember(tempCountry);
+                    if (tempCountry != null)
+                    {
+                        organization.AddFullMember(tempCountry, false);
 
-                    if (organization.isTrade == true)
-                        organization.tradeBonusPerWeek = organization.tradeBonusPerWeek + tempCountry.attrib["Trade Ratio"];
-
+                        if (organization.isTrade == true)
+                            organization.tradeBonusPerWeek = organization.tradeBonusPerWeek + tempCountry.GetTradeRatio();
+                    }
                 }
             }
 
@@ -72,8 +82,10 @@ namespace WorldMapStrategyKit
             {
                 if (countryName != string.Empty)
                 {
-                    Country tempCountry = GameEventHandler.Instance.GetCountryByName(countryName);
-                    organization.AddObserver(tempCountry);
+                    Country tempCountry = CountryManager.Instance.GetCountryByName(countryName);
+
+                    if (tempCountry != null)
+                        organization.AddObserver(tempCountry, false);
                 }
             }
 
@@ -81,8 +93,10 @@ namespace WorldMapStrategyKit
             {
                 if (countryName != string.Empty)
                 {
-                    Country tempCountry = GameEventHandler.Instance.GetCountryByName(countryName);
-                    organization.AddDialoguePartner(tempCountry);
+                    Country tempCountry = CountryManager.Instance.GetCountryByName(countryName);
+
+                    if (tempCountry != null)
+                        organization.AddDialoguePartner(tempCountry, false);
                 }
             }
 
@@ -90,27 +104,35 @@ namespace WorldMapStrategyKit
             {
                 if (countryName != string.Empty)
                 {
-                    Country tempCountry = GameEventHandler.Instance.GetCountryByName(countryName);
-                    organization.ApplyForFullMember(tempCountry);
+                    Country tempCountry = CountryManager.Instance.GetCountryByName(countryName);
+
+                    if (tempCountry != null)
+                        organization.ApplyForFullMember(tempCountry, false);
                 }
             }
+
             foreach (string countryName in appliedAsObserverList)
             {
                 if (countryName != string.Empty)
                 {
-                    Country tempCountry = GameEventHandler.Instance.GetCountryByName(countryName);
-                    organization.ApplyForObserver(tempCountry);
+                    Country tempCountry = CountryManager.Instance.GetCountryByName(countryName);
+
+                    if (tempCountry != null)
+                        organization.ApplyForObserver(tempCountry, false);
                 }
             }
+
             foreach (string countryName in appliedAsDialoguePartnerList)
             {
                 if (countryName != string.Empty)
                 {
-                    Country tempCountry = GameEventHandler.Instance.GetCountryByName(countryName);
-                    organization.ApplyForDialoguePartner(tempCountry);
+                    Country tempCountry = CountryManager.Instance.GetCountryByName(countryName);
+
+                    if (tempCountry != null)
+                        organization.ApplyForDialoguePartner(tempCountry, false);
                 }
             }
-            //Debug.Log(organization.organizationName + " = " + organization.tradeBonusPerWeek);
+
             organizationList.Add(organization);
         }
 
@@ -119,7 +141,6 @@ namespace WorldMapStrategyKit
             return organizationList;
         }
 
-        // Update is called once per frame
         public Texture2D GetOrganizationLogoByName(string organizationName)
         {
             foreach (Organization org in organizationList)

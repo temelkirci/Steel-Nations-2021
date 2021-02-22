@@ -7,6 +7,8 @@ namespace WorldMapStrategyKit
     {
         int cityLevel;
         List<Building> buildingListInCity;
+        List<GameObjectAnimator> divisionsInCity = new List<GameObjectAnimator>();
+
         GameObjectAnimator dockyard;
 
         int constructibleDockyardArea = 0;
@@ -31,7 +33,7 @@ namespace WorldMapStrategyKit
 
         public void CalculateCityLevel()
         {
-            cityLevel = (int)((population * 100f) / WMSK.instance.GetCountry(countryIndex).GetAvailableManpower());
+            cityLevel = (int)((GetPopulation() * 100) / WMSK.instance.GetCountry(countryIndex).GetAvailableManpower());
         }
 
         public int GetCityLevel()
@@ -74,12 +76,49 @@ namespace WorldMapStrategyKit
             return attrib["Uranium"];
         }
 
+        public void SetPopulation(int pop)
+        {
+            attrib["Population"] = pop;
+        }
+        public int GetPopulation()
+        {
+            return attrib["Population"];
+        }
+        public void AddPopulation(int pop)
+        {
+            attrib["Population"] += pop;
+        }
+
         public void StartConstruction(Building building)
         {
             if (building.leftConstructionDay == 0)
             {
                 building.leftConstructionDay = building.constructionTime;
             }
+        }
+
+        public void AddDivisionToCity(GameObjectAnimator division)
+        {
+            if (divisionsInCity.Count < GetCurrentBuildingNumberInCity(BUILDING_TYPE.GARRISON))
+            {
+                division.visible = false;
+                divisionsInCity.Add(division);
+            }
+            else
+            {
+                // you have reached maximum garrison in city
+            }
+        }
+
+        public List<GameObjectAnimator> GetAllDivisionsInCity()
+        {
+            return divisionsInCity;
+        }
+
+        public void VisibleDivision(GameObjectAnimator division)
+        {
+            division.visible = true;
+            divisionsInCity.Remove(division);
         }
 
         public void UpdateConstructionInCity()
@@ -211,6 +250,8 @@ namespace WorldMapStrategyKit
 			this.cityClass = cityClass;
 			this.uniqueId = uniqueId;
             this.attrib = new JSONObject();
+
+            this.attrib["Population"] = population;
 
             cityLevel = 0;
 

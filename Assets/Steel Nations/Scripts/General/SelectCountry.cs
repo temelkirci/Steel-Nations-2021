@@ -54,6 +54,10 @@ namespace WorldMapStrategyKit
             map.OnCountryClick -= OnCountryClick;
 
             GovernmentPanel.Instance.HidePanel();
+
+            foreach(Country country in CountryManager.Instance.GetAllCountriesWhichHaveArmy())
+                DivisionManager.Instance.CreateDivisions(country);
+
             GameEventHandler.Instance.GameStarted();
         }
     }

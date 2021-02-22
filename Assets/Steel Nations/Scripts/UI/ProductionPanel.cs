@@ -14,14 +14,12 @@ namespace WorldMapStrategyKit
         }
 
         public GameObject productionPanel;
-        public GameObject dockyardPanel;
 
         public GameObject weaponItem;
 
         public GameObject landContent;
         public GameObject airContent;
         public GameObject missileContent;
-        public GameObject navalContent;
 
         public GameObject weaponInformationPanel;
 
@@ -42,32 +40,15 @@ namespace WorldMapStrategyKit
 
         public GameObject starSprite;
 
-        bool isOpenDockyard = false;
-
         // Start is called before the first frame update
         void Start()
         {
             instance = this;
         }
 
-        public void OpenDockyard()
-        {
-            isOpenDockyard = true;
-
-            ShowProductionPanel();           
-        }
-
-        public void OpenMilitaryFactory()
-        {
-            isOpenDockyard = false;
-
-            ShowProductionPanel();
-        }
-
         public void HidePanel()
         {
             productionPanel.SetActive(false);
-            dockyardPanel.SetActive(false);
 
             GameEventHandler.Instance.GetPlayer().SetSelectedBuilding(null);
         }
@@ -82,25 +63,11 @@ namespace WorldMapStrategyKit
             {
                 WeaponTemplate weaponTemplate = WeaponManager.Instance.GetWeaponTemplateByID(i);
                 GameObject temp = null;
-                Debug.Log(weaponTemplate.weaponName);
-                if (weaponTemplate == null)
-                    return;
-
+ 
                 
-                if( isOpenDockyard == true )
-                {
-                    dockyardPanel.SetActive(true);
-                    productionPanel.SetActive(false);
-
-                    if (weaponTemplate.weaponTerrainType == 2)
-                    {
-                        temp = Instantiate(weaponItem, navalContent.transform);
-                    }
-                }
-                else
+                if(weaponTemplate != null )
                 {
                     productionPanel.SetActive(true);
-                    dockyardPanel.SetActive(false);
 
                     if (weaponTemplate.weaponTerrainType == 1)
                     {
@@ -270,10 +237,6 @@ namespace WorldMapStrategyKit
                 Destroy(child.gameObject);
             }
             foreach (Transform child in missileContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            foreach (Transform child in navalContent.transform)
             {
                 Destroy(child.gameObject);
             }

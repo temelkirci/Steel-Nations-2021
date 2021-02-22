@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 namespace WorldMapStrategyKit 
@@ -17,7 +16,6 @@ namespace WorldMapStrategyKit
         IntelligenceAgency intelligenceAgency;
 
         List<Country> atWarList = new List<Country>();
-        List<Country> nuclearWarList = new List<Country>();
 
         List<Country> placeTradeEmbargo = new List<Country>();
         List<Country> countriesImposingEconomicEmbargoOnYou = new List<Country>();
@@ -40,6 +38,7 @@ namespace WorldMapStrategyKit
         {
 
         }
+
         #region IntelligenceAgency
         public void CreateIntelligenceAgency(string name, int level, int budget, Texture2D flag)
         {
@@ -79,7 +78,7 @@ namespace WorldMapStrategyKit
         {
             long availableManpower = 0;
             foreach (City city in GetAllCitiesInCountry())
-                availableManpower += city.population;
+                availableManpower += city.GetPopulation();
 
             return availableManpower;
         }
@@ -310,6 +309,27 @@ namespace WorldMapStrategyKit
             return uranium;
         }
 
+        public void AddOil(int oil)
+        {
+            attrib["Oil"] += oil;
+        }
+        public void AddIron(int iron)
+        {
+            attrib["Iron"] += iron ;
+        }
+        public void AddSteel(int steel)
+        {
+            attrib["Steel"] += steel;
+        }
+        public void AddAluminium(int aluminium)
+        {
+            attrib["Aluminium"] += aluminium;
+        }
+        public void AddUranium(int uranium)
+        {
+            attrib["Uranium"] += uranium;
+        }
+
         public int GetOil()
         {
             return attrib["Oil"];
@@ -363,14 +383,10 @@ namespace WorldMapStrategyKit
         #endregion
 
         #region Nuclear War
-        public List<Country> GetNuclearWar()
+        public void BeginNuclearWar(Country tempCountry)
         {
-            return nuclearWarList;
-        }
-        public void AddNuclearWar(Country tempCountry)
-        {
-            nuclearWarList.Add(tempCountry);
-            NotificationManager.Instance.CreateNotification(name + " begun nuclear war to " + tempCountry.name);
+            MapManager.Instance.BeginNuclearWar(this, tempCountry);
+            NotificationManager.Instance.CreateNotification(name + " begun nuclear war against to " + tempCountry.name);
         }
         #endregion
 
@@ -432,11 +448,14 @@ namespace WorldMapStrategyKit
         public int GetTradeRatio()
         {
             int totalGDP = 0;
-            foreach(Country country in GameEventHandler.Instance.GetAllCountries())
+            foreach(Country country in CountryManager.Instance.GetAllCountries())
             {
                 totalGDP += country.GetPreviousGDP();
             }
-            return attrib["Trade Ratio"] = float.Parse(GetPreviousGDP().ToString()) * 100f / totalGDP;
+
+            attrib["Trade Ratio"] = float.Parse(GetPreviousGDP().ToString()) * 100f / totalGDP; ;
+
+            return attrib["Trade Ratio"];
         }
         #endregion
 
@@ -632,6 +651,26 @@ namespace WorldMapStrategyKit
         public List<City> GetAllCitiesInCountry()
         {
             return map.GetCities(this);
+        }
+
+        public List<City> GetCityListByPopulation(int minPopulation)
+        {
+            List<City> cityList = new List<City>();
+
+            foreach (City city in GetAllCitiesInCountry())
+                if (city.GetPopulation() > minPopulation)
+                    cityList.Add(city);
+
+            return cityList;
+        }
+
+        public List<City> GetSortedCityListByPopulation()
+        {
+            List<City> cityList = new List<City>();
+
+            cityList = GetAllCitiesInCountry().OrderBy(x => x.GetPopulation()).ToList();
+            cityList.Reverse();
+            return cityList;
         }
         #endregion
 

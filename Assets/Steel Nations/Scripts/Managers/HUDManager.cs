@@ -35,7 +35,11 @@ namespace WorldMapStrategyKit
         public TextMeshProUGUI date;
         public TextMeshProUGUI tension;
 
+        public TextMeshProUGUI infoText;
+
         public RawImage MyCountryFlag;
+
+        bool showMinimap = false;
 
         // Start is called before the first frame update
         void Start()
@@ -81,6 +85,10 @@ namespace WorldMapStrategyKit
             tension.text = GameEventHandler.Instance.GetPlayer().GetMyCountry().GetTension().ToString();
         }
 
+        public void ShowInfoText(string info)
+        {
+            infoText.text = info;
+        }
         public void UpdateMyResources()
         {
             myOil.text = GameEventHandler.Instance.GetPlayer().GetMyCountry().GetOil().ToString();
@@ -113,9 +121,14 @@ namespace WorldMapStrategyKit
 
         public void ShowHideMinimap(bool show)
         {
+            showMinimap = show;
+            ShowHideMinimap();
+        }
+        public void ShowHideMinimap()
+        {
             Vector3 pos = minimap.transform.localPosition;
 
-            if (show)
+            if (showMinimap == false)
             {
                 pos.x = pos.x + 550;
             }
@@ -123,6 +136,7 @@ namespace WorldMapStrategyKit
             {
                 pos.x = pos.x - 600;
             }
+            showMinimap = !showMinimap;
 
             minimap.transform.localPosition = pos;
         }

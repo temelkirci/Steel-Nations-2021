@@ -51,61 +51,388 @@ namespace WorldMapStrategyKit
             lineMaterialGround = Instantiate(Resources.Load<Material>("PathLine/groundPath"));
         }
 
+        void Update()
+        {
+            if (GameEventHandler.Instance.IsGameStarted() == false)
+                return;
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                UIManager.Instance.PauseGame();
+            }
+
+            //if (GetPlayer().GetMouseOverUnit() != null)
+            {
+                ShowTooltip();
+            }
+
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                Color rectangleFillColor = new Color(1f, 1f, 1f, 0.38f);
+                Color rectangleLineColor = Color.green;
+                map.RectangleSelectionInitiate(rectangleSelectionCallback, rectangleFillColor, rectangleLineColor);
+            }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                ClearCurrentSelection();
+            }
+        }
+
+        void rectangleSelectionCallback(Rect rect, bool finishRectangleSelection)
+        {
+            Player player = GameEventHandler.Instance.GetPlayer();
+
+            if (finishRectangleSelection)
+            {
+                if(map.VGOGet(rect).Count > 0)
+                {
+                    List<GameObjectAnimator> divisions = new List<GameObjectAnimator>();
+
+                    foreach (GameObjectAnimator GOA in map.VGOGet(rect))
+                    {
+                        if (GOA.isDivision() && player.IsMyDivision(GOA))
+                        {
+                            divisions.Add(GOA);
+                            GOA.GetComponentInChildren<Renderer>().material.color = Color.blue;
+                        }
+                    }
+
+                    MultipleDivisionSelection(divisions);
+                }
+                else
+                {
+                    ClearCurrentSelection();
+                }
+            }
+        }
+
+        public void BeginNuclearWar(Country attackCountry, Country defenseCountry)
+        {
+            StartCoroutine(War(attackCountry, defenseCountry, 1));
+        }
+
+        void ClearCurrentSelection()
+        {
+            Player player = GameEventHandler.Instance.GetPlayer();
+
+            foreach (GameObjectAnimator go in player.GetSelectedDivisions())
+            {
+                go.GetComponentInChildren<Renderer>().material.color = go.attrib["Color"];
+            }
+
+            DestroyPathLine();
+            player.ClearSelectedDivisions();
+        }
+
         public void StartListeningCountries()
         {
             /* Register events: this is optionally but allows your scripts to be informed instantly as the mouse enters or exits a country, province or city */
-            //map.OnCityEnter += (int cityIndex) => Debug.Log("Entered city " + map.cities[cityIndex].name);
-            //map.OnCityExit += (int cityIndex) => Debug.Log("Exited city " + map.cities[cityIndex].name);
-            //map.OnCityClick += OnCityClick;
+            //map.OnCityEnter += OnCityEnter;
+            //map.OnCityExit += OnCityExit;
+            map.OnCityClick += OnCityClick;
             map.OnCountryEnter += (int countryIndex, int regionIndex) => ShowBorderTexture(countryIndex, true);
             map.OnCountryExit += (int countryIndex, int regionIndex) => ShowBorderTexture(countryIndex, false);
             map.OnCountryClick += OnCountryClick;
-            //map.OnProvinceEnter += (int provinceIndex, int regionIndex) => Debug.Log("Entered province " + map.provinces[provinceIndex].name);
-            //map.OnProvinceExit += (int provinceIndex, int regionIndex) => Debug.Log("Exited province " + map.provinces[provinceIndex].name);
+            map.OnProvinceEnter += OnProvinceEnter;
+            map.OnProvinceExit += OnProvinceExit;
             map.OnProvinceClick += OnProvinceClick;
+        }
+
+
+        void OnCityClick(int cityIndex, int buttonIndex)
+        {
+            ClearCurrentSelection();
+
+            if (buttonIndex == 0)
+            {
+                City city = map.GetCity(cityIndex);
+                               
+                if(GameEventHandler.Instance.GetPlayer().GetMyCountry().GetAllCitiesInCountry().Contains(city) == true)
+                {
+                    GameEventHandler.Instance.GetPlayer().SetSelectedCity(city);
+
+                    CityInfoPanel.Instance.ShowCityMenu();
+                }            
+            }
         }
 
         void OnProvinceClick(int provinceIndex, int regionIndex, int buttonIndex)
         {
-            if (buttonIndex == 0)
-            {
-                Province province = map.GetProvince(provinceIndex);
-                Country country = map.GetCountry(province.countryIndex);
-
-                if(GameEventHandler.Instance.GetPlayer().GetMyCountry() == country)
-                {
-                    foreach (City city in country.GetAllCitiesInCountry())
-                    {
-                        if (city.province == province.name)
-                        {
-                            GameEventHandler.Instance.GetPlayer().SetSelectedCity(city);
-
-                            CityInfoPanel.Instance.ShowCityMenu();
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-
-                }
-                
-            }
+            //ClearCurrentSelection();
         }
+
+        void OnProvinceEnter(int provinceIndex, int regionIndex)
+        {
+            Province province = map.GetProvince(provinceIndex);
+
+            HUDManager.Instance.ShowInfoText(province.name);
+        }
+
+        void OnProvinceExit(int provinceIndex, int regionIndex)
+        {
+            Province province = map.GetProvince(provinceIndex);
+
+            HUDManager.Instance.ShowInfoText("");
+        }
+
 
         void OnCountryClick(int countryIndex, int regionIndex, int buttonIndex)
         {
+            //ClearCurrentSelection();
+
             if (buttonIndex == 0)
             {
                 Country tempCountry = map.GetCountry(countryIndex);
 
-                if (tempCountry != GameEventHandler.Instance.GetPlayer().GetMyCountry())
+                //if (tempCountry == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 {
                     GameEventHandler.Instance.GetPlayer().SetSelectedCountry(tempCountry);
 
                     GovernmentPanel.Instance.ShowGovernmentPanel();
                 }
             }
+        }
+
+        void BuildingSelection(GameObjectAnimator anim)
+        {
+            Player player = GameEventHandler.Instance.GetPlayer();
+
+            if (anim.isBuilding())
+            {
+                player.SetSelectedBuilding(anim);
+                player.ClearSelectedDivisions();
+
+                DockyardPanel.Instance.ShowDockyardPanel();
+            }
+        }
+        void MultipleDivisionSelection(List<GameObjectAnimator> anim)
+        {
+            Player player = GameEventHandler.Instance.GetPlayer();
+            ClearCurrentSelection();
+
+            foreach (GameObjectAnimator GOA in anim)
+            {
+                if(GOA.isDivision())
+                    player.AddSelectedDivisions(GOA);
+            }
+
+            if(player.GetSelectedDivisionNumber() == 1)
+                DivisionManagerPanel.Instance.ShowDivisionPanel();
+        }
+
+        void SingleDivisionSelection(GameObjectAnimator GOA)
+        {
+            Player player = GameEventHandler.Instance.GetPlayer();
+            ClearCurrentSelection();
+
+            if (GOA.isDivision())
+                player.AddSelectedDivisions(GOA);
+
+            DivisionManagerPanel.Instance.ShowDivisionPanel();
+        }
+
+        public void StartEventListener()
+        {
+            Player player = GameEventHandler.Instance.GetPlayer();
+            float distance = 0f;
+
+            // plug our mouse move listener - it received the x,y map position of the mouse
+            map.OnMouseMove += (float x, float y) =>
+            {
+                if (player.GetSelectedDivisions() != null)
+                {
+                    if (player.GetSelectedDivisionNumber() == 1)
+                    {
+                        distance = map.calc.Distance(x, y, player.GetSelectedDivisions()[0].currentMap2DLocation.x, player.GetSelectedDivisions()[0].currentMap2DLocation.y);
+                        //Debug.Log("Distance : " + distance);
+
+                        UpdateRoutePathLine(player.GetSelectedDivisions()[0], x, y);
+                    }
+                    else
+                    {
+                        DestroyPathLine();
+                    }
+                }
+                else
+                {
+                    DestroyPathLine();
+                }
+            };
+
+            map.OnClick += (float x, float y, int buttonIndex) =>
+            {
+                Vector2 targetPosition = new Vector2(x, y);
+
+                bool isContainWater = map.ContainsWater(targetPosition);
+                Country country = map.GetCountry(targetPosition);
+
+                if (buttonIndex == 0) // left click
+                {
+                    
+                }
+
+                else if (buttonIndex == 1) // right click
+                {
+                    if (country == player.GetMyCountry()) // move
+                    {
+                        foreach (GameObjectAnimator division in player.GetSelectedDivisions())
+                        {
+                            if (IsDivisionReadyToMove(division))
+                            {
+                                Debug.Log(division.name + " Number -> " + division.GetDivision().GetWeaponsInDivision().Count + " -> Speed"+  division.GetDivision().GetDivisionSpeed());
+
+                                if (division.GetDivision().divisionTemplate.divisionType == DIVISION_TYPE.AIR_DIVISION)
+                                {
+                                    AudioManager.Instance.PlayVoice(VOICE_TYPE.ATTACK);
+
+                                    StartFlight(division, targetPosition);
+                                }
+                                else
+                                {
+                                    AudioManager.Instance.PlayVoice(VOICE_TYPE.ROGER_THAT);
+
+                                    division.MoveTo(targetPosition, division.GetDivision().GetDivisionSpeed());
+                                }
+                            }
+                        }
+                    }
+                    else // attack
+                    {
+                        foreach (GameObjectAnimator division in player.GetSelectedDivisions())
+                        {
+                            if (IsDivisionReadyToAttack(division))
+                            {
+                                PrepareToAttack(division, targetPosition);
+                                AudioManager.Instance.PlayVoice(VOICE_TYPE.ATTACK);
+                            }
+                        }
+                    }
+
+                    AudioManager.Instance.PlayVoice(VOICE_TYPE.YES_SIR);
+                }
+
+            };
+            map.CenterMap();
+        }
+
+        public bool IsDivisionReadyToAttack(GameObjectAnimator division)
+        {
+            if (division != null && division.isDivision())
+                return true;
+            else
+                return false;
+        }
+
+        public bool IsDivisionReadyToMove(GameObjectAnimator division)
+        {
+            if (division != null && division.isDivision())
+                return true;
+            else
+                return false;
+        }
+
+        public void ListenVehicleEvents()
+        {
+            Player player = GameEventHandler.Instance.GetPlayer();
+
+            foreach (GameObjectAnimator vehicle in player.GetMyCountry().GetArmy().GetAllDivisionInArmy())
+            {
+                // Listen to unit-level events (if you need unit-level events...)
+                vehicle.OnPointerEnter += (GameObjectAnimator anim) => player.SetMouseOverUnit(anim);
+                vehicle.OnPointerExit += (GameObjectAnimator anim) => player.SetMouseOverUnit(null);
+                vehicle.OnPointerUp += (GameObjectAnimator anim) => SingleDivisionSelection(anim);
+                vehicle.OnPointerDown += (GameObjectAnimator anim) => SingleDivisionSelection(anim);
+            }
+
+            foreach (City city in player.GetMyCountry().GetAllCitiesInCountry())
+            {
+                if (city.GetDockyard() != null)
+                {
+                    // Listen to unit-level events (if you need unit-level events...)
+                    city.GetDockyard().OnPointerEnter += (GameObjectAnimator anim) => player.SetMouseOverUnit(anim);
+                    city.GetDockyard().OnPointerExit += (GameObjectAnimator anim) => player.SetMouseOverUnit(null);
+                    city.GetDockyard().OnPointerDown += (GameObjectAnimator anim) => BuildingSelection(anim);
+                }
+            }
+        }
+
+        public void ShowTooltip()
+        {
+            Player player = GameEventHandler.Instance.GetPlayer();
+
+            string tooltipText = string.Empty;
+
+            GameObjectAnimator GOA = player.GetMouseOverUnit();
+
+            if (GOA != null)
+            {
+                if (GOA.isBuilding() == true)
+                {
+                    tooltipText = GOA.name;
+                    GOA.gameObject.GetComponent<SimpleTooltip>().infoLeft = tooltipText + "\n";
+                }
+
+                if (GOA.isDivision() == true)
+                {
+                    string line1 = player.GetMouseOverUnit().name;
+                    string line2 = "Speed : " + GOA.GetDivision().GetDivisionSpeed().ToString();
+                    tooltipText = line1 + "\n" + line2 + "\n";
+
+                    GOA.gameObject.GetComponent<SimpleTooltip>().infoLeft = tooltipText + "\n";
+                }
+            }
+        }
+
+        void StartFlight(GameObjectAnimator fleet, Vector2 destination)
+        {
+            fleet.arcMultiplier = 5f;     // tempCountry is the arc for the plane trajectory
+            fleet.easeType = EASE_TYPE.SmootherStep;    // make it an easy-in-out movement
+
+            fleet.MoveTo(destination, fleet.GetDivision().GetDivisionSpeed());
+
+            Vector2 startingPos = fleet.startingMap2DLocation;
+            fleet.comeBack = true;
+            fleet.altitudeEnd = 5;
+            fleet.altitudeStart = 0.1f;
+
+            fleet.OnCountryEnter += (GameObjectAnimator anim) =>
+            {
+
+            };
+            fleet.OnKilled += (GameObjectAnimator anim) =>
+            {
+
+            };
+            fleet.OnMoveStart += (GameObjectAnimator anim) =>
+            {
+                AudioManager.Instance.PlayVoice(VOICE_TYPE.FIGHTER);
+
+                if (fleet.comeBack == false && startingPos != fleet.destination)
+                {
+                    fleet.altitudeEnd = 0.1f;
+                    fleet.altitudeStart = 5f;
+                }
+            };
+
+            fleet.OnMoveEnd += (GameObjectAnimator anim) =>
+            {
+                if (startingPos != fleet.destination && fleet.comeBack == true)
+                {
+                    fleet.comeBack = false;
+
+                    fleet.altitudeEnd = 0.1f;
+                    fleet.altitudeStart = 5;
+
+                    fleet.MoveTo(startingPos, fleet.GetDivision().GetDivisionSpeed());
+                    ShowExplosion(fleet.currentMap2DLocation);
+                }
+                else
+                {
+                    fleet.altitudeStart = 0.1f;
+                    fleet.currentAltitude = 0.1f;
+                    fleet.altitudeEnd = 0.1f;
+                }
+            };    // once the movement has finished, stop following the unit
         }
 
         void ExpandRegion(Country sourceCountry, Region region)
@@ -144,71 +471,83 @@ namespace WorldMapStrategyKit
         {
             principalCountryIndex = newCountryIndex;
         }
-
+        /*
         /// <summary>
         /// Used when show Linear Path toggle is checked
         /// </summary>
-        public void UpdateLinearPathLine(float x, float y)
+        public void UpdateLinearPathLine(GameObjectAnimator division, float x, float y)
         {
-            if (pathLine != null)
-            {   // remove existing line
-                DestroyImmediate(pathLine.gameObject);
-            }
+            if (division != null)
+            {
+                if (pathLine != null)
+                {   // remove existing line
+                    DestroyImmediate(pathLine.gameObject);
+                }
 
-            // destination of linear path
-            Vector2 destination = new Vector2(x, y);
+                // destination of linear path
+                Vector2 destination = new Vector2(x, y);
 
-            // optionally choose a material for the line (you may simply pass a color instead)
-            Material lineMat = pathArcElevation > 0 ? lineMaterialAerial : lineMaterialGround;
+                // optionally choose a material for the line (you may simply pass a color instead)
+                Material lineMat = pathArcElevation > 0 ? lineMaterialAerial : lineMaterialGround;
 
-            // draw the line
-            pathLine = map.AddLine(GameEventHandler.Instance.GetPlayer().GetSelectedDivision().currentMap2DLocation, destination, lineMat, pathArcElevation, pathLineWidth);
-            pathLine.drawingDuration = pathDrawingDuration;
-            pathLine.dashInterval = pathDashInterval;
-            pathLine.dashAnimationDuration = pathDashAnimationDuration;
+                // draw the line
+                pathLine = map.AddLine(division.currentMap2DLocation, destination, lineMat, pathArcElevation, pathLineWidth);
+                pathLine.drawingDuration = pathDrawingDuration;
+                pathLine.dashInterval = pathDashInterval;
+                pathLine.dashAnimationDuration = pathDashAnimationDuration;
 
-            pathLine.endCap = endCapSprite;
-            pathLine.endCapMaterial = endCapMaterial;
-            pathLine.endCapScale = new Vector3(1f, 1f, 2.5f);
-            pathLine.endCapOffset = 4f;
-            pathLine.endCapFlipDirection = true;
+                pathLine.endCap = endCapSprite;
+                pathLine.endCapMaterial = endCapMaterial;
+                pathLine.endCapScale = new Vector3(1f, 1f, 2.5f);
+                pathLine.endCapOffset = 4f;
+                pathLine.endCapFlipDirection = true;
 
-            UpdateCircle(destination);
+                UpdateCircle(destination);
+            }           
         }
-
+        */
         /// <summary>
         /// Used when show Route Path toggle is checked
         /// </summary>
-        public void UpdateRoutePathLine(float x, float y)
+        public void UpdateRoutePathLine(GameObjectAnimator division, float x, float y)
         {
-            if (GameEventHandler.Instance.GetPlayer().GetSelectedDivision() == null)
-                return;
-
-            if (pathLine != null)
-            {   // remove existing line
-                DestroyImmediate(pathLine.gameObject);
-            }
-
-            // Find a route for tempCountry tank to destination
-            Vector2 destination = new Vector2(x, y);
-            List<Vector2> route = GameEventHandler.Instance.GetPlayer().GetSelectedDivision().FindRoute(destination);
-
-            if (route == null)
+            if (division != null)
             {
-                // Draw a straight red line if no route is available
-                pathLine = map.AddLine(GameEventHandler.Instance.GetPlayer().GetSelectedDivision().currentMap2DLocation, destination, Color.red, pathArcElevation, pathLineWidth);
-            }
+                if (pathLine != null)
+                {   // remove existing line
+                    DestroyImmediate(pathLine.gameObject);
+                }
+
+                // Find a route for tempCountry tank to destination
+                Vector2 destination = new Vector2(x, y);
+                List<Vector2> route = division.FindRoute(destination);
+
+                if (route == null)
+                {
+                    // Draw a straight red line if no route is available
+                    pathLine = map.AddLine(division.currentMap2DLocation, destination, Color.red, pathArcElevation, pathLineWidth);
+                }
+                else
+                {
+                    pathLine = map.AddLine(route.ToArray(), Color.yellow, pathArcElevation, pathLineWidth);
+                }
+                pathLine.drawingDuration = pathDrawingDuration;
+                pathLine.dashInterval = pathDashInterval;
+                pathLine.dashAnimationDuration = pathDashAnimationDuration;
+
+                UpdateCircle(destination);
+            }   
             else
             {
-                pathLine = map.AddLine(route.ToArray(), Color.yellow, pathArcElevation, pathLineWidth);
+                DestroyImmediate(pathLine.gameObject);
             }
-            pathLine.drawingDuration = pathDrawingDuration;
-            pathLine.dashInterval = pathDashInterval;
-            pathLine.dashAnimationDuration = pathDashAnimationDuration;
-
-            UpdateCircle(destination);
         }
 
+        void DestroyPathLine()
+        {
+            if (pathLine != null)
+                DestroyImmediate(pathLine.gameObject);
+        }
 
         void UpdateCircle(Vector2 position)
         {
@@ -311,8 +650,41 @@ namespace WorldMapStrategyKit
             Destroy(explosion, 5);
         }
 
+        void AddMarker3DObjectOnCity(City city)
+        {
+            // Every marker is put on a plane-coordinate (in the range of -0.5..0.5 on both x and y)
+            Vector2 planeLocation;
 
-        public void PrepareToAttack(Vector2 targetAttackPosition)
+            planeLocation = city.unity2DLocation;
+
+            // or... choose a city by its name:
+            //		int cityIndex = map.GetCityIndex("Moscow");
+            //		planeLocation = map.cities[cityIndex].unity2DLocation;
+
+            // or... use the centroid of a country
+            //		int countryIndex = map.GetCountryIndex("Greece");
+            //		planeLocation = map.countries[countryIndex].center;
+
+            // or... use a custom location lat/lon. Example put the building over New York:
+            //		map.calc.fromLatDec = 40.71f;	// 40.71 decimal degrees north
+            //		map.calc.fromLonDec = -74.00f;	// 74.00 decimal degrees to the west
+            //		map.calc.fromUnit = UNIT_TYPE.DecimalDegrees;
+            //		map.calc.Convert();
+            //		planeLocation = map.calc.toPlaneLocation;
+
+            // Send the prefab to the AddMarker API setting a scale of 0.1f (this depends on your marker scales)
+            GameObject tower = Instantiate(Resources.Load<GameObject>("Tower/tower"));
+
+            map.AddMarker3DObject(tower, planeLocation, 1f);
+
+            // Fly to the destination and see the building created
+            map.FlyToLocation(planeLocation, 2f, 0.2f);
+
+            // Optionally add a blinking effect to the marker
+            MarkerBlinker.AddTo(tower, 3, 0.2f);
+        }
+
+        public void PrepareToAttack(GameObjectAnimator division, Vector2 targetAttackPosition)
         {
             // Create bullet
             GameObject bullet = Instantiate(tankBullet);
@@ -323,7 +695,7 @@ namespace WorldMapStrategyKit
             Vector3 tankCannonAnchor = new Vector3(0f, 1.55f, 0.85f);   // this is the position relative to the tank pivot (note that the tank pivot is at bottom of tank per model definition)
             float bulletSpeed = 0.1f;
             float bulletArc = 1.1f;
-            GameObjectAnimator bulletAnim = GameEventHandler.Instance.GetPlayer().GetSelectedDivision().gameObject.WMSK_Fire(bullet, tankCannonAnchor, targetAttackPosition, bulletSpeed, bulletArc);
+            GameObjectAnimator bulletAnim = division.gameObject.WMSK_Fire(bullet, tankCannonAnchor, targetAttackPosition, bulletSpeed, bulletArc);
             //bulletAnim.type = (int)MY_UNIT_TYPE.AIRPLANE;              // this is completely optional, just used in the demo scene to differentiate this unit from other tanks and ships
             bulletAnim.terrainCapability = TERRAIN_CAPABILITY.Any;  // ignores path-finding and can use a straight-line from start to destination
             bulletAnim.pivotY = 0.5f; // model is not ground based (which has a pivoty = 0, the default value, so setting the pivot to 0.5 will center vertically the model)
@@ -392,16 +764,6 @@ namespace WorldMapStrategyKit
             GameObjectAnimator anim = tower.WMSK_MoveTo(x, y);
             anim.autoScale = false;
             */
-        }
-
-        public void ToggleFreeCamera()
-        {
-            FreeCameraMove freeCameraScript = FindObjectOfType<FreeCameraMove>();
-            if (freeCameraScript != null)
-            {
-                freeCameraScript.enabled = !freeCameraScript.enabled;
-                map.enableFreeCamera = freeCameraScript.enabled;
-            }
         }
 
         public void ColorizeWorld()
