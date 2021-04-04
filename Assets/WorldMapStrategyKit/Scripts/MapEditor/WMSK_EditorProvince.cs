@@ -24,12 +24,14 @@ namespace WorldMapStrategyKit {
 
 		int lastProvinceCount = -1;
 		string[] _provinceNames;
+		string[] emptyStringArray = new string[0];
 
 		public string[] provinceNames {
 			get {
-				if (countryIndex == -1)
-					return new string[0];
-				if (map.countries [countryIndex].provinces != null && lastProvinceCount != map.countries [countryIndex].provinces.Length) {
+				if (countryIndex == -1 || map.countries[countryIndex].provinces == null) {
+					return emptyStringArray;
+				}
+				if (lastProvinceCount != map.countries [countryIndex].provinces.Length) {
 					provinceIndex = -1;
 					ReloadProvinceNames ();
 				}
@@ -415,8 +417,9 @@ namespace WorldMapStrategyKit {
 
 			// Update cities
 			List<City> cities = _map.GetCities (region);
-			if (cities.Count > 0) {
-				for (int k = 0; k < cities.Count; k++) {
+			int citiesCount = cities.Count;
+			if (citiesCount > 0) {
+				for (int k = 0; k < citiesCount; k++) {
 					if (cities [k].province != newProvinceName) {
 						cities [k].province = newProvinceName;
 						cityChanges = true;

@@ -24,27 +24,31 @@ namespace WorldMapStrategyKit {
 		public static void Animate (FADER_STYLE style, IFader fadeEntity, Renderer renderer, Color initialColor, Color color, float duration)
 		{
 			SurfaceFader fader = renderer.GetComponent<SurfaceFader> ();
-			if (fader != null)
-				DestroyImmediate (fader);
-			fader = renderer.gameObject.AddComponent<SurfaceFader> ();
+			if (fader == null) {
+				fader = renderer.gameObject.AddComponent<SurfaceFader>();
+				fader.fadeMaterial = Instantiate(renderer.sharedMaterial);
+				fader.fadeMaterial.hideFlags = HideFlags.DontSave;
+				renderer.sharedMaterial = fader.fadeMaterial;
+			}
 			fader.duration = duration + 0.0001f;
 			fader.color = color;
 			fader.style = style;
 			fader._renderer = renderer;
 			fader.fadeEntity = fadeEntity;
+			fadeEntity.isFading = true;
 			fader.initialColor = initialColor;
+			fader.map = WMSK.GetInstance(renderer.transform);
+			fader.highlightFadeStart = fader.map.time;
+			fader.Update();
 		}
 
-		void Start () {
-			GenerateMaterial ();
-			map = WMSK.GetInstance (transform);
-			highlightFadeStart = map.time;
-			if (fadeEntity!=null) fadeEntity.isFading = true;
-			Update ();
-		}
-	
-		// Update is called once per frame
-		void Update () {
+        void OnDestroy() {
+			if (fadeMaterial != null) DestroyImmediate(fadeMaterial);
+        }
+
+        // Update is called once per frame
+        public void Update () {
+			if (this == null || map == null) return;
 			float elapsed = map.time - highlightFadeStart;
 			switch (style) {
 			case FADER_STYLE.FadeOut:
@@ -115,9 +119,9 @@ namespace WorldMapStrategyKit {
 		
 		void UpdateBlink (float elapsed)
 		{
-			SetBlinkColor (elapsed / duration);
+			SetFadeColor (elapsed / duration);
 			if (elapsed >= duration) {
-				SetBlinkColor (0);
+				SetFadeColor (0);
 				if (fadeEntity!=null) {
 					fadeEntity.isFading = false;
 					if (fadeEntity.customMaterial!=null) {
@@ -130,7 +134,7 @@ namespace WorldMapStrategyKit {
 			}
 		}
 		
-		void SetBlinkColor (float t)
+		void SetFadeColor (float t)
 		{
 			Color newColor;
 			if (t < 0.5f) {
@@ -147,12 +151,6 @@ namespace WorldMapStrategyKit {
 		
 		#endregion
 
-
-		void GenerateMaterial () {
-			fadeMaterial = Instantiate (GetComponent<Renderer> ().sharedMaterial);
-			fadeMaterial.hideFlags = HideFlags.DontSave;
-			_renderer.sharedMaterial = fadeMaterial;
-		}
 	}
 
 }

@@ -5,29 +5,50 @@ namespace WorldMapStrategyKit
 {
     public class NotificationManager : Singleton<NotificationManager>
     {
-        List<string> notificationList = new List<string>();
+        List<string> publicNotificationList = new List<string>();
+        List<string> privateNotificationList = new List<string>();
 
         public void ShowNews()
         {
-            foreach (string news in GetAllNotifications())
+            foreach (string news in GetPublicNotifications())
             {
                 if (UIManager.Instance.newsGO.activeSelf == false)
                 {
-                    UIManager.Instance.News(news);
-                    GetAllNotifications().Remove(news);
+                    UIManager.Instance.PublicNotification(news);
+                    GetPublicNotifications().Remove(news);
+                    break;
+                }
+            }
+
+            foreach (string news in GetPrivateNotifications())
+            {
+                if (UIManager.Instance.newsGO.activeSelf == false)
+                {
+                    UIManager.Instance.PublicNotification(news);
+                    GetPublicNotifications().Remove(news);
                     break;
                 }
             }
         }
 
-        public void CreateNotification(string message)
+        public void CreatePublicNotification(string message)
         {
-            notificationList.Add(message);
+            publicNotificationList.Add(message);
         }
 
-        public List<string> GetAllNotifications()
+        public List<string> GetPublicNotifications()
         {
-            return notificationList;
+            return publicNotificationList;
+        }
+
+        public void CreatePrivateNotification(string message)
+        {
+            privateNotificationList.Add(message);
+        }
+
+        public List<string> GetPrivateNotifications()
+        {
+            return privateNotificationList;
         }
     }
 }

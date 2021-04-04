@@ -1,6 +1,7 @@
 ﻿Shader "WMSK/Unlit Country Frontiers Order 3" {
  
 Properties {
+	_MainTex ("Base (RGB)", 2D) = "white" {}
     _Color ("Color", Color) = (0,1,0,1)
     _OuterColor("Outer Color", Color) = (0,0.8,0,0.8)
 }

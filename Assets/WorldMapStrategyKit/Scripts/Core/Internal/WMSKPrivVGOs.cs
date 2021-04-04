@@ -36,19 +36,22 @@ namespace WorldMapStrategyKit {
             if (!vgosArrayIsDirty) return;
             for (int k = 0; k < vgosCount; k++) {
                 if (vgos[k] == null) {
+                    for (int j = k + 1; j < vgosCount; j++) {
+                        vgos[j - 1] = vgos[j];
+                    }
                     vgosCount--;
-                    Array.Copy(vgos, k + 1, vgos, k, vgosCount);
+                    k--;
                 }
             }
             vgosArrayIsDirty = false;
         }
 
-        void FixedUpdateViewportObjectsLoop() {
+        void UpdateViewportObjectsLoop() {
             // Update animators
             CheckVGOsArrayDirty();
             for (int k = 0; k < vgosCount; k++) {
                 GameObjectAnimator vgo = vgos[k];
-                if (vgo.isMoving || (vgo.lastKnownPosIsOnWater && vgo.enableBuoyancyEffect)) {
+                if (vgo.isMoving || vgo.mouseIsOver || (vgo.lastKnownPosIsOnWater && vgo.enableBuoyancyEffect)) {
                     vgo.PerformUpdateLoop();
                 }
             }

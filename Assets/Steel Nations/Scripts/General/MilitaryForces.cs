@@ -1,149 +1,125 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace WorldMapStrategyKit
+public class MilitaryForces
 {
-    public class MilitaryForces
+    List<WorldMapStrategyKit.GameObjectAnimator> allDivisionInMilitaryForces = new List<WorldMapStrategyKit.GameObjectAnimator>();
+    List<Weapon> allWeaponsInMilitaryForces = new List<Weapon>();
+
+    // add general
+    MILITARY_FORCES_TYPE militaryForcesType;
+    Person supremeCommander;
+
+    public MilitaryForces()
     {
-        List<GameObjectAnimator> allDivisionInMilitaryForces = new List<GameObjectAnimator>();
-        List<Weapon> allWeaponsInMilitaryForces = new List<Weapon>();
+        allDivisionInMilitaryForces.Clear();
+    }
 
-        // add general
-        MILITARY_FORCES_TYPE militaryForcesType;
+    public Person SupremeCommander
+    {
+        get { return supremeCommander; }
+        set { supremeCommander = value; }
+    }
 
-        public MILITARY_FORCES_TYPE GetMilitaryForcesType()
+    public int GetMilitaryPower()
+    {
+        int power = 0;
+        foreach (Weapon weapon in allWeaponsInMilitaryForces)
         {
-            return militaryForcesType;
+            if (weapon != null)
+                power = power + WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponAttack;
         }
 
-        public MilitaryForces()
+        foreach (WorldMapStrategyKit.GameObjectAnimator GOA in allDivisionInMilitaryForces)
         {
-            allDivisionInMilitaryForces.Clear();
-        }
-
-        public int GetMilitaryPower()
-        {
-            int power = 0;
-            if (allWeaponsInMilitaryForces.Count > 0)
+            List<Weapon> weaponList = GOA.GetDivision().GetWeaponsInDivision();
+            if (weaponList.Count > 0)
             {
-                foreach (Weapon weapon in allWeaponsInMilitaryForces)
-                {
+                foreach (Weapon weapon in weaponList)
                     power = power + WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponAttack;
-                }
             }
-
-            return power;
         }
 
-        public void SetMilitaryForcesType(MILITARY_FORCES_TYPE tempMilitaryForcesType)
-        {
-            militaryForcesType = tempMilitaryForcesType;
-        }
+        return power;
+    }
 
-        public void AddWeaponToMilitaryForces(Weapon weapon)
-        {
-            allWeaponsInMilitaryForces.Add(weapon);
-        }
-        public List<Weapon> GetAllWeaponsInMilitaryForces()
-        {
-            return allWeaponsInMilitaryForces;
-        }
+    public void SetMilitaryForcesType(MILITARY_FORCES_TYPE tempMilitaryForcesType)
+    {
+        militaryForcesType = tempMilitaryForcesType;
+    }
 
-        public int GetWeaponNumberInMilitaryForcesInventory(int weaponID)
-        {
-            int number = 0;
-            foreach (Weapon weapon in allWeaponsInMilitaryForces)
-                if (weapon.weaponTemplateID == weaponID)
-                    number++;
+    public void AddWeaponToMilitaryForces(Weapon weapon)
+    {
+        allWeaponsInMilitaryForces.Add(weapon);
+    }
+    public void RemoveWeaponFromMilitaryForces(Weapon weapon)
+    {
+        allWeaponsInMilitaryForces.Remove(weapon);
+    }
+    public void RemoveAllWeaponsFromMilitaryForces()
+    {
+        allWeaponsInMilitaryForces.Clear();
+    }
+    public void RemoveWeaponFromMilitaryForcesByWeaponID(int weaponID)
+    {
+        foreach(Weapon weapon in allWeaponsInMilitaryForces.ToArray())
+            if(weapon.weaponTemplateID == weaponID)
+                allWeaponsInMilitaryForces.Remove(weapon);
+    }
+    public void RemoveDivisionInMilitaryForces(WorldMapStrategyKit.GameObjectAnimator division)
+    {
+        allDivisionInMilitaryForces.Remove(division);
+    }
 
-            return number;
-        }
+    public List<Weapon> GetAllWeaponsInMilitaryForces()
+    {
+        return allWeaponsInMilitaryForces;
+    }
 
-        public List<Weapon> GetWeaponInMilitaryForcesInventory(int weaponID)
-        {
-            List<Weapon> tempWeaponList = new List<Weapon>();
+    public int GetWeaponNumberInMilitaryForcesInventory(int weaponID)
+    {
+        int number = 0;
+        foreach (Weapon weapon in allWeaponsInMilitaryForces)
+            if (weapon.weaponTemplateID == weaponID)
+                number++;
 
-            foreach (Weapon weapon in allWeaponsInMilitaryForces)
-                if (weapon.weaponTemplateID == weaponID)
-                    tempWeaponList.Add(weapon);
+        return number;
+    }
 
-            return tempWeaponList;
-        }
+    public List<Weapon> GetWeaponListInMilitaryForcesInventory(int weaponID)
+    {
+        List<Weapon> tempWeaponList = new List<Weapon>();
 
-        public void CreateDivision(GameObjectAnimator tempDivision, DivisionTemplate divisionTemplate)
-        {
-            Division militaryDivision = tempDivision.CreateDivisionGameObject();
-            militaryDivision.divisionTemplate = divisionTemplate;
-            militaryDivision.divisionName = tempDivision.name;
+        foreach (Weapon weapon in allWeaponsInMilitaryForces)
+            if (weapon.weaponTemplateID == weaponID)
+                tempWeaponList.Add(weapon);
 
-            List<Weapon> mainUnitList = new List<Weapon>();
-            foreach(int weaponID in divisionTemplate.mainUnitIDList)
-                mainUnitList.AddRange(GetWeaponInMilitaryForcesInventory(weaponID));
+        return tempWeaponList;
+    }
 
-            List<Weapon> secondUnitList = new List<Weapon>();
-            foreach (int weaponID in divisionTemplate.secondUnitList)
-                secondUnitList.AddRange(GetWeaponInMilitaryForcesInventory(weaponID));
+    public int PossibleDivisionNumber(DivisionTemplate divisionTemplate)
+    {
+        int requiredWeaponNumber = divisionTemplate.mainUnitMaximum;
+        int currentWeaponNumber = 0;
 
-            List<Weapon> thirdUnitList = new List<Weapon>();
-            foreach (int weaponID in divisionTemplate.thirdUnitList)
-                thirdUnitList.AddRange(GetWeaponInMilitaryForcesInventory(weaponID));
+        foreach (int weaponID in divisionTemplate.mainUnitIDList)
+            currentWeaponNumber = currentWeaponNumber + GetWeaponNumberInMilitaryForcesInventory(weaponID);
 
-            if (mainUnitList.Count >= divisionTemplate.mainUnitMaximum)
-            {
-                for (int i = 0; i < divisionTemplate.mainUnitMaximum; i++)
-                {
-                    militaryDivision.AddWeaponToDivision(mainUnitList[i]);
-                }
+        return currentWeaponNumber / requiredWeaponNumber;
+    }
 
-                int secondUnitNumber = divisionTemplate.secondUnitMaximum;
-                int thirdUnitNumber = divisionTemplate.thirdUnitMaximum;
+    public void AddDivisionToMilitaryForces(WorldMapStrategyKit.GameObjectAnimator tempDivision)
+    {
+        Debug.Log("Created New Division");
+        allDivisionInMilitaryForces.Add(tempDivision);
+    }
 
-                if (secondUnitList.Count < divisionTemplate.secondUnitMaximum)
-                {
-                    secondUnitNumber = secondUnitList.Count;
-                }
-                if (thirdUnitList.Count < divisionTemplate.thirdUnitMaximum)
-                {
-                    thirdUnitNumber = thirdUnitList.Count;
-                }
-                
-                for (int i = 0; i < secondUnitNumber; i++)
-                {
-                    militaryDivision.AddWeaponToDivision(secondUnitList[i]);
-                }
+    public List<WorldMapStrategyKit.GameObjectAnimator> GetAllDivisionInMilitaryForces()
+    {
+        foreach (WorldMapStrategyKit.GameObjectAnimator GOA in allDivisionInMilitaryForces.ToArray())
+            if (GOA == null)
+                allDivisionInMilitaryForces.Remove(GOA);
 
-                for (int i = 0; i < thirdUnitNumber; i++)
-                {
-                    militaryDivision.AddWeaponToDivision(thirdUnitList[i]);
-                }
-
-                AddDivisionToMilitaryForces(tempDivision);
-            }  
-            else
-            {
-                //Debug.Log(divisionTemplate.mainUnit + " -> " + divisionTemplate.mainUnitMaximum);
-            }
-            
-        }
-
-        public int PossibleDivisionNumber(DivisionTemplate divisionTemplate)
-        {
-            int requiredWeaponNumber = divisionTemplate.mainUnitMaximum;
-            int currentWeaponNumber = 0;
-            
-            foreach(int weaponID in divisionTemplate.mainUnitIDList)
-                currentWeaponNumber = currentWeaponNumber + GetWeaponNumberInMilitaryForcesInventory(weaponID);
-  
-            return currentWeaponNumber / requiredWeaponNumber;
-        }
-
-        public void AddDivisionToMilitaryForces(GameObjectAnimator tempDivision)
-        {
-            allDivisionInMilitaryForces.Add(tempDivision);
-        }
-
-        public List<GameObjectAnimator> GetAllDivisionInMilitaryForces()
-        {
-            return allDivisionInMilitaryForces;
-        }
+        return allDivisionInMilitaryForces;
     }
 }

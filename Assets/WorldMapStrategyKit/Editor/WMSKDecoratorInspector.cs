@@ -102,6 +102,11 @@ namespace WorldMapStrategyKit {
 				}
 
 				EditorGUILayout.BeginHorizontal();
+				GUILayout.Label(new GUIContent("Persistent", "The attributes set by this decorator will replace any other change done at runtime"), GUILayout.Width(120));
+				decorator.isPersistent = EditorGUILayout.Toggle(decorator.isPersistent);
+				EditorGUILayout.EndHorizontal();
+
+				EditorGUILayout.BeginHorizontal();
 				GUILayout.Label("Hidden", GUILayout.Width(120));
 				bool prevHidden = decorator.hidden;
 				decorator.hidden = EditorGUILayout.Toggle(decorator.hidden);
@@ -158,7 +163,7 @@ namespace WorldMapStrategyKit {
 						if (decorator.labelOverridesFontSize) {
 							GUILayout.Label("Size", GUILayout.Width(40));
 							float prevSize = decorator.labelFontSize;
-							decorator.labelFontSize = EditorGUILayout.Slider(decorator.labelFontSize, 0.01f, 1.0f);
+							decorator.labelFontSize =  Mathf.Max(0.01f, EditorGUILayout.FloatField(decorator.labelFontSize));
 							if (prevSize != decorator.labelFontSize)
 								requestChanges = true;
 						}

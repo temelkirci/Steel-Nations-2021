@@ -29,7 +29,6 @@ namespace WorldMapStrategyKit
             organization.isTrade = (isTradeBonus == 0) ? false : true;
             organization.isMilitary = (isMilitaryBonus == 0) ? false : true;
 
-            organization.tradeBonusPerWeek = 0;
             organization.oilBonus = 0;
             organization.miningBonus = 0;
             organization.gunBonus = 0;
@@ -37,7 +36,7 @@ namespace WorldMapStrategyKit
             organization.isTerroristOrganization = (isTerroristOrganization == 0) ? false : true;
             organization.isAttackForMember = (isAttackToProtect == 0) ? false : true;
 
-            organization.organizationLogo = Resources.Load("organizations/" + logoPath) as Texture2D;
+            organization.organizationLogo = ResourceManager.Instance.LoadTexture(RESOURCE_TYPE.ORGANIZATION, logoPath);
 
             string[] founderList = founder.Split('~');
 
@@ -71,9 +70,6 @@ namespace WorldMapStrategyKit
                     if (tempCountry != null)
                     {
                         organization.AddFullMember(tempCountry, false);
-
-                        if (organization.isTrade == true)
-                            organization.tradeBonusPerWeek = organization.tradeBonusPerWeek + tempCountry.GetTradeRatio();
                     }
                 }
             }

@@ -14,9 +14,7 @@ namespace WorldMapStrategyKit
         }
 
         public GameObject dockyardPanel;
-
         public GameObject weaponItem;
-
         public GameObject navyContent;
 
         public GameObject weaponInformationPanel;
@@ -42,6 +40,11 @@ namespace WorldMapStrategyKit
         void Start()
         {
             instance = this;
+        }
+
+        public void Init()
+        {
+
         }
 
         public void HidePanel()
@@ -76,6 +79,8 @@ namespace WorldMapStrategyKit
 
                 if (temp != null)
                 {
+                    temp.GetComponent<WeaponProductionItem>().SetWeapon(weaponTemplate);
+
                     int researchSpeedRotio = 10;// GameEventHandler.Instance.GetPlayer().GetMyCountry().GetProductionSpeed();
 
                     int weaponProductionTime = (weaponTemplate.weaponProductionTime - ((weaponTemplate.weaponProductionTime * researchSpeedRotio) / 100));
@@ -96,16 +101,9 @@ namespace WorldMapStrategyKit
                     entry2.callback.AddListener((data) => { HideInfoPanel(); });
                     trigger.triggers.Add(entry2);
 
-                    temp.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(i);
-
-                    temp.gameObject.transform.GetChild(1).transform.GetChild(5).GetComponent<Button>().onClick.AddListener(() => GameEventHandler.Instance.GetPlayer().GetSelectedCountry().ProductWeapon(weaponTemplate));
-
-                    temp.gameObject.transform.GetChild(1).transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", weaponTemplate.weaponCost.ToString()) + " M";
-                    temp.gameObject.transform.GetChild(1).transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = weaponProductionTime.ToString() + " day";
-
                     for (int index = 0; index < weaponTemplate.weaponLevel; index++)
                     {
-                        Instantiate(starSprite, temp.gameObject.transform.GetChild(1).transform.GetChild(6).transform);
+                        Instantiate(starSprite, temp.GetComponent<WeaponProductionItem>().generation.transform);
                     }
                 }
             }
@@ -140,31 +138,9 @@ namespace WorldMapStrategyKit
         {
             if (dockyardPanel.activeSelf == true)
             {
-                foreach (Production production in GameEventHandler.Instance.GetPlayer().GetMyCountry().GetAllProductionsInProgress())
+                foreach (Transform go in navyContent.transform)
                 {
-                    if (production.techWeapon.weaponTerrainType == 2)
-                    {
-                        foreach (Transform go in navyContent.transform)
-                        {
-                            Slider slider = go.transform.GetChild(1).transform.GetChild(3).transform.GetChild(2).GetComponent<Slider>();
-                            Text progress = go.transform.GetChild(1).transform.GetChild(3).transform.GetChild(3).transform.GetChild(0).GetComponent<Text>();
-                            Text weaponName = go.gameObject.transform.GetChild(1).transform.GetChild(2).GetComponent<Text>();
-
-                            if ((production.techWeapon.weaponName + " " + production.techWeapon.weaponLevel) == weaponName.text)
-                            {
-                                if (production.leftDays > 0)
-                                {
-                                    slider.value = 100f - (production.leftDays * 100f) / production.techWeapon.weaponProductionTime;
-                                }
-                                else
-                                {
-                                    slider.value = 100f;
-                                }
-
-                                progress.text = slider.value.ToString();
-                            }
-                        }
-                    }
+                    go.GetComponent<WeaponProductionItem>().UpdateProduction();
                 }
             }
         }

@@ -99,7 +99,7 @@ namespace WorldMapStrategyKit {
                 return _cursorLocation;
             }
             set {
-                if (_cursorLocation != value) {
+                if (_cursorLocation.x != value.x || _cursorLocation.z != value.z || _cursorLocation.y != value.y) {
                     _cursorLocation = value;
                     if (cursorLayerVLine != null) {
                         Vector3 pos = cursorLayerVLine.transform.localPosition;

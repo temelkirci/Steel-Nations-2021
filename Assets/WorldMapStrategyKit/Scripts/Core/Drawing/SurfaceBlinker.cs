@@ -23,9 +23,10 @@ namespace WorldMapStrategyKit {
 			startTime = map.time;
 			lapTime = startTime - speed;
 		}
-	
-		// Update is called once per frame
-		void Update () {
+
+        
+        // Update is called once per frame
+        void Update () {
 			float elapsed = map.time - startTime;
 			if (elapsed > duration) {
 				// Restores material
@@ -37,7 +38,6 @@ namespace WorldMapStrategyKit {
 				}
 				GetComponent<Renderer> ().sharedMaterial = goodMat;
 				// Hide surface?
-//																if (disableAtEnd)
 				if (customizableSurface.customMaterial == null) {
 					gameObject.SetActive (false);
 				}

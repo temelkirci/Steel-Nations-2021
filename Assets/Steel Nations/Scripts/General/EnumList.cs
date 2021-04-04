@@ -18,18 +18,64 @@ public enum CITY_CLASS : byte
     COUNTRY_CAPITAL = 4
 }
 
+public enum MY_UNIT_TYPE
+{
+    TANK,
+    SHIP,
+    AIRPLANE,
+    DOCKYARD,
+    CITY_BUILDING,
+    REGION_CAPITAL_BUILDING,
+    COUNTRY_CAPITAL_BUILDING,
+    ARMORED_VEHICLE,
+    ARTILLERY
+}
+
+
+public enum PERSON_TYPE
+{
+    NONE,
+    PRESIDENT,
+    VICE_PRESIDENT,
+    GENERAL,
+    ADMIRAL,
+    SUPREME_COMMANDER,
+    CHIEF_OF_GENERAL_STAFF
+}
+
 public enum DIVISION_TYPE
 {
-    ARMORED_DIVISION = 1,
-    MECHANIZED_INFANTRY_DIVISION = 2,
-    MOTORIZED_INFANTRY_DIVISION = 3,
+    ARMORED_DIVISION,
+    MECHANIZED_INFANTRY_DIVISION,
+    MOTORIZED_INFANTRY_DIVISION,
 
-    BOMBER_DIVISION = 4,
-    AIR_DIVISION = 5,
+    BOMBER_DIVISION,
+    AIR_DIVISION,
 
-    SUBMARINE_DIVISION = 6,
-    DESTROYER_DIVISION = 7,
-    CARRIER_DIVISION = 8
+    SUBMARINE_DIVISION,
+    DESTROYER_DIVISION,
+    CARRIER_DIVISION
+}
+
+public enum MINERAL_TYPE
+{
+    NONE,
+    OIL,
+    IRON,
+    STEEL,
+    URANIUM,
+    ALUMINIUM
+}
+
+public enum ACTION_CATEGORY
+{
+    NONE,
+    POLITIKS,
+    INTELLIGENCE_AGENCY,
+    MILITARY, 
+    TRADE,
+    SUPPORT,
+    REGION
 }
 
 public enum BUILDING_TYPE
@@ -78,9 +124,52 @@ public enum WEAPON_TYPE
 
 public enum MILITARY_FORCES_TYPE
 {
-    LAND_FORCES = 1,
-    AIR_FORCES = 2,
-    NAVAL_FORCES = 3
+    NONE,
+    LAND_FORCES,
+    AIR_FORCES,
+    NAVAL_FORCES
+}
+
+public enum ACTION_TYPE
+{
+    NONE,
+
+    Change_System_Of_Government,
+
+    Assassination_Of_President,
+
+    Steal_Technology,
+
+    Make_A_Military_Coup,
+
+    Sign_A_Peace_Treaty,
+    Begin_Nuclear_War,
+    Declare_War,
+
+    Purchase_Weapon,
+
+    Ask_For_Money_Support,
+    Give_Money_Support,
+
+    Ask_For_Military_Access,
+    Cancel_Military_Access,
+    Give_Military_Access,
+
+    Request_Garrison_Support,
+    Give_Garrison_Support,
+
+    Give_Gun_Support,
+    Ask_For_Gun_Support,
+
+    Request_License_Production,
+
+    Place_Arms_Embargo,
+    Place_Trade_Embargo,
+
+    Ask_For_Control_Of_Region,
+    Give_Control_Of_Region,
+
+    Buy_Mineral
 }
 
 public enum POLICY_TYPE

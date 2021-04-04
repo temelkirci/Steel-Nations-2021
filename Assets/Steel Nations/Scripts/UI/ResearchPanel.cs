@@ -37,6 +37,8 @@ namespace WorldMapStrategyKit
 
         public GameObject selectedResearchPanel;
         public GameObject researchSlider;
+        public GameObject researchButton;
+        public GameObject cancelResearchButton;
 
         public TextMeshProUGUI weaponName;
         public TextMeshProUGUI researchCost;
@@ -45,12 +47,17 @@ namespace WorldMapStrategyKit
         public TextMeshProUGUI researchSpeed;
         public TextMeshProUGUI totalResearchSpeed;
 
-        Research selectedResearch;
+        public Research selectedResearch;
 
         // Start is called before the first frame update
         void Start()
         {
             instance = this;
+        }
+
+        public void Init()
+        {
+
         }
 
         public void AddWeapon(WeaponTemplate weapon, GameObject lineGOs)
@@ -97,21 +104,23 @@ namespace WorldMapStrategyKit
 
             temp = Instantiate(weaponItem, content.transform);
 
-            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().IsWeaponProducible(weapon.weaponID) == false)
-            {
-                temp.transform.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0.3f);
-            }
-
             if (temp != null && weapon != null)
             {
+                if (GameEventHandler.Instance.GetPlayer().GetMyCountry().IsWeaponProducible(weapon.weaponID) == false)
+                {
+                    temp.transform.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0.3f);
+                }
+
                 string tooltipText = string.Empty;
 
-                temp.gameObject.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => UpdateSelectedWeapon(weapon));
+                tooltipText = weapon.weaponName + "\n" +
+                    "Cost : $ " + string.Format("{0:#,0}", float.Parse(weapon.weaponCost.ToString())) + " M" + "\n" +
+                    "Attack Range : " + weapon.weaponAttackRange.ToString() + " km" + "\n" + 
+                    "Defense : " + weapon.weaponDefense.ToString() + "\n";
 
-                tooltipText = weapon.weaponName + "\n" + "Cost : " + weapon.weaponCost.ToString() + "\n" + "Attack Range : " + weapon.weaponAttackRange.ToString() + "\n" + "Defense : " + weapon.weaponDefense.ToString() + "\n";
                 temp.gameObject.GetComponent<SimpleTooltip>().infoLeft = tooltipText;
 
-                temp.gameObject.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(weapon.weaponID);
+                temp.GetComponent<WeaponResearchItem>().SetWeapon(weapon);
             }
         }
 
@@ -215,57 +224,84 @@ namespace WorldMapStrategyKit
             selectedResearchPanel.SetActive(false);
         }
 
-        void UpdateSelectedWeapon(WeaponTemplate weapon)
+        public void UpdateSelectedWeapon(WeaponResearchItem weaponResearch)
         {
+            if (weaponResearch == null)
+                return;
+
+            WeaponTemplate selectedWeapon = weaponResearch.weapon;
+
+            if (selectedWeapon == null)
+                return;
+
             selectedResearchPanel.SetActive(true);
 
-            int researchSpeedRotio = (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetTotalBuildings(BUILDING_TYPE.UNIVERSITY) / 10 ) + (GameEventHandler.Instance.GetPlayer().GetMyCountry().attrib["Research Speed"]);
-            weaponName.text = weapon.weaponName;
-            researchCost.text = weapon.weaponResearchCost.ToString();
-            researchDuring.text = weapon.weaponResearchTime.ToString();
-            universityNumber.text = GameEventHandler.Instance.GetPlayer().GetMyCountry().GetTotalBuildings(BUILDING_TYPE.UNIVERSITY).ToString();
-            researchSpeed.text = GameEventHandler.Instance.GetPlayer().GetMyCountry().GetResearchSpeed().ToString();
+            int researchSpeedRotio = (CountryManager.Instance.GetTotalBuildings(GameEventHandler.Instance.GetPlayer().GetMyCountry(), BUILDING_TYPE.UNIVERSITY) / 10 ) + (GameEventHandler.Instance.GetPlayer().GetMyCountry().attrib["Research Speed"]);
+            weaponName.text = selectedWeapon.weaponName;
+            researchCost.text = selectedWeapon.weaponResearchCost.ToString();
+            researchDuring.text = selectedWeapon.weaponResearchTime.ToString();
+            universityNumber.text = CountryManager.Instance.GetTotalBuildings(GameEventHandler.Instance.GetPlayer().GetMyCountry(), BUILDING_TYPE.UNIVERSITY).ToString();
+            researchSpeed.text = GameEventHandler.Instance.GetPlayer().GetMyCountry().Research_Speed.ToString();
 
-            int weaponResearchTime = (weapon.weaponResearchTime - ( (weapon.weaponResearchTime * researchSpeedRotio) / 100 ) );
+            int weaponResearchTime = (selectedWeapon.weaponResearchTime - ( (selectedWeapon.weaponResearchTime * researchSpeedRotio) / 100 ) );
             if (weaponResearchTime <= 1)
                 weaponResearchTime = 1;
 
             totalResearchSpeed.text = weaponResearchTime.ToString();
 
-            selectedResearchPanel.transform.GetChild(0).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(weapon.weaponID);
+            selectedResearchPanel.transform.GetChild(0).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(selectedWeapon.weaponID);
             selectedResearchPanel.transform.GetChild(0).transform.GetChild(0).GetComponent<RawImage>().gameObject.SetActive(true);
 
-            if(GameEventHandler.Instance.GetPlayer().GetMyCountry().IsWeaponProducible(weapon.weaponID) == false)
-                selectedResearchPanel.transform.GetChild(3).GetComponent<Button>().onClick.AddListener(() => GameEventHandler.Instance.GetPlayer().GetMyCountry().ResearchWeapon(weapon));
-        }
-
-        public void ShowResearchProgress()
-        {
-            if (researchPanel.activeSelf == true)
+            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().IsWeaponProducible(selectedWeapon.weaponID) == false)
             {
-                foreach (Research research in GameEventHandler.Instance.GetPlayer().GetMyCountry().GetAllResearchsInProgress())
-                {
-                    if (research.researchCountries.Contains(GameEventHandler.Instance.GetPlayer().GetMyCountry()))
-                    {
-                        selectedResearch = research;
-                        break;
-                    }
-                }
+                researchButton.GetComponent<Button>().onClick.AddListener(() => weaponResearch.StartReserach());
+                cancelResearchButton.GetComponent<Button>().onClick.AddListener(() => weaponResearch.CancelResearch());
+            }
+            else
+            {
+                researchSlider.GetComponent<Slider>().value = 0;
+            }
 
-                if (selectedResearch == null)
-                    return;
-
-                if (selectedResearch.leftDays >= 0)
+            if(weaponResearch.GetResearch() == null)
+            {
+                cancelResearchButton.SetActive(false);
+                researchButton.SetActive(true);
+            }
+            else
+            {
+                if(weaponResearch.GetResearch().IsResearching())
                 {
-                    researchSlider.GetComponent<Slider>().value = 100f - (selectedResearch.leftDays * 100f) / selectedResearch.totalResearchDay;
+                    cancelResearchButton.SetActive(true);
+                    researchButton.SetActive(false);
                 }
                 else
                 {
-                    researchSlider.GetComponent<Slider>().value = 0f;
+                    cancelResearchButton.SetActive(false);
+                    researchButton.SetActive(true);
                 }
             }
         }
 
+        public void ShowResearchProgress()
+        {
+            if (selectedResearch == null)
+            {
+                return;
+            }
+
+            if (researchPanel.activeSelf == true)
+            {
+                if (selectedResearch.IsCompleted() == false)
+                {
+                    researchSlider.GetComponent<Slider>().value = selectedResearch.GetProgress();
+                }
+                else
+                {
+                    Debug.Log("completed");
+                }
+            }          
+        }
+        
         void ClearUnits()
         {
             foreach (Transform child in weaponContent.transform)

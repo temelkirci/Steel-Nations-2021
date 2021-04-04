@@ -525,7 +525,7 @@ namespace WorldMapStrategyKit {
 			set {
 				if (value != _enableFreeCamera) {
 					_enableFreeCamera = value;
-					if (!_enableFreeCamera && _renderViewportIsTerrain) {
+					if (!_enableFreeCamera && renderViewportIsTerrain) {
 						Vector3 mapPos = Misc.Vector3zero;
 						GetCurrentMapLocation (out mapPos);
 						FlyToLocation (mapPos, 0.8f);	// reset view
@@ -607,7 +607,7 @@ namespace WorldMapStrategyKit {
 		/// </summary>
 		public bool GetCurrentMapLocation (out Vector3 location) {
 			Vector3 screenPos;
-			if (renderViewportIsEnabled && !_renderViewportIsTerrain) {
+			if (renderViewportIsEnabled && !renderViewportIsTerrain) {
 				screenPos = cameraMain.WorldToScreenPoint (_renderViewport.transform.position);
 			} else {
 				screenPos = new Vector3 (cameraMain.pixelWidth / 2, cameraMain.pixelHeight / 2, 0f);

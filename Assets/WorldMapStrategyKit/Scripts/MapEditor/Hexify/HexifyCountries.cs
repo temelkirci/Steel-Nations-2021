@@ -129,8 +129,8 @@ namespace WorldMapStrategyKit
 			}
 
 			// Update cities and mount points
-			List<City> cities = _map.cities;
-			int cityCount = cities.Count;
+			City[] cities = _map.cities;
+			int cityCount = cities.Length;
 			for (int k = 0; k < cityCount; k++) {
 				City city = cities [k];
 				int countryIndex = _map.GetCountryIndex (city.unity2DLocation);

@@ -89,8 +89,9 @@ namespace WorldMapStrategyKit {
 		/// Hides minimap
 		/// </summary>
 		public static void Hide() {
-			if (instance != null)
-                Destroy(instance);
+			if (instance != null) {
+				Destroy(instance.gameObject);
+			}
 		}
 
 		/// <summary>

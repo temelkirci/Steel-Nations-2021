@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace WorldMapStrategyKit
 {
@@ -13,12 +11,23 @@ namespace WorldMapStrategyKit
         GameObjectAnimator mouseOverUnit;
         City selectedCity;
         City mouseOverCity;
-
+        Province selectedProvince;
+        bool leadWar;
         Country selectedCountry;
 
         public Player()
         {
             selectedDivisions = new List<GameObjectAnimator>();
+            leadWar = false;
+        }
+
+        public void LeadWar(bool lead)
+        {
+            leadWar = lead;
+        }
+        public bool IsLeadWar()
+        {
+            return leadWar;
         }
 
         public Country GetMyCountry()
@@ -50,7 +59,7 @@ namespace WorldMapStrategyKit
         }
         public void ClearSelectedDivisions()
         {
-            selectedDivisions.Clear(); ;
+            selectedDivisions.Clear();
         }
 
         public int GetSelectedDivisionNumber()
@@ -83,15 +92,24 @@ namespace WorldMapStrategyKit
             selectedCountry = country;
         }
 
+        public void SetSelectedProvince(Province province)
+        {
+            selectedProvince = province;
+        }
+        public Province GetSelectedProvince()
+        {
+            return selectedProvince;
+        }
+
         public City GetSelectedCity()
         {
             return selectedCity;
         }
+
         public void SetSelectedCity(City city)
         {
             selectedCity = city;
         }
-
         public City GetMouseOverCity()
         {
             return mouseOverCity;

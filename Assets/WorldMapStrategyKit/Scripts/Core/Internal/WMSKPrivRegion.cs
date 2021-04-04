@@ -4,10 +4,6 @@
 
 using UnityEngine;
 using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using WorldMapStrategyKit.Poly2Tri;
 
 
@@ -17,16 +13,6 @@ namespace WorldMapStrategyKit {
 
 		#region Region related functions
 
-		struct CurvedLabelInfo {
-			public Vector2 axisStart;
-			public Vector2 axisEnd;
-			public float axisAngle;
-			public Vector2 axisAveragedThickness;
-			public Vector2 axisMidDisplacement;
-			public Vector2 p0, p1;
-		}
-
-
 		struct BorderIntersection {
 			public Vector2 p;
 			public float dist;
@@ -35,9 +21,12 @@ namespace WorldMapStrategyKit {
 		Material extrudedMat;
 		BorderIntersection[] intersections;
 
-		bool ComputeCurvedLabelData(Region region, out CurvedLabelInfo curvedLabel) {
+		bool ComputeCurvedLabelData(Region region) {
 
-			curvedLabel = new CurvedLabelInfo();
+			if (!region.curvedLabelInfo.isDirty) {
+				return true;
+            }
+			region.curvedLabelInfo.isDirty = false;
 
 			Vector2[] points = region.points;
 			if (points == null)
@@ -131,23 +120,23 @@ namespace WorldMapStrategyKit {
 			}
 
 			// Land intersection points
-			curvedLabel.p0 = p0;
-			curvedLabel.p1 = p1;
+			region.curvedLabelInfo.p0 = p0;
+			region.curvedLabelInfo.p1 = p1;
 
 			// Corrected centroid
 			Vector2 centroid = (p0 + p1) * 0.5f;
-			curvedLabel.axisAveragedThickness = p1 - p0;
+			region.curvedLabelInfo.axisAveragedThickness = p1 - p0;
 
 			// Reduce axis length
-			curvedLabel.axisStart = centroid + (axisStart - centroid) * _countryLabelsLength;
-			curvedLabel.axisEnd = centroid + (axisEnd - centroid) * _countryLabelsLength;
+			region.curvedLabelInfo.axisStart = centroid + (axisStart - centroid) * _countryLabelsLength;
+			region.curvedLabelInfo.axisEnd = centroid + (axisEnd - centroid) * _countryLabelsLength;
 
 			// Final axis and displacement values
 			axisMid = (axisStart + axisEnd) * 0.5f;
-			curvedLabel.axisMidDisplacement = centroid - axisMid;
+			region.curvedLabelInfo.axisMidDisplacement = centroid - axisMid;
 			axis = axisEnd - axisStart;
 			// note the multiplication of axis.x by 2 to compensate map aspect ratio
-			curvedLabel.axisAngle = Mathf.Atan2(axis.y, axis.x * 2f) * Mathf.Rad2Deg;
+			region.curvedLabelInfo.axisAngle = Mathf.Atan2(axis.y, axis.x * 2f) * Mathf.Rad2Deg;
 
 			return true;
 		}
@@ -481,7 +470,7 @@ namespace WorldMapStrategyKit {
 			indices [indices.Length - 1] = 0; 
 			GameObject boldFrontiers = new GameObject (name);
 
-			bool customBorder = region.customBorderTexture != null;
+			bool customBorder = region.customBorderTexture != null || region.customBorderTintColor != Color.white;
 
 			if (_outlineDetail == OUTLINE_DETAIL.Simple && !customBorder) {
 				Mesh mesh = new Mesh ();
@@ -491,7 +480,7 @@ namespace WorldMapStrategyKit {
 				mesh.vertices = points; 
 				mesh.SetIndices (indices, MeshTopology.LineStrip, 0);
 				mesh.RecalculateBounds ();
-				if (disposalManager!=null) disposalManager.MarkForDisposal (mesh); //mesh.hideFlags = HideFlags.DontSave;
+				if (disposalManager!=null) disposalManager.MarkForDisposal (mesh);
 
 				MeshFilter mf = boldFrontiers.AddComponent<MeshFilter> ();
 				mf.sharedMesh = mesh;
@@ -520,8 +509,8 @@ namespace WorldMapStrategyKit {
 				lr.SetPosition (pCount, region.points [0]);
 				lr.loop = true;
 				if (customBorder && region.customBorderTexture != outlineMatTextured.mainTexture) {
-					Material mat = Instantiate<Material> (outlineMatTextured);
-					if (disposalManager!=null) disposalManager.MarkForDisposal (mat); //mat.hideFlags = HideFlags.DontSave;
+					Material mat = Instantiate (outlineMatTextured);
+					if (disposalManager!=null) disposalManager.MarkForDisposal (mat);
 					mat.name = outlineMatTextured.name;
 					mat.mainTexture = region.customBorderTexture;
 					mat.mainTextureScale = new Vector2 (region.customBorderTextureTiling, 1f);

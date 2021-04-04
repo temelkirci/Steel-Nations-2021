@@ -3,29 +3,29 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace WorldMapStrategyKit.PathFinding {
-				interface IPathFinder {
+    interface IPathFinder {
 
-								HeuristicFormula Formula {
-												get;
-												set;
-								}
+        HeuristicFormula Formula {
+            get;
+            set;
+        }
 
-								int HeuristicEstimate {
-												get;
-												set;
-								}
+        float HeuristicEstimate {
+            get;
+            set;
+        }
 
-								int MaxSearchCost {
-												get;
-												set;
-								}
+        float MaxSearchCost {
+            get;
+            set;
+        }
 
-								int MaxSteps {
-												get;
-												set;
-								}
+        int MaxSteps {
+            get;
+            set;
+        }
 
-								List<PathFinderNode> FindPath (Point start, Point end, out int totalCost);
+        List<PathFinderNode> FindPath(Point start, Point end, out float totalCost);
 
-				}
+    }
 }

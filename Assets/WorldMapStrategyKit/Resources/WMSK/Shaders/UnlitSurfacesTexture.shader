@@ -1,8 +1,8 @@
 ﻿Shader "WMSK/Unlit Surface Texture" {
  
 Properties {
+	_MainTex ("Base (RGB)", 2D) = "white" {}
     _Color ("Color", Color) = (1,1,1)
-    _MainTex ("Main Tex", 2D) = "white" {}
     _WaterMaskTex ("Water Mask Tex", 2D) = "white" {}
     _WaterLevel ("Water Level", Float) = 0.1
     _AlphaOnWater ("Alpha On Wagter", Float) = 0.2

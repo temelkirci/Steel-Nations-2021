@@ -111,7 +111,6 @@ namespace WorldMapStrategyKit {
 				return null;
 			if (orientToTarget)
 				goAnim.LookAt(destination);
-
 			return goAnim.Fire(delay, bullet, startAnchor, destination, bulletSpeed, arcHeight, testAnchor);
 		}
 

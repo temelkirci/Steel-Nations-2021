@@ -1,9 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
-using System.Collections.Generic;
 using WorldMapStrategyKit.PathFinding;
-using WorldMapStrategyKit.MapGenerator;
 
 namespace WorldMapStrategyKit {
     [CustomEditor(typeof(WMSK))]
@@ -228,7 +226,7 @@ namespace WorldMapStrategyKit {
                     _map.renderViewportResolution = EditorGUILayout.Slider(new GUIContent("Resolution", "Resolution of the render texture. A value of 2 offers the best quality as it produces a super-sampling effect of x2. A value of 1 will match screen size but won't provide any antialias. A value greater than 2 should be used only under special scenarios like using multiple-cameras, one near the terrain surface to grasp more detail. Don't use values greater than 2 if not neccesary to avoid performance issues."), _map.renderViewportResolution, 0.5f, 8f);
                     _map.renderViewportResolutionMaxRTWidth = EditorGUILayout.IntField(new GUIContent("Max Texture Width", "Maximum width for the render texture. Recommended value is 2048 for most cases."), _map.renderViewportResolutionMaxRTWidth);
 
-                    if (!_map.renderViewportIsTerrain) {
+                    if (!_map.renderViewportIsTerrain && !_map.renderViewportIsMapPanel) {
                         _map.renderViewportLightingMode = (VIEWPORT_LIGHTING_MODE)EditorGUILayout.EnumPopup(new GUIContent("Lighting", "Lighting mode used for render viewport in scene."), _map.renderViewportLightingMode);
                         _map.renderViewportCurvature = EditorGUILayout.Slider(new GUIContent("Curvature Max Zoom", "Curvature of the render viewport at max zoom. 0 = disabled."), _map.renderViewportCurvature, -100f, 100f);
                         _map.renderViewportCurvatureMinZoom = EditorGUILayout.Slider(new GUIContent("Curvature Min Zoom", "Curvature of the render viewport at min zoom."), _map.renderViewportCurvatureMinZoom, -100f, 100f);
@@ -252,7 +250,7 @@ namespace WorldMapStrategyKit {
                             }
                         }
                         _map.renderViewportTerrainAlpha = EditorGUILayout.Slider(new GUIContent("   Alpha", "Transparency for the WMSK texture projected onto the Unity terrain."), _map.renderViewportTerrainAlpha, 0f, 1f);
-                    } else {
+                    } else if (_map.renderViewportIs3DViewport) {
                         _map.earthElevation = EditorGUILayout.Slider("Ground Elevation", _map.earthElevation, 0, 2.0f);
                         _map.renderViewportGOAutoScaleMultiplier = EditorGUILayout.Slider(new GUIContent("Unit Scale Multiplier", "Scale multiplier applied to all game objects put on top of the viewport."), _map.renderViewportGOAutoScaleMultiplier, 0.1f, 10f);
                         _map.renderViewportGOAutoScaleMin = EditorGUILayout.Slider(new GUIContent("   Minimum Scale", "Scale multiplier applied to all game objects put on top of the viewport."), _map.renderViewportGOAutoScaleMin, 0.1f, 100f);
@@ -279,11 +277,13 @@ namespace WorldMapStrategyKit {
                     }
                 }
 
-                _map.sun = (GameObject)EditorGUILayout.ObjectField(new GUIContent("Sun", "Assign a Game Object (usually a Directional Light that acts as the Sun) to automatically synchronize the light direction with the time of day parameter below."), _map.sun, typeof(GameObject), true);
-                if (_map.sun != null) {
-                    _map.sunUseTimeOfDay = EditorGUILayout.Toggle("   Use Time Of Day", _map.sunUseTimeOfDay);
-                    if (_map.sunUseTimeOfDay) {
-                        _map.timeOfDay = EditorGUILayout.Slider("   Time Of Day", _map.timeOfDay, 0f, 24f);
+                if (!_map.renderViewportIsMapPanel) {
+                    _map.sun = (GameObject)EditorGUILayout.ObjectField(new GUIContent("Sun", "Assign a Game Object (usually a Directional Light that acts as the Sun) to automatically synchronize the light direction with the time of day parameter below."), _map.sun, typeof(GameObject), true);
+                    if (_map.sun != null) {
+                        _map.sunUseTimeOfDay = EditorGUILayout.Toggle("   Use Time Of Day", _map.sunUseTimeOfDay);
+                        if (_map.sunUseTimeOfDay) {
+                            _map.timeOfDay = EditorGUILayout.Slider("   Time Of Day", _map.timeOfDay, 0f, 24f);
+                        }
                     }
                 }
             }
@@ -376,8 +376,8 @@ namespace WorldMapStrategyKit {
                     _map.citiesCountryCapitalColor = EditorGUILayout.ColorField("Country Capital", _map.citiesCountryCapitalColor);
                     _map.cityIconSize = EditorGUILayout.Slider("Icon Size", _map.cityIconSize, 0.1f, 5.0f);
                     EditorGUILayout.BeginHorizontal();
-                    _map.minPopulation = EditorGUILayout.IntSlider("Min Population (K)", _map.minPopulation, 0, 3000);
-                    GUILayout.Label(_map.numCitiesDrawn + "/" + _map.cities.Count);
+                    _map.minPopulation = EditorGUILayout.IntField("Min Population (K)", _map.minPopulation);
+                    GUILayout.Label(_map.numCitiesDrawn + "/" + _map.cities.Length);
                     EditorGUILayout.EndHorizontal();
 
                     GUILayout.Label("Always Visible:");
@@ -399,6 +399,7 @@ namespace WorldMapStrategyKit {
                         cityClassFilter += WMSK.CITY_CLASS_FILTER_COUNTRY_CAPITAL;
                     }
                     _map.cityClassAlwaysShow = cityClassFilter;
+                    _map.maxCitiesPerCountry = EditorGUILayout.IntField(new GUIContent("Max Cities Per Country", "0 = unlimited."), _map.maxCitiesPerCountry);
 
                     _map.citySpot = (GameObject)EditorGUILayout.ObjectField("Normal City Icon", _map.citySpot, typeof(GameObject), false);
                     _map.citySpotCapitalRegion = (GameObject)EditorGUILayout.ObjectField("Region Capital Icon", _map.citySpotCapitalRegion, typeof(GameObject), false);
@@ -440,10 +441,12 @@ namespace WorldMapStrategyKit {
 
                 _map.enableCountryHighlight = EditorGUILayout.Toggle("Country Highlight", _map.enableCountryHighlight);
                 if (_map.enableCountryHighlight) {
-                    _map.fillColor = EditorGUILayout.ColorField("   Highlight Color", _map.fillColor);
-                    _map.highlightMaxScreenAreaSize = EditorGUILayout.Slider(new GUIContent("   Max Screen Size", "Defines the maximum screen area of a highlighted country. To prevent filling the whole screen with the highlight color, you can reduce this value and if the highlighted screen area size is greater than this factor (1=whole screen) the country won't be filled at all (it will behave as selected though)"), _map.highlightMaxScreenAreaSize, 0, 1f);
+                    _map.highlightCountryRecolor = EditorGUILayout.Toggle("   Recolor Region", _map.highlightCountryRecolor);
+                    if (_map.highlightCountryRecolor) {
+                        _map.fillColor = EditorGUILayout.ColorField("      Highlight Color", _map.fillColor);
+                        _map.highlightMaxScreenAreaSize = EditorGUILayout.Slider(new GUIContent("      Max Screen Size", "Defines the maximum screen area of a highlighted country. To prevent filling the whole screen with the highlight color, you can reduce this value and if the highlighted screen area size is greater than this factor (1=whole screen) the country won't be filled at all (it will behave as selected though)"), _map.highlightMaxScreenAreaSize, 0, 1f);
+                    }
                     _map.highlightAllCountryRegions = EditorGUILayout.Toggle("   Include All Regions", _map.highlightAllCountryRegions);
-
                     _map.showOutline = EditorGUILayout.Toggle("   Draw Outline", _map.showOutline);
                     if (_map.showOutline) {
                         _map.outlineColor = EditorGUILayout.ColorField("      Outline Color", _map.outlineColor);
@@ -489,11 +492,9 @@ namespace WorldMapStrategyKit {
                         EditorGUILayout.EndHorizontal();
                     } else {
                         _map.countryLabelsFontTMPro = (Object)EditorGUILayout.ObjectField(new GUIContent("   Font (TMPro)", "Font asset to be used with TextMesh Pro - see manual"), _map.countryLabelsFontTMPro, typeof(UnityEngine.Object), false);
-#if UNITY_2018_2_OR_NEWER
                         if (_map.countryLabelsFontTMPro == null) {
                             EditorGUILayout.HelpBox("Please assign an SDF Font to World Map Strategy Kit inspector. You can create SDF Fonts using TextMesh Pro Font Asset creator tool.", MessageType.Warning);
                         }
-#endif
                     }
 
                     if (!_map.renderViewportIsEnabled) {
@@ -611,8 +612,8 @@ namespace WorldMapStrategyKit {
                         GUILayout.Label("Url Template");
                         _map.tileServerCustomUrl = EditorGUILayout.TextField(_map.tileServerCustomUrl);
                         EditorGUILayout.HelpBox("Use:\n$N$ for random [a-c] node (optional)\n$Z$ for zoom level (required)\n$X$ and $Y$ for X/Y tile indices (required).", MessageType.Info);
-                    } else if (_map.tileServer == TILE_SERVER.AerisWeather) {
-                        GUILayout.Label("Copyright Notice");
+                    } else if (_map.tileServer.IsAerisWeather()) {
+                        EditorGUILayout.LabelField("Copyright Notice");
                         EditorGUILayout.SelectableLabel(_map.tileServerCopyrightNotice);
                         _map.tileServerClientId = EditorGUILayout.TextField(new GUIContent("Client Id", "The client id of your Aeris Weather account."), _map.tileServerClientId);
                         _map.tileServerAPIKey = EditorGUILayout.TextField(new GUIContent("Secret Key", "Secret key linked to your Aeris Weather account."), _map.tileServerAPIKey);
@@ -621,8 +622,12 @@ namespace WorldMapStrategyKit {
                             EditorGUILayout.HelpBox("To access AerisWeather service, ClientId, SecretKey as well as one or more Layer Types must be specified.", MessageType.Warning);
                         }
                         _map.tileServerTimeOffset = EditorGUILayout.TextField(new GUIContent("Time Offset", "Enter the map time offset from now (eg. current or -10min or +1hour) or an exact date with format: YYYYMMDDhhiiss."), _map.tileServerTimeOffset);
+                    } else if (_map.tileServer.IsMapBox()) {
+                        EditorGUILayout.LabelField("Copyright Notice");
+                        EditorGUILayout.SelectableLabel(_map.tileServerCopyrightNotice);
+                        _map.tileServerAPIKey = EditorGUILayout.TextField(new GUIContent("Access Token (Required)", "Access token of your MapBox account."), _map.tileServerAPIKey);
                     } else {
-                        GUILayout.Label("Copyright Notice");
+                        EditorGUILayout.LabelField("Copyright Notice");
                         EditorGUILayout.SelectableLabel(_map.tileServerCopyrightNotice);
                         _map.tileServerAPIKey = EditorGUILayout.TextField(new GUIContent("API Key", "Custom portion added to tile request url. For example: apikey=1234589"), _map.tileServerAPIKey);
                     }
@@ -776,7 +781,7 @@ namespace WorldMapStrategyKit {
 
                 if (expandPathFindingSection) {
                     _map.pathFindingHeuristicFormula = (HeuristicFormula)EditorGUILayout.IntPopup("Heuristic", (int)_map.pathFindingHeuristicFormula, pathFindingHeuristicOptions, pathFindingHeuristicValues);
-                    _map.pathFindingMaxCost = EditorGUILayout.IntField(new GUIContent("Default Max Cost", "Maximum total route cost for any unit that doesn't have a specific pathFindingMaxCost value in the GameObjectAnimator."), _map.pathFindingMaxCost);
+                    _map.pathFindingMaxCost = EditorGUILayout.FloatField(new GUIContent("Default Max Cost", "Maximum total route cost for any unit that doesn't have a specific pathFindingMaxCost value in the GameObjectAnimator."), _map.pathFindingMaxCost);
                     _map.pathFindingMaxSteps = EditorGUILayout.IntField(new GUIContent("Default Max Steps", "Maximum total steps for any unit that doesn't have a specific pathFindingMaxSteps value in the GameObjectAnimator."), _map.pathFindingMaxSteps);
                     _map.waterMaskLevel = (byte)EditorGUILayout.IntSlider("Water Level", (byte)_map.waterMaskLevel, 0, 255);
                     _map.pathFindingVisualizeMatrixCost = EditorGUILayout.Toggle("Show Matrix Cost", _map.pathFindingVisualizeMatrixCost);

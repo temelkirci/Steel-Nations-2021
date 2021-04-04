@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using System;
 using System.Collections;
 
@@ -12,22 +11,19 @@ namespace WorldMapStrategyKit
         {
             get { return instance; }
         }
-
-        WMSK map;
         
         Player player;
+        WMSK map;
 
         DateTime today;
         bool gameStarted = false;
-        private IEnumerator coroutine;
+        IEnumerator coroutine;
 
         void Start()
         {
             instance = this;
 
-            // Get a reference to the World Map API:
             map = WMSK.instance;
-
             map.paused = false;
             map.timeSpeed = 1;
         }
@@ -36,56 +32,63 @@ namespace WorldMapStrategyKit
         {
             return today.Day;
         }
+
         public int GetMonthOfYear()
         {
             return today.Month;
         }
 
-        private IEnumerator IncreaseDay(float waitTime)
+        public int GetCurrentYear()
+        {
+            return today.Year;
+        }
+
+        IEnumerator IncreaseDay()
         {
             while(map.paused == false)
             {
-                yield return new WaitForSeconds(waitTime);
+                yield return new WaitForSeconds(GameSettings.Instance.GetGameSpeed());
 
                 today = today.AddDays(1);
 
-                if(GetDayOfMonth() == 1 && GetMonthOfYear() == 1)
-                {
-                    // new year
-                }
-
-                CountryManager.Instance.DailyUpdateAllCountries();
-
-                if (GetDayOfMonth() == 1)
-                {
-                    // save game
-                }
-                if (GetDayOfMonth() == 5)
-                {
-                    
-                }
-                if (GetDayOfMonth() == 10)
-                {
-
-                }
-                if (GetDayOfMonth() == 15)
-                {
-                    CountryManager.Instance.MonthlyUpdateAllCountries();
-                }
-                if (GetDayOfMonth() == 20)
-                {
-                    
-                }
-
-                if (GetDayOfMonth() == 25)
-                {
-                    foreach (Organization org in OrganizationManager.Instance.GetAllOrganizations())
-                        org.ResultForApply();
-                }
-
                 HUDManager.Instance.UpdateHUD();
-                UIManager.Instance.UpdatePanels();
                 NotificationManager.Instance.ShowNews();
+
+                if (GameSettings.Instance.GetSelectedGameMode() == GameSettings.GAME_MODE.QUIZ)
+                {
+
+                }
+                else
+                {
+                    CountryManager.Instance.DailyUpdateForAllCountries();
+
+                    if (GetDayOfMonth() == 5)
+                    {
+                        HUDManager.Instance.PrivateNotification("Auto Saving !... ");
+                        //SaveLoadManager.Instance.SaveGame();
+                        CountryManager.Instance.MonthlyUpdateForAllCountries();
+
+                        if (GetMonthOfYear() == 1)
+                        {
+                            // new year
+                        }
+                    }
+
+                    if (GetDayOfMonth() == 15)
+                    {
+                        int index = UnityEngine.Random.Range(0, OrganizationManager.Instance.GetAllOrganizations().Count);
+
+                        OrganizationManager.Instance.GetAllOrganizations()[index].ResultForApply();
+                    }
+
+                    if (GetDayOfMonth() == 28)
+                    {
+                        //CountryManager.Instance.MonthlyUpdateForAllCountries();
+                    }
+
+                    UIManager.Instance.UpdatePanels();
+                }
+
             }
         }
 
@@ -97,8 +100,7 @@ namespace WorldMapStrategyKit
         {
             return today;
         }
-        
-        
+
         public void SetPlayer(Player player)
         {
             this.player = player;
@@ -110,29 +112,59 @@ namespace WorldMapStrategyKit
 
         public void GameStarted()
         {
-            today = new DateTime(2020, 1, 1);
-            AudioManager.Instance.PlayVoice(VOICE_TYPE.GAME_BACKGROUND, true);
-
             gameStarted = true;
 
+            today = new DateTime(2020, 1, 1);
+
             HUDManager.Instance.ShowHUD();
-            BuildingManager.Instance.CreateBuildings();
 
-            MapManager.Instance.StartEventListener();                
-            MapManager.Instance.ListenVehicleEvents();
+            if (GameSettings.Instance.GetSelectedGameMode() == GameSettings.GAME_MODE.QUIZ)
+            {
+                MapManager.Instance.ColorizeCountry(GetPlayer().GetMyCountry());
+                //MapManager.Instance.TextureCountry(GetPlayer().GetMyCountry());
 
-            MapManager.Instance.StartListeningCountries();
-            UIManager.Instance.StartButtonListeners();
-            coroutine = IncreaseDay(2.0f);
+                QuizManager.Instance.Init();
+                HUDManager.Instance.bottomButtons.SetActive(false);
+
+                GameSettings.Instance.SetGameSpeed_X8();
+            }
+            else
+            {
+                GameSettings.Instance.SetGameSpeed_X1();
+                ArmyPanel.Instance.Init();
+
+                ActionManager.Instance.Init();
+
+                if (GetPlayer().GetMyCountry().IsAllDivisionsCreated() == false)
+                    GetPlayer().GetMyCountry().CreateAllDivisions();
+
+                MapManager.Instance.StartEventListener();
+                MapManager.Instance.ListenVehicleEvents();
+
+                MapManager.Instance.StartListeningCountries();
+                UIManager.Instance.StartButtonListeners();           
+
+                /*
+                if (GetPlayer().GetMyCountry().GetArmy() != null)
+                {
+                    Dictionary<WeaponTemplate, int> allWeapons = GetPlayer().GetMyCountry().GetArmy().GetAllWeaponsInArmyInventory();
+                    foreach (WeaponTemplate weaponTemplate in WeaponManager.Instance.GetWeaponTemplateList())
+                    {
+                        int number = 0;
+                        allWeapons.TryGetValue(weaponTemplate, out number);
+
+                        if (number > 0)
+                        {
+                            Debug.Log(weaponTemplate.weaponName + " -> " + number);
+                        }
+                    }
+                }
+                */
+            }
+
+            coroutine = IncreaseDay();
             StartCoroutine(coroutine);
         }
-
-        public int GetCurrentYear()
-        {
-            return today.Year;
-        }
-
-        
     }
 
 }

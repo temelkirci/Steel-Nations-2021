@@ -35,7 +35,7 @@ namespace WorldMapStrategyKit
         void Start()
         {
             instance = this;
-        }     
+        }
 
         public void ShowOrganizationPanel()
         {
@@ -55,7 +55,7 @@ namespace WorldMapStrategyKit
                 GameObject temp = Instantiate(organizationItem, organizationContent.transform);
 
                 temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = organization.organizationName;
-                temp.gameObject.transform.GetChild(2).GetComponent<RawImage>().texture = OrganizationManager.Instance.GetOrganizationLogoByName(organization.organizationName);
+                temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = OrganizationManager.Instance.GetOrganizationLogoByName(organization.organizationName);
 
                 temp.gameObject.GetComponent<Button>().onClick.AddListener(() => ShowOrganizationDetails(organization));
 
@@ -88,36 +88,30 @@ namespace WorldMapStrategyKit
             militaryOrganization.text = organization.isMilitary.ToString();
             terroristOrganization.text = organization.isTerroristOrganization.ToString();
             protectOtherMembers.text = organization.isAttackForMember.ToString();
-            tradeValue.text = organization.tradeBonusPerWeek.ToString();
+            tradeValue.text = organization.GetTradeBonus().ToString();
 
             foreach(Country country in organization.GetFullMemberList())
             {
                 GameObject temp = Instantiate(flagLogo, fullMemberContent.transform);
                 temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
-
-                //if (country == GameEventHandler.MyCountry)
-                    //member = true;
+                temp.GetComponent<SimpleTooltip>().infoLeft = country.name;
             }
 
             foreach (Country country in organization.GetObserverList())
             {
                 GameObject temp = Instantiate(flagLogo, observationContent.transform);
                 temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
-
-                //if (country == GameEventHandler.MyCountry)
-                    //member = true;
+                temp.GetComponent<SimpleTooltip>().infoLeft = country.name;
             }
 
             foreach (Country country in organization.GetDialoguePartnerList())
             {
                 GameObject temp = Instantiate(flagLogo, dialoguePartnerContent.transform);
                 temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
-
-                //if (country == GameEventHandler.MyCountry)
-                    //member = true;
+                temp.GetComponent<SimpleTooltip>().infoLeft = country.name;
             }
 
-            if(member == false)
+            if (member == false)
             {
                 applyButton.onClick.AddListener(() => ApplyForOrganization(GameEventHandler.Instance.GetPlayer().GetMyCountry()));
             }

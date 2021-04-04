@@ -30,7 +30,7 @@ namespace WorldMapStrategyKit {
 			if (needRedraw) {
 				if (material!=null && material.color!=color) {
 					material = Instantiate(material);
-					material.hideFlags = HideFlags.DontSave;
+					//material.hideFlags = HideFlags.DontSave;
 					material.color = color;
 				}
 				if (lineMeshFilter != null) {

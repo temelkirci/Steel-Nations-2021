@@ -46,7 +46,7 @@ namespace WorldMapStrategyKit {
 
 								string[] cityNames {
 												get {
-																if (_calc.map != null && lastCityCount != _calc.map.cities.Count) {
+																if (_calc.map != null && lastCityCount != _calc.map.cities.Length) {
 																				_cityNames = _calc.map.GetCityNames ();
 																				lastCityCount = _cityNames.Length;
 																}

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 499228}
   - component: {fileID: 3364714}
   - component: {fileID: 2341412}
-  - component: {fileID: 5010835397827523183}
-  - component: {fileID: 5415176361884892559}
+  - component: {fileID: 2574433517026984568}
+  - component: {fileID: 8088702344974769125}
   m_Layer: 0
   m_Name: AT_FighterJet
   m_TagString: Untagged
@@ -87,7 +87,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &5010835397827523183
+--- !u!114 &2574433517026984568
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,9 +100,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleTooltipStyle: {fileID: 11400000, guid: dea555cc7b5bdbb4e8dae068d456f3de, type: 2}
-  infoLeft: Hello
+  infoLeft: 
   infoRight: 
---- !u!65 &5415176361884892559
+--- !u!65 &8088702344974769125
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

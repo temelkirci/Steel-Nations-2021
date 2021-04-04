@@ -14,7 +14,6 @@ namespace WorldMapStrategyKit
         public bool isTrade;
         public bool isMilitary;
 
-        public float tradeBonusPerWeek;
         public float miningBonus;
         public float oilBonus;
         public float gunBonus;
@@ -46,7 +45,6 @@ namespace WorldMapStrategyKit
 
             isActive = true;
 
-            tradeBonusPerWeek = 0;
             miningBonus = 0;
             oilBonus = 0;
             gunBonus = 0;
@@ -70,6 +68,18 @@ namespace WorldMapStrategyKit
             OilEmbargoList.Clear();
         }
 
+        public float GetTradeBonus()
+        {
+            float tradeBonusMonthly = 0;
+
+            foreach (Country tempCountry in FullMemberList)
+            {
+                tradeBonusMonthly = tradeBonusMonthly + CountryManager.Instance.GetGDPTradeBonus(tempCountry);
+            }
+
+            return tradeBonusMonthly;
+        }
+
         public void AddFounder(Country country, bool showNotification)
         {
             FoundersList.Add(country);
@@ -80,7 +90,7 @@ namespace WorldMapStrategyKit
             FullMemberList.Add(country);
 
             if (showNotification)
-                NotificationManager.Instance.CreateNotification(country.name + " join to " + organizationName + " as full member");
+                NotificationManager.Instance.CreatePublicNotification(country.name + " join to " + organizationName + " as full member");
         }
 
         public void AddObserver(Country country, bool showNotification)
@@ -88,7 +98,7 @@ namespace WorldMapStrategyKit
             ObserverList.Add(country);
 
             if (showNotification)
-                NotificationManager.Instance.CreateNotification(country.name + " join to " + organizationName + " as observer");
+                NotificationManager.Instance.CreatePublicNotification(country.name + " join to " + organizationName + " as observer");
         }
 
         public void AddDialoguePartner(Country country, bool showNotification)
@@ -96,7 +106,7 @@ namespace WorldMapStrategyKit
             DialoguePartnerList.Add(country);
 
             if (showNotification)
-                NotificationManager.Instance.CreateNotification(country.name + " join to " + organizationName + " as dialogue partner");
+                NotificationManager.Instance.CreatePublicNotification(country.name + " join to " + organizationName + " as dialogue partner");
         }
 
         public void ApplyForFullMember(Country country, bool showNotification)
@@ -104,7 +114,7 @@ namespace WorldMapStrategyKit
             AppliedForFullMemberList.Add(country);
 
             if (showNotification)
-                NotificationManager.Instance.CreateNotification(country.name + " made a full membership application to " + organizationName);
+                NotificationManager.Instance.CreatePublicNotification(country.name + " made a full membership application to " + organizationName);
         }
 
         public void ApplyForObserver(Country country, bool showNotification)
@@ -112,7 +122,7 @@ namespace WorldMapStrategyKit
             AppliedForObserverList.Add(country);
 
             if (showNotification)
-                NotificationManager.Instance.CreateNotification(country.name + " applied to " + organizationName + " as observer");
+                NotificationManager.Instance.CreatePublicNotification(country.name + " applied to " + organizationName + " as observer");
         }
 
         public void ApplyForDialoguePartner(Country country, bool showNotification)
@@ -120,7 +130,7 @@ namespace WorldMapStrategyKit
             AppliedForDialoguePartnerList.Add(country);
 
             if (showNotification)
-                NotificationManager.Instance.CreateNotification(country.name + " applied to " + organizationName + " as dialogue partner");
+                NotificationManager.Instance.CreatePublicNotification(country.name + " applied to " + organizationName + " as dialogue partner");
         }
 
         public string OrganizationName
@@ -194,9 +204,24 @@ namespace WorldMapStrategyKit
 
         public void ResultForApply()
         {
-            ResultForFullMember();
-            ResultForObserver();
-            ResultForDialoguePartner();
+            if (AppliedForObserverList.Count > 0)
+            {
+                ResultForObserver();
+                return;
+            }
+
+            if (AppliedForDialoguePartnerList.Count > 0)
+            {
+                ResultForDialoguePartner();
+                return;
+            }
+
+            if(AppliedForFullMemberList.Count > 0)
+            {
+                ResultForFullMember();
+                return;
+            }
+
         }
 
         void ResultForFullMember()
@@ -210,7 +235,7 @@ namespace WorldMapStrategyKit
             if (fullMemberCountryAcceptChance >= 50)
                 AddFullMember(fullMemberCountry, true);
             else
-                NotificationManager.Instance.CreateNotification(fullMemberCountry.name + " has been rejected by " + organizationName);
+                NotificationManager.Instance.CreatePublicNotification(fullMemberCountry.name + " has been rejected by " + organizationName);
 
             AppliedForFullMemberList.Remove(fullMemberCountry);
         }
@@ -226,7 +251,7 @@ namespace WorldMapStrategyKit
             if (acceptChance >= 25)
                 AddObserver(country, true);
             else
-                NotificationManager.Instance.CreateNotification(country.name + "  has been rejected by " + organizationName);
+                NotificationManager.Instance.CreatePublicNotification(country.name + "  has been rejected by " + organizationName);
 
             AppliedForObserverList.Remove(country);
         }
@@ -242,7 +267,7 @@ namespace WorldMapStrategyKit
             if (acceptChance >= 0)
                 AddDialoguePartner(country, true);
             else
-                NotificationManager.Instance.CreateNotification(country.name + " has been rejected by " + organizationName);
+                NotificationManager.Instance.CreatePublicNotification(country.name + " has been rejected by " + organizationName);
 
             AppliedForDialoguePartnerList.Remove(country);
         }

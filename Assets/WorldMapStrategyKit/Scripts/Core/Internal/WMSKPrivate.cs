@@ -62,7 +62,7 @@ namespace WorldMapStrategyKit {
         Dictionary<Color, Material> coloredMatCache;
         Dictionary<Color, Material> markerMatCache;
         Dictionary<double, Region> frontiersCacheHit;
-        List<Vector3> frontiersPoints;
+        List<Vector2> frontiersPoints;
         DisposalManager disposalManager;
         int lastRegionIndex;
 
@@ -169,12 +169,20 @@ namespace WorldMapStrategyKit {
 
         void OnDestroy() {
             if (_surfacesLayer != null) {
-                GameObject.DestroyImmediate(_surfacesLayer);
+                DestroyImmediate(_surfacesLayer);
+            }
+            if (coloredMatCache != null) {
+                foreach (Material mat in coloredMatCache.Values) if (mat != null) DestroyImmediate(mat);
+            }
+            if (markerMatCache != null) {
+                foreach (Material mat in markerMatCache.Values) if (mat != null) DestroyImmediate(mat);
             }
             overlayLayer = null;
             DestroyMapperCam();
             DestroyTiles();
-            disposalManager.DisposeAll();
+            if (disposalManager != null) {
+                disposalManager.DisposeAll();
+            }
         }
 
         void Reset() {
@@ -196,7 +204,7 @@ namespace WorldMapStrategyKit {
             updateDoneThisFrame = true;
 
             // Updates mapperCam to reflect current main camera position and rotation (if main camera has moved)
-            if (_renderViewportIsTerrain) {
+            if (renderViewPortIsTerrain) {
                 SyncMapperCamWithMainCamera();
             }
 
@@ -259,20 +267,18 @@ namespace WorldMapStrategyKit {
                     frontiersMat.shader.maximumLOD = _currentCamera.orthographicSize < 2.2 ? 100 : (_currentCamera.orthographicSize < 8 ? 200 : 300);
                     provincesMat.shader.maximumLOD = _currentCamera.orthographicSize < 8 ? 200 : 300;
                 } else {
-                    if (!_enableFreeCamera && _allowUserZoom && (_zoomMinDistance > 0 || _zoomMaxDistance > 0)) {
+                    if (!_enableFreeCamera && (_allowUserZoom || flyToActive) && (_zoomMinDistance > 0 || _zoomMaxDistance > 0)) {
                         float minDistance = Mathf.Max(_currentCamera.nearClipPlane + 0.0001f, _zoomMinDistance * transform.localScale.y);
                         Plane plane = new Plane(transform.forward, transform.position);
                         lastDistanceFromCamera = Mathf.Abs(plane.GetDistanceToPoint(_currentCamera.transform.position));
                         if (lastDistanceFromCamera < minDistance) {
                             _currentCamera.transform.position = ClampDistanceToMap(prevCamPos, _currentCamera.transform.position, lastDistanceFromCamera, minDistance);
-                            //_currentCamera.transform.position += _currentCamera.transform.forward * (lastDistanceFromCamera - minDistance);
                             lastDistanceFromCamera = minDistance;
                             wheelAccel = 0;
                         } else {
                             float maxDistance = Mathf.Min(maxFrustumDistance, _zoomMaxDistance * transform.localScale.y);
                             if (lastDistanceFromCamera > maxDistance) {
                                 // Get intersection point from camera with plane
-                                //_currentCamera.transform.position += _currentCamera.transform.forward * (lastDistanceFromCamera - maxDistance);
                                 _currentCamera.transform.position = ClampDistanceToMap(prevCamPos, _currentCamera.transform.position, lastDistanceFromCamera, maxDistance);
                                 lastDistanceFromCamera = maxDistance;
                                 wheelAccel = 0;
@@ -280,28 +286,7 @@ namespace WorldMapStrategyKit {
                         }
                     }
                     // updates frontiers LOD
-                    if (_thickerFrontiers) {
-                        float fw = _frontiersWidth;
-                        if (_frontiersDynamicWidth && !_renderViewportIsTerrain) {
-                            frontiersMat.shader.maximumLOD = lastDistanceFromCamera < 25f ? 100 : 300;
-                            if (lastDistanceFromCamera > 20f && lastDistanceFromCamera < 25f) { // smooth transition
-                                float t = 1f - (lastDistanceFromCamera - 20f) / 5f;
-                                fw = Mathf.Max(0.05f, _frontiersWidth * t);
-                            }
-                        } else {
-                            frontiersMat.shader.maximumLOD = 100;
-                        }
-                        frontiersMat.SetFloat("_Thickness", fw);
-                    } else {
-                        int lod = 300;
-                        if (_frontiersDynamicWidth && !_renderViewportIsTerrain) {
-                            lod = lastDistanceFromCamera < 4.472f ? 100 : (lastDistanceFromCamera < 17.888f ? 200 : 300);
-                        }
-                        frontiersMat.shader.maximumLOD = lod;
-                    }
-
-                    // Provinces
-                    provincesMat.shader.maximumLOD = lastDistanceFromCamera < 14.0 ? 200 : 300;
+                    UpdateShadersLOD();
                 }
 
 
@@ -381,7 +366,7 @@ namespace WorldMapStrategyKit {
                 if (_showGrid) {
                     CheckGridRect();
                 }
-            } else if (!_renderViewportIsTerrain) {
+            } else if (!renderViewPortIsTerrain) {
                 // Map has not moved
                 if (--viewportColliderNeedsUpdate == 1) {
                     Mesh ms;
@@ -421,15 +406,19 @@ namespace WorldMapStrategyKit {
             }
         }
 
-
+        int fixedFrame;
         void FixedUpdate() {
-            FixedUpdateViewportObjectsLoop();
+            if (Time.frameCount != fixedFrame) {
+                fixedFrame = Time.frameCount;
+                UpdateViewportObjectsLoop();
+            }
         }
 
         void LateUpdate() {
-            updateDoneThisFrame = false;
 
-            if (_renderViewportIsTerrain) {
+            updateDoneThisFrame = false; 
+
+            if (renderViewPortIsTerrain) {
                 if (_enableFreeCamera || !Application.isPlaying) {
                     SyncMapperCamWithMainCamera(); // catch any camera change between Update and LateUpdate
                 }
@@ -451,6 +440,35 @@ namespace WorldMapStrategyKit {
             }
         }
 
+        void UpdateShadersLOD() {
+            if (isMiniMap) return;
+            if (frontiersMat != null) {
+                if (_thickerFrontiers) {
+                    float fw = _frontiersWidth;
+                    if (_frontiersDynamicWidth && !renderViewPortIsTerrain) {
+                        frontiersMat.shader.maximumLOD = lastDistanceFromCamera < 25f ? 100 : 300;
+                        if (lastDistanceFromCamera > 20f && lastDistanceFromCamera < 25f) { // smooth transition
+                            float t = 1f - (lastDistanceFromCamera - 20f) / 5f;
+                            fw = Mathf.Max(0.05f, _frontiersWidth * t);
+                        }
+                    } else {
+                        frontiersMat.shader.maximumLOD = 100;
+                    }
+                    frontiersMat.SetFloat("_Thickness", fw);
+                } else {
+                    int lod = 300;
+                    if (_frontiersDynamicWidth && !renderViewPortIsTerrain) {
+                        lod = lastDistanceFromCamera < 4.472f ? 100 : (lastDistanceFromCamera < 17.888f ? 200 : 300);
+                    }
+                    frontiersMat.shader.maximumLOD = lod;
+                }
+            }
+
+            // Provinces
+            if (provincesMat != null) {
+                provincesMat.shader.maximumLOD = lastDistanceFromCamera < 14.0 ? 200 : 300;
+            }
+        }
 
         Vector3 ClampDistanceToMap(Vector3 prevPos, Vector3 currPos, float currDistance, float clampDistance) {
 
@@ -471,6 +489,14 @@ namespace WorldMapStrategyKit {
             if (cam == null)
                 return;
 
+            if (_fitWindowHeight) {
+                float distance = GetFrustumDistance();
+                float camDist = GetCameraDistance();
+                if (camDist > distance) {
+                    cam.transform.position += cam.transform.forward * (camDist - distance);
+                }
+            }
+
             float limitLeft, limitRight;
             if (_fitWindowWidth) {
                 limitLeft = 0f;
@@ -488,7 +514,7 @@ namespace WorldMapStrategyKit {
             }
 
             Vector3 posEdge;
-            if (!_wrapHorizontally || _renderViewportIsTerrain) {
+            if (!_wrapHorizontally || renderViewPortIsTerrain) {
                 // Clamp right
                 posEdge = transform.TransformPoint(_windowRect.xMax, 0, 0);
                 pos = cam.WorldToViewportPoint(posEdge);
@@ -613,8 +639,8 @@ namespace WorldMapStrategyKit {
                             _currentCamera.transform.Translate((_currentCamera.transform.position - dest) * wheelAccel * _mouseWheelSensitivity * deltaTime, Space.World);
                         }
                         if (zoomDampingStart > 0) {
-                            float t = (Time.time - zoomDampingStart) / _zoomDampingDuration;
-                            wheelAccel = Mathf.Lerp(wheelAccel, 0, t); 
+                            float t = (Time.time - zoomDampingStart) / (_zoomDampingDuration + 0.001f);
+                            wheelAccel = Mathf.Lerp(wheelAccel, 0, t);
                         } else {
                             wheelAccel = 0;
                         }
@@ -655,7 +681,7 @@ namespace WorldMapStrategyKit {
                         Vector3 localPoint;
                         bool goodHit = GetLocalHitFromMousePos(out localPoint);
                         bool positionMoved = false;
-                        if (localPoint != lastMouseMapHitPos || !lastMouseMapHitPosGood) {
+                        if (localPoint.x != lastMouseMapHitPos.x || localPoint.y != lastMouseMapHitPos.y || !lastMouseMapHitPosGood) {
                             lastMouseMapHitPos = localPoint;
                             lastMouseMapHitPosGood = goodHit;
                             positionMoved = true;
@@ -822,7 +848,7 @@ namespace WorldMapStrategyKit {
                                     }
                                 }
                             } else {
-                                dragDirection = (Input.mousePosition - mouseDragStart);
+                                dragDirection = Input.mousePosition - mouseDragStart;
                                 dragDirection.x = ApplyDragThreshold(dragDirection.x);
                                 dragDirection.y = ApplyDragThreshold(dragDirection.y);
                                 if (dragDirection.x != 0 || dragDirection.y != 0) {
@@ -893,7 +919,7 @@ namespace WorldMapStrategyKit {
 
 
             if (dragDampingStart > 0 && !buttonLeftPressed) {
-                float t = 1f - (Time.time - dragDampingStart) / dragDampingDuration;
+                float t = 1f - (Time.time - dragDampingStart) / (_dragDampingDuration + 0.001f);
                 if (t < 0) {
                     t = 0;
                     dragDampingStart = 0f;
@@ -953,7 +979,7 @@ namespace WorldMapStrategyKit {
 #if UNITY_EDITOR
 #if UNITY_2018_3_OR_NEWER
             UnityEditor.PrefabInstanceStatus prefabInstanceStatus = UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject);
-            if (prefabInstanceStatus != UnityEditor.PrefabInstanceStatus.NotAPrefab) {
+            if (prefabInstanceStatus != UnityEditor.PrefabInstanceStatus.NotAPrefab && prefabInstanceStatus != UnityEditor.PrefabInstanceStatus.Disconnected) {
                 UnityEditor.PrefabUtility.UnpackPrefabInstance(gameObject, UnityEditor.PrefabUnpackMode.Completely, UnityEditor.InteractionMode.AutomatedAction);
             }
 #else
@@ -1077,7 +1103,7 @@ namespace WorldMapStrategyKit {
             if (_dontLoadGeodataAtStart) {
                 countries = new Country[0];
                 provinces = new Province[0];
-                cities = new List<City>();
+                cities = new City[0];
                 mountPoints = new List<MountPoint>();
             } else {
                 ReloadData();
@@ -1249,7 +1275,11 @@ namespace WorldMapStrategyKit {
                 if (disposalManager != null) {
                     disposalManager.MarkForDisposal(aux);
                 }
-                aux.hideFlags |= HideFlags.HideInHierarchy;
+#if UNITY_EDITOR
+                if (Drawing.hideInHierarchy) {
+                    aux.hideFlags |= HideFlags.HideInHierarchy;
+                }
+#endif
                 entityRoot = aux.transform;
                 entityRoot.SetParent(surfacesLayer.transform, false);
             }
@@ -1264,7 +1294,11 @@ namespace WorldMapStrategyKit {
                     if (disposalManager != null) {
                         disposalManager.MarkForDisposal(aux);
                     }
-                    aux.hideFlags |= HideFlags.HideInHierarchy;
+#if UNITY_EDITOR
+                    if (Drawing.hideInHierarchy) {
+                        aux.hideFlags |= HideFlags.HideInHierarchy;
+                    }
+#endif
                     category = aux.transform;
                     category.SetParent(entityRoot, false);
                 }
@@ -1304,8 +1338,9 @@ namespace WorldMapStrategyKit {
         /// </summary>
         /// <param name="forceReconstructFrontiers">If set to <c>true</c> frontiers will be recomputed.</param>
         public void Redraw(bool forceReconstructFrontiers) {
-            if (forceReconstructFrontiers)
+            if (forceReconstructFrontiers) {
                 needOptimizeFrontiers = true;
+            }
             Redraw();
         }
 
@@ -1431,7 +1466,7 @@ namespace WorldMapStrategyKit {
                 earthMat.name = materialName;
                 renderer.material = earthMat;
                 if (earthBlurred != null && RenderTexture.active != earthBlurred) {
-                    RenderTexture.DestroyImmediate(earthBlurred);
+                    DestroyImmediate(earthBlurred);
                     earthBlurred = null;
                 }
             }
@@ -1521,7 +1556,6 @@ namespace WorldMapStrategyKit {
 
             if (earthBlurred == null) {
                 earthBlurred = new RenderTexture(earthTex.width / 8, earthTex.height / 8, 0);
-                earthBlurred.hideFlags = HideFlags.DontSave;
             }
             Material blurMat = new Material(Shader.Find("WMSK/Blur5Tap"));
             if (blurMat != null) {
@@ -1548,6 +1582,32 @@ namespace WorldMapStrategyKit {
             return GetLocalHitFromScreenPos(mousePos, out localPoint, false);
         }
 
+        bool GetMapPosFromViewportPoint(ref Vector3 localPoint, bool nonWrap) {
+            Vector3 tl = _currentCamera.WorldToViewportPoint(transform.TransformPoint(new Vector3(-0.5f, 0.5f)));
+            Vector3 br = _currentCamera.WorldToViewportPoint(transform.TransformPoint(new Vector3(0.5f, -0.5f)));
+
+            if (nonWrap) {
+                localPoint.x = (localPoint.x - tl.x) / (br.x - tl.x) - 0.5f;
+                localPoint.y = (localPoint.y - br.y) / (tl.y - br.y) - 0.5f;
+                return true;
+            } else {
+                if (_wrapHorizontally) {    // enables wrapping mode location
+                    if (localPoint.x < tl.x)
+                        localPoint.x = br.x - (tl.x - localPoint.x);
+                    else if (localPoint.x > br.x) {
+                        localPoint.x = tl.x + localPoint.x - br.x;
+                    }
+                }
+                // Trace the ray from this position in mapper cam space
+                if (localPoint.x >= tl.x && localPoint.x <= br.x && localPoint.y >= br.y && localPoint.y <= tl.y) {
+                    localPoint.x = (localPoint.x - tl.x) / (br.x - tl.x) - 0.5f;
+                    localPoint.y = (localPoint.y - br.y) / (tl.y - br.y) - 0.5f;
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Check mouse hit on the map and return the local plane coordinate. Handles viewports.
         /// </summary>
@@ -1556,13 +1616,29 @@ namespace WorldMapStrategyKit {
         /// <param name="localPoint">Local point.</param>
         /// <param name="nonWrap">If true is passed, then a local hit is returned either on the real map plane or in a assumed wrapped plane next to it (effectively returning an x coordinate from -1.5..1.5</param>
         public bool GetLocalHitFromScreenPos(Vector3 screenPos, out Vector3 localPoint, bool nonWrap) {
+
+            if (viewportMode == ViewportMode.MapPanel) {
+                Vector2 pos;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(renderViewportUIPanel, screenPos, null, out pos);
+                pos = Rect.PointToNormalized(renderViewportUIPanel.rect, pos);
+                if (pos.x >= 0 && pos.x <= 1 && pos.y >= 0 && pos.y <= 1) {
+                    localPoint = pos;
+                    if (GetMapPosFromViewportPoint(ref localPoint, nonWrap)) {
+                        return true;
+                    }
+                }
+                localPoint = Misc.Vector3zero;
+                return false;
+            }
+
+
             Ray ray = cameraMain.ScreenPointToRay(screenPos);
             int hitCount = Physics.RaycastNonAlloc(ray.origin, ray.direction, tempHits, 2000, layerMask);
             if (hitCount > 0) {
                 for (int k = 0; k < hitCount; k++) {
                     // Hit the map?
                     if (tempHits[k].collider.gameObject == _renderViewport) {
-                        if (_renderViewportIsTerrain) {
+                        if (viewportMode == ViewportMode.Terrain) {
                             localPoint = tempHits[k].point; // hit on terrain in world space
                             float terrainCenterX = terrain.transform.position.x + terrain.terrainData.size.x * 0.5f;
                             float terrainCenterZ = terrain.transform.position.z + terrain.terrainData.size.z * 0.5f;
@@ -1578,28 +1654,10 @@ namespace WorldMapStrategyKit {
                             // Get plane in screen space
                             localPoint.x += 0.5f;   // convert to viewport coordinates
                             localPoint.y += 0.5f;
-                            Vector3 tl = _currentCamera.WorldToViewportPoint(transform.TransformPoint(new Vector3(-0.5f, 0.5f)));
-                            Vector3 br = _currentCamera.WorldToViewportPoint(transform.TransformPoint(new Vector3(0.5f, -0.5f)));
-
-                            if (nonWrap) {
-                                localPoint.x = (localPoint.x - tl.x) / (br.x - tl.x) - 0.5f;
-                                localPoint.y = (localPoint.y - br.y) / (tl.y - br.y) - 0.5f;
+                            if (GetMapPosFromViewportPoint(ref localPoint, nonWrap)) {
                                 return true;
-                            } else {
-                                if (_wrapHorizontally) {    // enables wrapping mode location
-                                    if (localPoint.x < tl.x)
-                                        localPoint.x = br.x - (tl.x - localPoint.x);
-                                    else if (localPoint.x > br.x) {
-                                        localPoint.x = tl.x + localPoint.x - br.x;
-                                    }
-                                }
-                                // Trace the ray from this position in mapper cam space
-                                if (localPoint.x >= tl.x && localPoint.x <= br.x && localPoint.y >= br.y && localPoint.y <= tl.y) {
-                                    localPoint.x = (localPoint.x - tl.x) / (br.x - tl.x) - 0.5f;
-                                    localPoint.y = (localPoint.y - br.y) / (tl.y - br.y) - 0.5f;
-                                    return true;
-                                }
                             }
+
                         } else
                             return true;
                     }
@@ -1643,7 +1701,7 @@ namespace WorldMapStrategyKit {
             }
 
             if (needCheckRegion) {
-                int countryCount = _countriesOrderedBySize.Count;
+                int countryCount = countriesOrderedBySize.Count;
                 for (int oc = 0; oc < countryCount; oc++) {
                     int c = _countriesOrderedBySize[oc];
                     Country country = _countries[c];
@@ -1682,7 +1740,7 @@ namespace WorldMapStrategyKit {
                             break;
                         }
                     }
-                    if (candidateCountryIndex >= 0) 
+                    if (candidateCountryIndex >= 0)
                         break;
                 }
                 // If no candidate country found, try looking into provinces directly just in case some province doesn't have a country region on the same area
@@ -1854,16 +1912,16 @@ namespace WorldMapStrategyKit {
             flyToCallZoomDistance = distance;
 
             // setup lerping parameters
-            flyToStartQuaternion = currentCamera.transform.rotation;
-            flyToStartLocation = _currentCamera.transform.position;
+            Camera cam = currentCamera;
+            if (cam == null) return;
+            flyToStartQuaternion = cam.transform.rotation;
+            flyToStartLocation = cam.transform.position;
             if (_enableFreeCamera) {
                 flyToEndQuaternion = flyToStartQuaternion;
-                flyToEndLocation = transform.TransformPoint(point) - _currentCamera.transform.forward * distance;
+                flyToEndLocation = transform.TransformPoint(point) - cam.transform.forward * distance;
             } else {
                 flyToEndQuaternion = transform.rotation;
-                //				flyToEndLocation = transform.TransformPoint (point) - transform.forward * distance;
-
-                Vector3 offset = _currentCamera.ViewportToWorldPoint(new Vector3(_flyToScreenCenter.x, _flyToScreenCenter.y, distance)) - _currentCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, distance));
+                Vector3 offset = cam.ViewportToWorldPoint(new Vector3(_flyToScreenCenter.x, _flyToScreenCenter.y, distance)) - cam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, distance));
                 flyToEndLocation = transform.TransformPoint(point) - transform.forward * distance - offset;
             }
             flyToDuration = duration;
@@ -1918,6 +1976,12 @@ namespace WorldMapStrategyKit {
                 }
             }
             return distance;
+        }
+
+
+        float GetCameraDistance() {
+            Plane plane = new Plane(-transform.forward, transform.position);
+            return plane.GetDistanceToPoint(currentCamera.transform.position);
         }
 
         /// <summary>
@@ -2009,7 +2073,7 @@ namespace WorldMapStrategyKit {
 
         // Updates flyTo params due to a change in viewport mode
         void RepositionCamera() {
-            if (_renderViewportIsTerrain) {
+            if (renderViewPortIsTerrain) {
                 Vector3 terrainCenter = terrain.GetPosition();
                 terrainCenter.x += terrain.terrainData.size.x * 0.5f;
                 terrainCenter.y += 250f;
@@ -2128,6 +2192,7 @@ namespace WorldMapStrategyKit {
                     d *= 10;
                 } else if (ch == '.') {
                     v = v / d;
+                    d = 1;
                 } else if (ch == '-') {
                     v = -v;
                 } else if (ch == ',') {
@@ -2332,29 +2397,25 @@ namespace WorldMapStrategyKit {
             if (t != null)
                 DestroyImmediate(t.gameObject);
             cursorLayerVLine = new GameObject("CursorV");
-            if (disposalManager != null)
-                disposalManager.MarkForDisposal(cursorLayerVLine); //.hideFlags = HideFlags.DontSave;
             cursorLayerVLine.transform.SetParent(transform, false);
             cursorLayerVLine.transform.localPosition = Misc.Vector3back * 0.00001f; // needed for minimap
             cursorLayerVLine.transform.localRotation = Quaternion.Euler(Misc.Vector3zero);
             cursorLayerVLine.layer = gameObject.layer;
             cursorLayerVLine.SetActive(_showCursor);
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = points;
-            mesh.SetIndices(indices, MeshTopology.Lines, 0);
-            mesh.RecalculateBounds();
-            if (disposalManager != null)
-                disposalManager.MarkForDisposal(mesh); //.hideFlags = HideFlags.DontSave;
+
+            Mesh meshH = new Mesh();
+            meshH.vertices = points;
+            meshH.SetIndices(indices, MeshTopology.Lines, 0);
+            meshH.RecalculateBounds();
 
             MeshFilter mf = cursorLayerVLine.AddComponent<MeshFilter>();
-            mf.sharedMesh = mesh;
+            mf.sharedMesh = meshH;
 
             MeshRenderer mr = cursorLayerVLine.AddComponent<MeshRenderer>();
             mr.receiveShadows = false;
             mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
             mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            //			mr.useLightProbes = false;
             mr.sharedMaterial = cursorMatV;
 
 
@@ -2366,31 +2427,26 @@ namespace WorldMapStrategyKit {
             if (t != null)
                 DestroyImmediate(t.gameObject);
             cursorLayerHLine = new GameObject("CursorH");
-            if (disposalManager != null)
-                disposalManager.MarkForDisposal(cursorLayerHLine); //.hideFlags = HideFlags.DontSave;
             cursorLayerHLine.transform.SetParent(transform, false);
             cursorLayerHLine.transform.localPosition = Misc.Vector3back * 0.00001f; // needed for minimap
             cursorLayerHLine.transform.localRotation = Quaternion.Euler(Misc.Vector3zero);
             cursorLayerHLine.layer = gameObject.layer;
             cursorLayerHLine.SetActive(_showCursor);
 
-            mesh = new Mesh();
-            mesh.vertices = points;
-            mesh.SetIndices(indices, MeshTopology.Lines, 0);
-            mesh.RecalculateBounds();
-            if (disposalManager != null)
-                disposalManager.MarkForDisposal(mesh); //.hideFlags = HideFlags.DontSave;
+
+            Mesh meshV = new Mesh();
+            meshV.vertices = points;
+            meshV.SetIndices(indices, MeshTopology.Lines, 0);
+            meshV.RecalculateBounds();
 
             mf = cursorLayerHLine.AddComponent<MeshFilter>();
-            mf.sharedMesh = mesh;
+            mf.sharedMesh = meshV;
 
             mr = cursorLayerHLine.AddComponent<MeshRenderer>();
             mr.receiveShadows = false;
             mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
             mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            //			mr.useLightProbes = false;
             mr.sharedMaterial = cursorMatH;
-
 
         }
 

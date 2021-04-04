@@ -420,7 +420,7 @@ namespace WorldMapStrategyKit {
 
 		[SerializeField]
 		Color
-			_provinceLabelsShadowColor = Color.black;
+			_provinceLabelsShadowColor = new Color(0,0,0,0.5f);
 
 		/// <summary>
 		/// Color for province labels.
@@ -620,7 +620,7 @@ namespace WorldMapStrategyKit {
 				int cc0, cc1;
 				if (countryIndex < 0) {
 					cc0 = 0;
-					cc1 = _countriesOrderedBySize.Count;
+					cc1 = countriesOrderedBySize.Count;
 				} else {
 					cc0 = countryIndex;
 					cc1 = countryIndex + 1;
@@ -1100,10 +1100,27 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// Colorize all regions of specified province/state by index in the global provinces collection.
 		/// </summary>
-		public void ToggleProvinceSurface (int provinceIndex, bool visible, Color color) {
+		public void ToggleProvinceSurface (int provinceIndex, bool visible, Color color = default(Color)) {
 			ToggleProvinceSurface (provinceIndex, visible, color, null, Misc.Vector2one, Misc.Vector2zero, 0, false);
 		}
 
+		/// <summary>
+		/// Colorize all regions of specified province/state by index in the global provinces collection.
+		/// </summary>
+		public void ToggleProvinceSurface(Province province, bool visible, Color color = default(Color)) {
+			int provinceIndex = GetProvinceIndex(province);
+			if (provinceIndex < 0) return;
+			ToggleProvinceSurface(provinceIndex, visible, color);
+		}
+
+		/// <summary>
+		/// Colorize all regions of specified province and assings a texture to main region with options.
+		/// </summary>
+		public void ToggleProvinceSurface(Province province, bool visible, Color color, Texture2D texture, bool applyTextureToAllRegions = false) {
+			int provinceIndex = GetProvinceIndex(province);
+			if (provinceIndex < 0) return;
+			ToggleProvinceSurface(provinceIndex, visible, color, texture, applyTextureToAllRegions);
+		}
 
 		/// <summary>
 		/// Colorize all regions of specified province and assings a texture to main region with options.
@@ -1190,8 +1207,8 @@ namespace WorldMapStrategyKit {
 				for (int cr = 0; cr < province.regions.Count; cr++) {
 					Region region = province.regions [cr];
 					int cacheIndex = GetCacheIndexForProvinceRegion (c, cr);
-					GameObject surf = null;
-					if (surfaces.TryGetValue (cacheIndex, out surf)) {
+                    GameObject surf;
+                    if (surfaces.TryGetValue (cacheIndex, out surf)) {
 						if (surf == null) {
 							surfaces.Remove (cacheIndex);
 						} else {
@@ -1782,7 +1799,7 @@ namespace WorldMapStrategyKit {
 				}
 			}
 
-			int cityCount = cities.Count;
+			int cityCount = cities.Length;
 			for (int k = 0; k < cityCount; k++) {
 				if (_cities [k].countryIndex == sourceProvince.countryIndex && _cities [k].province.Equals (sourceProvince.name))
 					_cities [k].province = targetProvince.name;
@@ -1944,15 +1961,15 @@ namespace WorldMapStrategyKit {
 
 
 		/// <summary>
-		/// Returns the colored surface (game object) of a province. If it has not been colored yet, it will return null.
+		/// Returns the colored surface (game object) of a province. If it has not been colored yet, it will generate it.
 		/// </summary>
 		public GameObject GetProvinceRegionSurfaceGameObject (int provinceIndex, int regionIndex) {
 			int cacheIndex = GetCacheIndexForProvinceRegion (provinceIndex, regionIndex);
-			GameObject obj = null;
-			if (surfaces.TryGetValue (cacheIndex, out obj)) {
-				return obj;
+			GameObject surf;
+			if (!surfaces.TryGetValue(cacheIndex, out surf)) {
+				surf = ToggleProvinceRegionSurface(provinceIndex, regionIndex, true, Misc.ColorClear);
 			}
-			return null;
+			return surf;
 		}
 
 
@@ -2208,7 +2225,7 @@ namespace WorldMapStrategyKit {
 			}
 
 			// Remap cities & mount points
-			int citiesCount = cities.Count;
+			int citiesCount = cities.Length;
 			List<City> newCities = new List<City> (citiesCount);
 			for (int c = 0; c < citiesCount; c++) {
 				int pi = GetProvinceIndex (_cities [c].unity2DLocation);
@@ -2225,7 +2242,7 @@ namespace WorldMapStrategyKit {
 					}
 				}
 			}
-			cities = newCities;
+			cities = newCities.ToArray();
 
 			int mountpointsCount = mountPoints.Count;
 			List<MountPoint> newMountpoints = new List<MountPoint> (mountpointsCount);

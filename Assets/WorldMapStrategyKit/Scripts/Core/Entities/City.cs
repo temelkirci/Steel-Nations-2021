@@ -1,114 +1,113 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace WorldMapStrategyKit
-{
-	public partial class City: IExtendableAttribute
-    {
-        int cityLevel;
-        List<Building> buildingListInCity;
-        List<GameObjectAnimator> divisionsInCity = new List<GameObjectAnimator>();
+namespace WorldMapStrategyKit {
 
-        GameObjectAnimator dockyard;
+	public enum CITY_CLASS : byte {
+		CITY = 1,
+		REGION_CAPITAL = 2,
+		COUNTRY_CAPITAL = 4
+	}
 
-        int constructibleDockyardArea = 0;
+	public partial class City: IExtendableAttribute {
 
-        public void SetDockyard(GameObjectAnimator GOA)
-        {
-            dockyard = GOA;
-        }
-        public GameObjectAnimator GetDockyard()
-        {
-            return dockyard;
-        }
+        Dictionary<BUILDING_TYPE, int> buildingListInCity = null;
+        Dictionary<BUILDING_TYPE, int> buildingsInConstruction = null;
+        List<GameObjectAnimator> divisionsInCity = null;
+        GameObjectAnimator dockyard = null;
 
-        public int GetConstructibleDockyardAreaNumber()
+        Dictionary<MINERAL_TYPE, int> mineralReserves = null;
+
+        int cityIncome;
+        float cityLevel;
+        int constructibleDockyardArea;
+        int unemployed;
+
+        public float CityLevel
         {
-            return constructibleDockyardArea;
-        }
-        public void SetConstructibleDockyardAreaNumber(int number)
-        {
-            constructibleDockyardArea = number;
+            get { return cityLevel; }
+            set { cityLevel = value; }
         }
 
-        public void CalculateCityLevel()
+        public int CityIncome
         {
-            cityLevel = (int)((GetPopulation() * 100) / WMSK.instance.GetCountry(countryIndex).GetAvailableManpower());
+            get { return cityIncome; }
+            set { cityIncome = value; }
         }
 
-        public int GetCityLevel()
+        public int GetFactoryIncome()
         {
-            return cityLevel;
+            return GetBuildingNumber(BUILDING_TYPE.FACTORY) * BuildingManager.Instance.GetBuildingIncomeMonthly(BUILDING_TYPE.FACTORY);
         }
 
-        public void SetReserveResources(int oil, int iron, int steel, int aluminium, int uranium)
+        public int GetTradePortIncome()
         {
-            attrib["Oil"] = oil;
-            attrib["Iron"] = iron;
-            attrib["Steel"] = steel;
-            attrib["Aluminium"] = aluminium;
-            attrib["Uranium"] = uranium;
+            return GetBuildingNumber(BUILDING_TYPE.FACTORY) * BuildingManager.Instance.GetBuildingIncomeMonthly(BUILDING_TYPE.FACTORY);
         }
 
-        public List<Building> GetAllBuildings()
+        public int Unemployed
+        {
+            get { return unemployed; }
+            set { unemployed = value; }
+        }
+
+        public int GetMineralResources(MINERAL_TYPE mineralType)
+        {
+            int number = 0;
+            mineralReserves.TryGetValue(mineralType, out number);
+            return number;
+        }
+
+        public void SetMineralResources(MINERAL_TYPE mineralType, int number)
+        {
+            if (mineralReserves == null)
+                mineralReserves = new Dictionary<MINERAL_TYPE, int>();
+            mineralReserves.Add(mineralType, number);
+        }
+
+        public GameObjectAnimator Dockyard
+        {
+            get { return dockyard; }
+            set { dockyard = value; }
+        }
+
+        public int Constructible_Dockyard_Area
+        {
+            get { return constructibleDockyardArea; }
+            set { constructibleDockyardArea = value; }
+        }
+
+        public void StartConstructionInCity(BUILDING_TYPE building)
+        {
+            int buildingTime = BuildingManager.Instance.GetBuildingByBuildingType(building).constructionTime;
+            buildingsInConstruction.Add(building, buildingTime);
+        }
+
+        public Dictionary<BUILDING_TYPE, int> GetAllBuildingsInConstruction()
+        {
+            return buildingsInConstruction;
+        }
+
+        public int GetBuildingNumber(BUILDING_TYPE buildingType)
+        {
+            int number = 0;
+            if (buildingListInCity == null)
+                buildingListInCity = new Dictionary<BUILDING_TYPE, int>();
+
+            buildingListInCity.TryGetValue(buildingType, out number);
+
+            return number;
+        }
+        public Dictionary<BUILDING_TYPE, int> GetAllBuildings()
         {
             return buildingListInCity;
         }
-
-        public int GetOilReserves()
+        public void AddBuilding(BUILDING_TYPE building, int number)
         {
-            return attrib["Oil"];
-        }
-        public int GetIronReserves()
-        {
-            return attrib["Iron"];
-        }
-        public int GetSteelReserves()
-        {
-            return attrib["Steel"];
-        }
-        public int GetAluminiumReserves()
-        {
-            return attrib["Aluminium"];
-        }
-        public int GetUraniumReserves()
-        {
-            return attrib["Uranium"];
-        }
-
-        public void SetPopulation(int pop)
-        {
-            attrib["Population"] = pop;
-        }
-        public int GetPopulation()
-        {
-            return attrib["Population"];
-        }
-        public void AddPopulation(int pop)
-        {
-            attrib["Population"] += pop;
-        }
-
-        public void StartConstruction(Building building)
-        {
-            if (building.leftConstructionDay == 0)
-            {
-                building.leftConstructionDay = building.constructionTime;
-            }
-        }
-
-        public void AddDivisionToCity(GameObjectAnimator division)
-        {
-            if (divisionsInCity.Count < GetCurrentBuildingNumberInCity(BUILDING_TYPE.GARRISON))
-            {
-                division.visible = false;
-                divisionsInCity.Add(division);
-            }
-            else
-            {
-                // you have reached maximum garrison in city
-            }
-        }
+            if (buildingListInCity == null)
+                buildingListInCity = new Dictionary<BUILDING_TYPE, int>();
+            buildingListInCity.Add(building, number);
+        }     
 
         public List<GameObjectAnimator> GetAllDivisionsInCity()
         {
@@ -121,148 +120,48 @@ namespace WorldMapStrategyKit
             divisionsInCity.Remove(division);
         }
 
-        public void UpdateConstructionInCity()
-        {
-            foreach (Building building in buildingListInCity)
-            {
-                if (building.leftConstructionDay == 1)
-                {
-                    building.currentBuildingInCity = building.currentBuildingInCity + 1;
-                    building.leftConstructionDay = 0;
-
-                    //Debug.Log(building.GetHashCode() + " -> Construction is completed");
-                }
-
-                if(building.leftConstructionDay > 1)
-                {
-                    building.leftConstructionDay = building.leftConstructionDay - 1;
-                    //Debug.Log(building.GetHashCode() + " -> Left day for Construction is " + building.leftConstructionDay);
-                }
-            }
-        }
-
-        public void CreateBuilding(BUILDING_TYPE tempBuildingType, int tempCurrentBuilding, int tempMaxBuilding)
-        {
-            Building building = CityInfoPanel.Instance.CreateBuildingByType(tempBuildingType);
-
-            building.maxBuildingInCity = tempMaxBuilding;
-            building.currentBuildingInCity = tempCurrentBuilding;
-
-            buildingListInCity.Add(building);
-        }
-
-        public void SetCurrentBuildingNumberInCity(BUILDING_TYPE buildingType, int number)
-        {
-            foreach (Building building in buildingListInCity)
-            {
-                if (building.buildingType == buildingType)
-                {
-                    building.currentBuildingInCity = number;
-                    break;
-                }
-            }
-        }
-
-        public void SetMaxBuildingNumberInCity(BUILDING_TYPE buildingType, int number)
-        {
-            foreach (Building building in buildingListInCity)
-            {
-                if (building.buildingType == buildingType)
-                {
-                    building.maxBuildingInCity = number;
-                    break;
-                }
-            }
-        }
-
-        public int GetCurrentBuildingNumberInCity(BUILDING_TYPE buildingType)
-        {
-            foreach (Building building in buildingListInCity)
-            {
-                if (building.buildingType == buildingType)
-                {
-                    return building.currentBuildingInCity;
-                }
-            }
-
-            return 0;
-        }
-
-        public int GetMaxBuildingNumberInCity(BUILDING_TYPE buildingType)
-        {
-            foreach (Building building in buildingListInCity)
-            {
-                if (building.buildingType == buildingType)
-                {
-                    return building.maxBuildingInCity;
-                }
-            }
-
-            return 0;
-        }
-
-        public Building GetBuildingByNameInCity(string buildingName)
-        {
-            foreach (Building building in buildingListInCity)
-            {
-                if (building.buildingName == buildingName)
-                {
-                    return building;
-                }
-            }
-
-            return null;
-        }
+        
 
         /// <summary>
         /// An unique identifier useful to persist data between sessions. Used by serialization.
         /// </summary>
         public int uniqueId { get; set; }
 
-		/// <summary>
-		/// Use this property to add/retrieve custom attributes for this country
-		/// </summary>
-		public JSONObject attrib { get; set; }
+        /// <summary>
+        /// Use this property to add/retrieve custom attributes for this country
+        /// </summary>
+        public JSONObject attrib { get; set; }
 
-		public string name;
-		public string province;
-		public int countryIndex;
-		public Vector2 unity2DLocation;
-		public int population;
-		public CITY_CLASS cityClass;
+        public string name;
+        public string province;
+        public int countryIndex;
+        public Vector2 unity2DLocation;
+        public int population;
+        public CITY_CLASS cityClass;
 
-        public void SaveCity()
+        /// <summary>
+        /// Set by DrawCities method.
+        /// </summary>
+        public bool isVisible;
+
+        public City(string name, string province, int countryIndex, int population, Vector2 location, CITY_CLASS cityClass, int uniqueId)
         {
-
-        }
-
-		/// <summary>
-		/// Set by DrawCities method.
-		/// </summary>
-		public bool isVisible;
-
-		public City(string name, string province, int countryIndex, int population, Vector2 location, CITY_CLASS cityClass, int uniqueId) {
-			this.name = name;
-			this.province = province;
-			this.countryIndex = countryIndex;
-			this.population = population;
-			this.unity2DLocation = location;
-			this.cityClass = cityClass;
-			this.uniqueId = uniqueId;
+            this.name = name;
+            this.province = province;
+            this.countryIndex = countryIndex;
+            this.population = population;
+            this.unity2DLocation = location;
+            this.cityClass = cityClass;
+            this.uniqueId = uniqueId;
             this.attrib = new JSONObject();
-
-            this.attrib["Population"] = population;
-
-            cityLevel = 0;
-
-            buildingListInCity = new List<Building>();
         }
 
-    public City Clone() {
-			City c = new City(name, province, countryIndex, population, unity2DLocation, cityClass, uniqueId);
-			c.attrib = new JSONObject();
-			c.attrib.Absorb(attrib);
-			return c;
-		}
+        public City Clone()
+        {
+            City c = new City(name, province, countryIndex, population, unity2DLocation, cityClass, uniqueId);
+            c.attrib = new JSONObject();
+            c.attrib.Absorb(attrib);
+            return c;
+        }
     }
 }

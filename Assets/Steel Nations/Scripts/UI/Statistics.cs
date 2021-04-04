@@ -42,12 +42,12 @@ namespace WorldMapStrategyKit
                     GameObject temp = Instantiate(economyItem, economyContent.transform);
                     temp.gameObject.transform.GetChild(3).transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
                     temp.gameObject.transform.GetChild(3).transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = country.name;
-                    temp.gameObject.transform.GetChild(3).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.GetBudget().ToString())) + "M";
-                    temp.gameObject.transform.GetChild(3).transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.attrib["Previous GDP"])) + "M";
-                    temp.gameObject.transform.GetChild(3).transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.attrib["Previous Export"])) + "M";
-                    temp.gameObject.transform.GetChild(3).transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.attrib["Previous Import"])) + "M";
-                    temp.gameObject.transform.GetChild(3).transform.GetChild(6).GetComponent<TextMeshProUGUI>().text = country.attrib["Trade Ratio"];
-                    temp.gameObject.transform.GetChild(3).transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.attrib["Debt"])) + "M";
+                    temp.gameObject.transform.GetChild(3).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.Budget.ToString())) + "M";
+                    temp.gameObject.transform.GetChild(3).transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.Current_GDP.ToString())) + "M";
+                    temp.gameObject.transform.GetChild(3).transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.Individual_Tax.ToString())) + "M";
+                    temp.gameObject.transform.GetChild(3).transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.Previous_GDP_per_Capita.ToString())) + "M";
+                    temp.gameObject.transform.GetChild(3).transform.GetChild(6).GetComponent<TextMeshProUGUI>().text = CountryManager.Instance.GetTotalTradeBonus(country).ToString();
+                    temp.gameObject.transform.GetChild(3).transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(country.Debt.ToString())) + "M";
                 }
             }
         }

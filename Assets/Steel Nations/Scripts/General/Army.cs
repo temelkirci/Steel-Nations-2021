@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace WorldMapStrategyKit 
 {
@@ -12,7 +11,10 @@ namespace WorldMapStrategyKit
         int soldierNumber;
         int defenseBudget;
 
-        // add genelkurmay başkanı
+        List<GameObjectAnimator> allDivisionsInArmy = new List<GameObjectAnimator>();
+
+        Person chiefOfGeneralStaff;
+        Country country;
 
         public Army()
         {
@@ -22,38 +24,55 @@ namespace WorldMapStrategyKit
 
             defenseBudget = 0;
             soldierNumber = 0;
+        }
 
-            CreateArmy();
+        public Country Country
+        {
+            get { return country; }
+            set { country = value; }
         }
 
         #region Defense Budget
-        public int GetDefenseBudget()
+        public int Defense_Budget
         {
-            return defenseBudget;
-        }
-        public void SetDefenseBudget(int defenseBudget)
-        {
-            this.defenseBudget = defenseBudget;
+            get { return defenseBudget; }
+            set { defenseBudget = value; }
         }
         #endregion
 
         #region Division
         public List<GameObjectAnimator> GetAllDivisionInArmy()
         {
-            List<GameObjectAnimator> allDivisionsInArmy = new List<GameObjectAnimator>();
-
-            allDivisionsInArmy.Clear();
-
-            foreach (GameObjectAnimator tempDivision in GetLandForces().GetAllDivisionInMilitaryForces())
+            foreach (GameObjectAnimator tempDivision in GetLandForces().GetAllDivisionInMilitaryForces().ToArray())
                 allDivisionsInArmy.Add(tempDivision);
-            foreach (GameObjectAnimator tempDivision in GetAirForces().GetAllDivisionInMilitaryForces())
+            foreach (GameObjectAnimator tempDivision in GetAirForces().GetAllDivisionInMilitaryForces().ToArray())
                 allDivisionsInArmy.Add(tempDivision);
-            foreach (GameObjectAnimator tempDivision in GetNavalForces().GetAllDivisionInMilitaryForces())
+            foreach (GameObjectAnimator tempDivision in GetNavalForces().GetAllDivisionInMilitaryForces().ToArray())
                 allDivisionsInArmy.Add(tempDivision);
 
             return allDivisionsInArmy;
         }
+
+        public void RemoveDivisionFromArmy(GameObjectAnimator division)
+        {
+            if (GetLandForces().GetAllDivisionInMilitaryForces().Contains(division))
+                GetLandForces().RemoveDivisionInMilitaryForces(division);
+
+            if (GetAirForces().GetAllDivisionInMilitaryForces().Contains(division))
+                GetAirForces().RemoveDivisionInMilitaryForces(division);
+
+            if (GetNavalForces().GetAllDivisionInMilitaryForces().Contains(division))
+                GetNavalForces().RemoveDivisionInMilitaryForces(division);
+        }
         #endregion
+
+        public GameObjectAnimator GetDivisionGOA(Division division)
+        {
+            foreach (GameObjectAnimator GOA in allDivisionsInArmy)
+                if (GOA.GetDivision() == division)
+                    return GOA;
+            return null;
+        }
 
         public int GetArmyPower()
         {
@@ -74,6 +93,8 @@ namespace WorldMapStrategyKit
 
         public void CreateArmy()
         {
+            chiefOfGeneralStaff = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty, country);
+
             CreateLandForces();
             CreateAirForces();
             CreateNavalForces();
@@ -83,6 +104,8 @@ namespace WorldMapStrategyKit
         {
             landForces = new MilitaryForces();
             landForces.SetMilitaryForcesType(MILITARY_FORCES_TYPE.LAND_FORCES);
+
+            landForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty, country);
         }
 
         public void CreateAirForces()
@@ -90,12 +113,48 @@ namespace WorldMapStrategyKit
             airForces = new MilitaryForces();
             airForces.SetMilitaryForcesType(MILITARY_FORCES_TYPE.AIR_FORCES);
 
+            airForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty, country);
         }
 
         public void CreateNavalForces()
         {
             navalForces = new MilitaryForces();
             navalForces.SetMilitaryForcesType(MILITARY_FORCES_TYPE.NAVAL_FORCES);
+
+            navalForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty, country);
+        }
+
+        public void AddWeaponToMilitaryForces(WeaponTemplate template, int amount)
+        {
+            Weapon weapon = new Weapon();
+            weapon.weaponTemplateID = template.weaponID;
+            weapon.weaponLeftHealth = template.weaponDefense;
+
+            if (template.weaponTerrainType == 1)
+                for(int i=0; i<amount; i++)
+                    GetLandForces().AddWeaponToMilitaryForces(weapon);
+
+            if (template.weaponTerrainType == 2)
+                for (int i = 0; i < amount; i++)
+                    GetNavalForces().AddWeaponToMilitaryForces(weapon);
+
+            if (template.weaponTerrainType == 3 || template.weaponTerrainType == 4)
+                for (int i = 0; i < amount; i++)
+                    GetAirForces().AddWeaponToMilitaryForces(weapon);
+        }
+        public void RemoveWeaponFromMilitaryForcesByWeaponTemplate(WeaponTemplate weaponTemplate, int amount)
+        {
+            if (weaponTemplate.weaponTerrainType == 1)
+                for (int i = 0; i < amount; i++)
+                    GetLandForces().RemoveWeaponFromMilitaryForcesByWeaponID(weaponTemplate.weaponID);
+
+            if (weaponTemplate.weaponTerrainType == 2)
+                for (int i = 0; i < amount; i++)
+                    GetNavalForces().RemoveWeaponFromMilitaryForcesByWeaponID(weaponTemplate.weaponID);
+
+            if (weaponTemplate.weaponTerrainType == 3 || weaponTemplate.weaponTerrainType == 4)
+                for (int i = 0; i < amount; i++)
+                    GetAirForces().RemoveWeaponFromMilitaryForcesByWeaponID(weaponTemplate.weaponID);
         }
 
         public MilitaryForces GetLandForces()
@@ -134,22 +193,32 @@ namespace WorldMapStrategyKit
 
             return expense;
         }
-
+        
         public Dictionary<WeaponTemplate, int> GetAllWeaponsInArmyInventory()
         {
             Dictionary<WeaponTemplate, int> allUnitsInArmyInventory = new Dictionary<WeaponTemplate, int>(); // weapons in inventory
 
             foreach (WeaponTemplate weapon in WeaponManager.Instance.GetWeaponTemplateList())
             {
-                if(weapon.weaponTerrainType == 1)
-                    GetLandForces().GetWeaponNumberInMilitaryForcesInventory(weapon.weaponID);
+                int number = 0;
+                if (weapon.weaponTerrainType == 1)
+                {
+                    number = GetLandForces().GetWeaponNumberInMilitaryForcesInventory(weapon.weaponID);
+                }
                 if (weapon.weaponTerrainType == 2)
-                    GetNavalForces().GetWeaponNumberInMilitaryForcesInventory(weapon.weaponID);
+                {
+                    number = GetNavalForces().GetWeaponNumberInMilitaryForcesInventory(weapon.weaponID);
+                }
                 if (weapon.weaponTerrainType == 3 || weapon.weaponTerrainType == 4)
-                    GetAirForces().GetWeaponNumberInMilitaryForcesInventory(weapon.weaponID);
+                {
+                    number = GetAirForces().GetWeaponNumberInMilitaryForcesInventory(weapon.weaponID);
+                }
+
+                allUnitsInArmyInventory.Add(weapon, number);
             }
 
             return allUnitsInArmyInventory;
         }
+
     }
 }

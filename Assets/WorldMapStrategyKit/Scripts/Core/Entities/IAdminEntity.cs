@@ -56,7 +56,7 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// Used by pathfinding in Country or Province modes. Cost for crossing a country/province. Defaults to 1.
 		/// </summary>
-		int crossCost { get; set; }
+		float crossCost { get; set; }
 
 		/// <summary>
 		/// Custom array of countries/provinces that could be reached from this country. Useful for Country/Province path-finding.

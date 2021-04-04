@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using TMPro;
+using DuloGames.UI;
 
 namespace WorldMapStrategyKit
 {
@@ -13,9 +13,8 @@ namespace WorldMapStrategyKit
             get { return instance; }
         }
 
-        List<Building> buildingList = new List<Building>();
-
         WMSK map;
+
         /// <summary>
         /// City Panel
         /// </summary>
@@ -43,16 +42,12 @@ namespace WorldMapStrategyKit
         public TextMeshProUGUI uraniumInCity;
         public TextMeshProUGUI aluminiumInCity;        
 
-        //public GameObject missileStars;
         public GameObject cityImage;
 
         public void Start()
-        {
-            map = WMSK.instance;
-            
+        {            
             instance = this;
-
-            HideAllTabs();
+            map = WMSK.instance;
         }
 
         public void HideAllTabs()
@@ -84,23 +79,22 @@ namespace WorldMapStrategyKit
             if (city == null)
                 return;
 
+            cityName.text = city.name;
+
             cityPanel.gameObject.SetActive(true);
             cityMenu.gameObject.SetActive(false);
 
             HideAllTabs();
 
             cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(0).gameObject.SetActive(true);
-            cityPanel.transform.GetChild(3).transform.GetChild(0).gameObject.SetActive(true);
+            cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(0).GetComponent<UITab>().isOn = true;
 
             string countryName = map.GetCityCountryName(city);
             Country country = map.GetCountry(countryName);
 
             cityImage.GetComponent<RawImage>().texture = country.GetCountryFlag();
 
-            // Update text labels
-            cityName.text = city.name;
-
-            manpower.text = string.Format("{0:#,0}", float.Parse(city.GetPopulation().ToString()));
+            manpower.text = string.Format("{0:#,0}", float.Parse(city.population.ToString()));
             province.text = city.province;
 
             if (city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
@@ -111,11 +105,6 @@ namespace WorldMapStrategyKit
                 cityType.text = "Small City";
         }
 
-        public void AddBuilding(Building building)
-        {
-            buildingList.Add(building);
-        }
-
         public void ShowEconomy()
         {
             City city = GameEventHandler.Instance.GetPlayer().GetSelectedCity();
@@ -123,32 +112,34 @@ namespace WorldMapStrategyKit
             if (city == null)
                 return;
 
+            cityName.text = city.name;
+
             cityPanel.gameObject.SetActive(true);
             cityMenu.gameObject.SetActive(false);
 
             HideAllTabs();
 
             cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(1).gameObject.SetActive(true);
-            cityPanel.transform.GetChild(3).transform.GetChild(1).gameObject.SetActive(true);
+            cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(1).GetComponent<UITab>().isOn = true;
 
             foreach (Transform child in mineralContent.transform)
             {
                 Destroy(child.gameObject);
             }
 
-            oilInCity.text = city.GetOilReserves().ToString();
-            ironInCity.text = city.GetIronReserves().ToString();
-            uraniumInCity.text = city.GetUraniumReserves().ToString();
-            steelInCity.text = city.GetSteelReserves().ToString();
-            aluminiumInCity.text = city.GetAluminiumReserves().ToString();
+            oilInCity.text = city.GetMineralResources(MINERAL_TYPE.OIL).ToString();
+            ironInCity.text = city.GetMineralResources(MINERAL_TYPE.IRON).ToString();
+            uraniumInCity.text = city.GetMineralResources(MINERAL_TYPE.URANIUM).ToString();
+            steelInCity.text = city.GetMineralResources(MINERAL_TYPE.STEEL).ToString();
+            aluminiumInCity.text = city.GetMineralResources(MINERAL_TYPE.ALUMINIUM).ToString();
 
-            foreach (Building building in city.GetAllBuildings())
+            foreach (var building in city.GetAllBuildings())
             {
                 GameObject temp = null;
 
-                if (building.buildingType == BUILDING_TYPE.MINERAL_FACTORY ||
-                    building.buildingType == BUILDING_TYPE.OIL_RAFINERY ||
-                    building.buildingType == BUILDING_TYPE.NUCLEAR_FACILITY)
+                if (building.Key == BUILDING_TYPE.MINERAL_FACTORY ||
+                    building.Key == BUILDING_TYPE.OIL_RAFINERY ||
+                    building.Key == BUILDING_TYPE.NUCLEAR_FACILITY)
                 {
                     temp = Instantiate(buildingItem, mineralContent.transform);
                 }
@@ -156,23 +147,25 @@ namespace WorldMapStrategyKit
 
                 if (temp != null)
                 {
-                    temp.gameObject.name = building.buildingName;
-                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.buildingName;
-                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = Resources.Load("buildings/" + building.buildingName) as Texture2D;
+                    Building build = BuildingManager.Instance.GetBuildingByBuildingType(building.Key);
+
+                    temp.gameObject.name = build.buildingName;
+                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = build.buildingName;
+                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = build.buildingImage;
                     temp.gameObject.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(delegate
                     {
-                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().GetBudget() >= building.constructionCost)
-                            city.StartConstruction(building);
+                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= build.constructionCost)
+                            city.StartConstructionInCity(building.Key);
                     });
 
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.currentBuildingInCity.ToString();
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = building.maxBuildingInCity.ToString();
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.Value.ToString();
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = build.maxBuildingInCity.ToString();
 
-                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = building.incomeMonthly.ToString();
-                    temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.expenseMonthly.ToString();
+                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = build.incomeMonthly.ToString();
+                    //temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.Key.expenseMonthly.ToString();
 
-                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = building.constructionCost.ToString();
-                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = building.constructionTime.ToString() + " days";
+                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = build.constructionCost.ToString();
+                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = build.constructionTime.ToString() + " days";
 
                     temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 0.0f;
                 }
@@ -181,54 +174,60 @@ namespace WorldMapStrategyKit
 
         public void ShowBuildings()
         {
-            if (GameEventHandler.Instance.GetPlayer().GetSelectedCity() == null)
+            City city = GameEventHandler.Instance.GetPlayer().GetSelectedCity();
+
+            if (city == null)
                 return;
+
+            cityName.text = city.name;
 
             cityPanel.gameObject.SetActive(true);
             cityMenu.gameObject.SetActive(false);
 
             HideAllTabs();
 
-            cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(1).gameObject.SetActive(true);
-            cityPanel.transform.GetChild(3).transform.GetChild(1).gameObject.SetActive(true);
+            cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(2).gameObject.SetActive(true);
+            cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(2).GetComponent<UITab>().isOn = true;
 
             foreach (Transform child in buildingContent.transform)
             {
                 Destroy(child.gameObject);
             }
 
-            foreach (Building building in GameEventHandler.Instance.GetPlayer().GetSelectedCity().GetAllBuildings())
+            foreach (var building in city.GetAllBuildings())
             {
                 GameObject temp = null;
 
-                if (building.buildingType == BUILDING_TYPE.HOSPITAL ||
-                    building.buildingType == BUILDING_TYPE.FACTORY ||
-                    building.buildingType == BUILDING_TYPE.TRADE_PORT ||
-                    building.buildingType == BUILDING_TYPE.UNIVERSITY ||
-                    building.buildingType == BUILDING_TYPE.MILITARY_FACTORY)
+                if (building.Key == BUILDING_TYPE.HOSPITAL ||
+                    building.Key == BUILDING_TYPE.FACTORY ||
+                    building.Key == BUILDING_TYPE.TRADE_PORT ||
+                    building.Key == BUILDING_TYPE.UNIVERSITY ||
+                    building.Key == BUILDING_TYPE.MILITARY_FACTORY)
                 {
                     temp = Instantiate(buildingItem, buildingContent.transform);
                 }
 
                 if (temp != null)
                 {
-                    temp.gameObject.name = building.buildingName;
-                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.buildingName;
-                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = Resources.Load("buildings/" + building.buildingName) as Texture2D;
+                    Building build = BuildingManager.Instance.GetBuildingByBuildingType(building.Key);
+
+                    temp.gameObject.name = build.buildingName;
+                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = build.buildingName;
+                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = build.buildingImage;
                     temp.gameObject.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(delegate
                     {
-                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().GetBudget() >= building.constructionCost)
-                            GameEventHandler.Instance.GetPlayer().GetSelectedCity().StartConstruction(building);
+                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= build.constructionCost)
+                            GameEventHandler.Instance.GetPlayer().GetSelectedCity().StartConstructionInCity(building.Key);
                     });
 
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.currentBuildingInCity.ToString();
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = building.maxBuildingInCity.ToString();
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.Value.ToString();
+                    //temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = building.maxBuildingInCity.ToString();
 
-                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = building.incomeMonthly.ToString();
-                    temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.expenseMonthly.ToString();
+                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = build.incomeMonthly.ToString();
+                    //temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.Key.expenseMonthly.ToString();
 
-                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = building.constructionCost.ToString();
-                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = building.constructionTime.ToString() + " days";
+                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = build.constructionCost.ToString();
+                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = build.constructionTime.ToString() + " days";
 
                     temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 0.0f;
                 }
@@ -242,13 +241,15 @@ namespace WorldMapStrategyKit
             if (city == null)
                 return;
 
+            cityName.text = city.name;
+
             cityPanel.gameObject.SetActive(true);
             cityMenu.gameObject.SetActive(false);
 
             HideAllTabs();
 
-            cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(2).gameObject.SetActive(true);
-            cityPanel.transform.GetChild(3).transform.GetChild(2).gameObject.SetActive(true);
+            cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(3).gameObject.SetActive(true);
+            cityPanel.transform.GetChild(2).transform.GetChild(0).transform.GetChild(3).GetComponent<UITab>().isOn = true;
 
             foreach (Transform child in garrisonContent.transform)
             {
@@ -259,47 +260,50 @@ namespace WorldMapStrategyKit
                 Destroy(child.gameObject);
             }
 
-            foreach (Building building in city.GetAllBuildings())
+            foreach (var building in city.GetAllBuildings())
             {
                 GameObject temp = null;
 
-                if (building.buildingType == BUILDING_TYPE.GARRISON ||
-                    building.buildingType == BUILDING_TYPE.MILITARY_BASE)
+                if (building.Key == BUILDING_TYPE.GARRISON ||
+                    building.Key == BUILDING_TYPE.MILITARY_BASE)
                 {
                     temp = Instantiate(buildingItem, garrisonContent.transform);
                 }
 
                 if (temp != null)
                 {
-                    temp.gameObject.name = building.buildingName;
-                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.buildingName;
-                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = Resources.Load("buildings/" + building.buildingName) as Texture2D;
+                    Building build = BuildingManager.Instance.GetBuildingByBuildingType(building.Key);
+
+                    temp.gameObject.name = build.buildingName;
+                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = build.buildingName;
+                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = build.buildingImage;
                     temp.gameObject.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(delegate
                     {
-                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().GetBudget() >= building.constructionCost)
-                            city.StartConstruction(building);
+                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= build.constructionCost)
+                            city.StartConstructionInCity(building.Key);
                     });
 
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.currentBuildingInCity.ToString();
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = building.maxBuildingInCity.ToString();
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.Value.ToString();
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = build.maxBuildingInCity.ToString();
 
-                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = building.incomeMonthly.ToString();
-                    temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.expenseMonthly.ToString();
+                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = build.incomeMonthly.ToString();
+                    //temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.Key.expenseMonthly.ToString();
 
-                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = building.constructionCost.ToString();
-                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = building.constructionTime.ToString() + " days";
+                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = build.constructionCost.ToString();
+                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = build.constructionTime.ToString() + " days";
 
                     temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 0.0f;
                 }
             }
 
-            if(city.GetCurrentBuildingNumberInCity(BUILDING_TYPE.GARRISON) > 0)
+            if(city.GetBuildingNumber(BUILDING_TYPE.GARRISON) > 0)
             {
                 foreach (GameObjectAnimator divison in city.GetAllDivisionsInCity())
                 {
                     GameObject temp = Instantiate(divisionItem, divisionContent.transform);
 
                     temp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = divison.GetDivision().divisionName;
+                    temp.transform.GetChild(1).GetComponent<RawImage>().texture = divison.GetDivision().GetDivisionIcon();
 
                     temp.gameObject.transform.GetChild(4).GetComponent<Button>().onClick.AddListener(delegate
                     {
@@ -314,80 +318,38 @@ namespace WorldMapStrategyKit
         {
             if (cityPanel.gameObject.activeSelf)
             {
-                foreach (Building building in GameEventHandler.Instance.GetPlayer().GetSelectedCity().GetAllBuildings())
+                foreach (var building in GameEventHandler.Instance.GetPlayer().GetSelectedCity().GetAllBuildings())
                 {
                     GameObject temp = null;
+                    Building build = BuildingManager.Instance.GetBuildingByBuildingType(building.Key);
 
                     foreach (Transform child in buildingContent.transform)
                     {
-                        if(child.gameObject.name == building.buildingName)
+                        if(child.gameObject.name == build.buildingName)
                             temp = child.gameObject;
-
                     }
                     foreach (Transform child in garrisonContent.transform)
                     {
-                        if (child.gameObject.name == building.buildingName)
+                        if (child.gameObject.name == build.buildingName)
                             temp = child.gameObject;
                     }
                     foreach (Transform child in mineralContent.transform)
                     {
-                        if (child.gameObject.name == building.buildingName)
+                        if (child.gameObject.name == build.buildingName)
                             temp = child.gameObject;
                     }
 
                     if(temp != null)
                     {
-                        if(building.leftConstructionDay == 0)
+                        if(build.leftConstructionDay == 0)
                             temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 0;
                         else
-                            temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 100.0f - (building.leftConstructionDay * 100.0f) / building.constructionTime;
+                            temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 100.0f - (build.leftConstructionDay * 100.0f) / build.constructionTime;
                     }
 
                 }
             }
         }
         
-        public Building CreateBuildingByType(BUILDING_TYPE buildingType)
-        {
-            foreach (Building building in buildingList)
-            {
-                if (building.buildingType == buildingType)
-                { 
-                    return building.Clone();
-                }
-            }
-            return null;
-        }
-
-        public BUILDING_TYPE GetBuildingTypeByBuildingName(string buildingName)
-        {
-            if (buildingName == "Airport")
-                return BUILDING_TYPE.AIRPORT;
-            if (buildingName == "Trade Port")
-                return BUILDING_TYPE.TRADE_PORT;
-            if (buildingName == "Military Factory")
-                return BUILDING_TYPE.MILITARY_FACTORY;
-            if (buildingName == "University")
-                return BUILDING_TYPE.UNIVERSITY;
-            if (buildingName == "Nuclear Facility")
-                return BUILDING_TYPE.NUCLEAR_FACILITY;
-            if (buildingName == "Hospital")
-                return BUILDING_TYPE.HOSPITAL;
-            if (buildingName == "Oil Rafinery")
-                return BUILDING_TYPE.OIL_RAFINERY;
-            if (buildingName == "Factory")
-                return BUILDING_TYPE.FACTORY;
-            if (buildingName == "Mineral Factory")
-                return BUILDING_TYPE.MINERAL_FACTORY;
-            if (buildingName == "Garrison")
-                return BUILDING_TYPE.GARRISON;
-            if (buildingName == "Dockyard")
-                return BUILDING_TYPE.DOCKYARD;
-            if (buildingName == "Military Base")
-                return BUILDING_TYPE.MILITARY_BASE;
-
-            return BUILDING_TYPE.NONE;
-        }
-
     }
 }

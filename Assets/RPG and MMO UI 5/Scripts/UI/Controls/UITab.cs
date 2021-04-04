@@ -107,8 +107,7 @@ namespace DuloGames.UI
             set { this.m_TextColors = value; }
         }
 
-
-        private Selectable.SelectionState m_CurrentState = Selectable.SelectionState.Normal;
+		private Selectable.SelectionState m_CurrentState = Selectable.SelectionState.Normal;
 		
 		// Tween controls
 		[NonSerialized] private readonly TweenRunner<ColorTween> m_ColorTweenRunner;

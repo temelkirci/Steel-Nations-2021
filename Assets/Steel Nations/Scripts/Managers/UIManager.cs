@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 namespace WorldMapStrategyKit
 {
@@ -12,6 +13,8 @@ namespace WorldMapStrategyKit
             get { return instance; }
         }
 
+        WMSK map;
+
         public Button economyButton;
         public Button researchButton;
         public Button productionButton;
@@ -21,7 +24,6 @@ namespace WorldMapStrategyKit
         public Button agentButton;
         public Button statisticsButton;
 
-        WMSK map;
         public GameObject newsGO;
         public GameObject pauseGO;
 
@@ -49,11 +51,8 @@ namespace WorldMapStrategyKit
             EconomyPanel.Instance.UpdateEconomyPanel();
             ResearchPanel.Instance.ShowResearchProgress();
             ProductionPanel.Instance.ShowProductionProgress();
-            // update organization panel
-            // update policy panel
-            // update army panel
-            // update agent panel
-            // update statistics panel
+            DockyardPanel.Instance.ShowProductionProgress();
+            CityInfoPanel.Instance.UpdateAllBuildings();
         }
 
         public void PauseGame()
@@ -63,15 +62,20 @@ namespace WorldMapStrategyKit
             pauseGO.SetActive(map.paused);
         }
 
-        public void News(string news)
+        public void ExitToMainMenu()
+        {
+            SceneManager.LoadScene("Menu Scene");
+        }
+
+        public void PublicNotification(string news)
         {
             newsGO.SetActive(true);
             newsGO.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = news;
 
-            Invoke("HideNews", 5);
+            Invoke("HidePublicNotification", 5);
         }
 
-        void HideNews()
+        void HidePublicNotification()
         {
             newsGO.SetActive(false);
         }

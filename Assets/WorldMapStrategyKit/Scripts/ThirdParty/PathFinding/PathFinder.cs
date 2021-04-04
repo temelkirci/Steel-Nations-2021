@@ -15,54 +15,54 @@ using System.Collections.Generic;
 
 namespace WorldMapStrategyKit.PathFinding {
 
-				public struct PathFinderNode {
-								public int F;
-								public int G;
-								public int H;
-								// f = gone + heuristic
-								public int X;
-								public int Y;
-								public int PX;
-								// Parent
-								public int PY;
-				}
+    public struct PathFinderNode {
+        public float F;
+        public float G;
+        public float H;
+        // f = gone + heuristic
+        public int X;
+        public int Y;
+        public int PX;
+        // Parent
+        public int PY;
+    }
 
-				struct PathFinderNodeFast {
-								public int F;
-								// f = gone + heuristic
-								public int G;
-								public ushort PX;
-								// Parent
-								public ushort PY;
-								public byte Status;
-				}
+    struct PathFinderNodeFast {
+        public float F;
+        // f = gone + heuristic
+        public float G;
+        public ushort PX;
+        // Parent
+        public ushort PY;
+        public byte Status;
+    }
 
-				public struct PathFinderNodeAdmin {
-								public int F;
-								// f = gone + heuristic
-								public int G;
-								public int Index;
-								public int Parent;
-								public byte Status;
-				}
+    public struct PathFinderNodeAdmin {
+        public float F;
+        // f = gone + heuristic
+        public float G;
+        public int Index;
+        public int Parent;
+        public byte Status;
+    }
 
-				enum PathFinderNodeType {
-								Start = 1,
-								End = 2,
-								Open = 4,
-								Close = 8,
-								Current = 16,
-								Path = 32
-				}
+    enum PathFinderNodeType {
+        Start = 1,
+        End = 2,
+        Open = 4,
+        Close = 8,
+        Current = 16,
+        Path = 32
+    }
 
-				public enum HeuristicFormula {
-								Manhattan = 1,
-								MaxDXDY = 2,
-								DiagonalShortCut = 3,
-								Euclidean = 4,
-								EuclideanNoSQR = 5,
-								Custom1 = 6
-				}
+    public enum HeuristicFormula {
+        Manhattan = 1,
+        MaxDXDY = 2,
+        DiagonalShortCut = 3,
+        Euclidean = 4,
+        EuclideanNoSQR = 5,
+        Custom1 = 6
+    }
 
 
 }

@@ -10,6 +10,8 @@ namespace DuloGames.UI
         Character = 5,
         Inventory = 6,
         SpellBook = 7,
-        Dialog = 8
+        Dialog = 8,
+        QuestLog = 9,
+        Vendor = 10
 	}
 }

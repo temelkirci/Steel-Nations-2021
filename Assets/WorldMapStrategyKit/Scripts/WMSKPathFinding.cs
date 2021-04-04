@@ -10,9 +10,9 @@ using System.Text;
 using WorldMapStrategyKit.PathFinding;
 
 namespace WorldMapStrategyKit {
-	public delegate int OnPathFindingCrossPosition (Vector2 position);
-	public delegate int OnPathFindingCrossAdminEntity (int entityIndex);
-	public delegate int OnPathFindingCrossCell (int cellIndex);
+	public delegate float OnPathFindingCrossPosition (Vector2 position);
+	public delegate float OnPathFindingCrossAdminEntity (int entityIndex);
+	public delegate float OnPathFindingCrossCell (int cellIndex);
 
 	public partial class WMSK : MonoBehaviour {
 
@@ -57,13 +57,13 @@ namespace WorldMapStrategyKit {
 		}
 
 		[SerializeField]
-		int
+		float
 			_pathFindingMaxCost = 200000;
 
 		/// <summary>
 		/// The maximum search cost of the path finding execution.
 		/// </summary>
-		public int pathFindingMaxCost {
+		public float pathFindingMaxCost {
 			get { return _pathFindingMaxCost; }
 			set {
 				if (value != _pathFindingMaxCost) {
@@ -118,7 +118,7 @@ namespace WorldMapStrategyKit {
 
 		[SerializeField]
 		bool
-			_pathFindingEnableCustomRouteMatrix = false;
+			_pathFindingEnableCustomRouteMatrix;
 
 		/// <summary>
 		/// Enables user-defined location crossing costs for path finding engine.
@@ -131,9 +131,9 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// Returns a copy of the current custom route matrix or set it.
 		/// </summary>
-		public int[] pathFindingCustomRouteMatrix {
+		public float[] pathFindingCustomRouteMatrix {
 			get { 
-				int[] copy = new int[customRouteMatrix.Length];
+				float[] copy = new float[customRouteMatrix.Length];
 				Array.Copy (_customRouteMatrix, copy, _customRouteMatrix.Length);
 				return copy;
 			}
@@ -206,7 +206,7 @@ namespace WorldMapStrategyKit {
 		/// <param name="minAltitude">Minimum altitude (0..1)</param>
 		/// <param name="maxAltitude">Maximum altutude (0..1)</param>
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxCost</param>
-		public List<Vector2> FindRoute (string startCityName, string startCountryName, string endCityName, string endCountryName, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float minAltitude = 0, float maxAltitude = 1f, int maxSearchCost = -1, int maxSearchSteps = -1) {
+		public List<Vector2> FindRoute (string startCityName, string startCountryName, string endCityName, string endCountryName, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float minAltitude = 0, float maxAltitude = 1f, float maxSearchCost = -1, int maxSearchSteps = -1) {
 			City city1 = GetCity (startCityName, startCountryName);
 			City city2 = GetCity (endCityName, endCountryName);
 			if (city1 == null || city2 == null)
@@ -223,7 +223,7 @@ namespace WorldMapStrategyKit {
 		/// <param name="minAltitude">Minimum altitude (0..1)</param>
 		/// <param name="maxAltitude">Maximum altutude (0..1)</param>
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxCost</param>
-		public List<Vector2> FindRoute (City startCity, City endCity, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float minAltitude = 0, float maxAltitude = 1f, int maxSearchCost = -1, int maxSearchSteps = -1) {
+		public List<Vector2> FindRoute (City startCity, City endCity, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float minAltitude = 0, float maxAltitude = 1f, float maxSearchCost = -1, int maxSearchSteps = -1) {
 			if (startCity == null || endCity == null)
 				return null;
 			return FindRoute (startCity.unity2DLocation, endCity.unity2DLocation, terrainCapability, minAltitude, maxAltitude, maxSearchCost, maxSearchSteps);
@@ -239,8 +239,8 @@ namespace WorldMapStrategyKit {
 		/// <param name="minAltitude">Minimum altitude (0..1)</param>
 		/// <param name="maxAltitude">Maximum altutude (0..1)</param>
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxCost</param>
-		public List<Vector2> FindRoute (Vector2 startPosition, Vector2 endPosition, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float minAltitude = 0, float maxAltitude = 1f, int maxSearchCost = -1, int maxSearchSteps = -1) {
-			int dummy;
+		public List<Vector2> FindRoute (Vector2 startPosition, Vector2 endPosition, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float minAltitude = 0, float maxAltitude = 1f, float maxSearchCost = -1, int maxSearchSteps = -1) {
+			float dummy;
 			return FindRoute (startPosition, endPosition, out dummy, terrainCapability, minAltitude, maxAltitude, maxSearchCost, maxSearchSteps);
 		}
 
@@ -255,7 +255,7 @@ namespace WorldMapStrategyKit {
 		/// <param name="minAltitude">Minimum altitude (0..1)</param>
 		/// <param name="maxAltitude">Maximum altutude (0..1)</param>
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxCost</param>
-		public List<Vector2> FindRoute (Vector2 startPosition, Vector2 endPosition, out int totalCost, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float minAltitude = 0, float maxAltitude = 1f, int maxSearchCost = -1, int maxSearchSteps = -1) {
+		public List<Vector2> FindRoute (Vector2 startPosition, Vector2 endPosition, out float totalCost, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float minAltitude = 0, float maxAltitude = 1f, float maxSearchCost = -1, int maxSearchSteps = -1) {
 			ComputeRouteMatrix (terrainCapability, minAltitude, maxAltitude);
 			totalCost = 0;
 			Point startingPoint = new Point ((int)((startPosition.x + 0.5f) * EARTH_ROUTE_SPACE_WIDTH), 
@@ -375,13 +375,14 @@ namespace WorldMapStrategyKit {
 		/// </summary>
 		public void PathFindingCustomRouteMatrixReset () {
 			if (_customRouteMatrix == null || _customRouteMatrix.Length == 0) {
-				_customRouteMatrix = new int[EARTH_ROUTE_SPACE_WIDTH * EARTH_ROUTE_SPACE_HEIGHT];
+				_customRouteMatrix = new float[EARTH_ROUTE_SPACE_WIDTH * EARTH_ROUTE_SPACE_HEIGHT];
 			}
 			for (int k = 0; k < _customRouteMatrix.Length; k++) {
 				_customRouteMatrix [k] = -1;
 			}
-			if (_pathFindingVisualizeMatrixCost)
-				UpdatePathfindingMatrixCostTexture ();
+			if (_pathFindingVisualizeMatrixCost) {
+				UpdatePathfindingMatrixCostTexture();
+			}
 		}
 
 		/// <summary>
@@ -542,7 +543,7 @@ namespace WorldMapStrategyKit {
 		/// <param name="startingCountryIndex">The index for the starting country</param>
 		/// <param name="destinationCountryIndex">The index for the destination country</param>
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxCost</param>
-		public List<int> FindRoute (Country startingCountry, Country destinationCountry, int maxSearchCost = -1) {
+		public List<int> FindRoute (Country startingCountry, Country destinationCountry, float maxSearchCost = -1) {
 			int startingCountryIndex = GetCountryIndex (startingCountry);
 			int destinationCountryIndex = GetCountryIndex (destinationCountry);
 			if (destinationCountryIndex == startingCountryIndex || destinationCountryIndex < 0 || startingCountryIndex < 0)
@@ -580,7 +581,7 @@ namespace WorldMapStrategyKit {
 		/// <param name="startingProvince">The index for the starting province</param>
 		/// <param name="destinationProvince">The index for the destination province</param>
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxCost</param>
-		public List<int> FindRoute (Province startingProvince, Province destinationProvince, int maxSearchCost = -1) {
+		public List<int> FindRoute (Province startingProvince, Province destinationProvince, float maxSearchCost = -1) {
 			int startingProvinceIndex = GetProvinceIndex (startingProvince);
 			int destinationProvinceIndex = GetProvinceIndex (destinationProvince);
 			if (destinationProvinceIndex == startingProvinceIndex || destinationProvinceIndex < 0 || startingProvinceIndex < 0)
@@ -627,7 +628,7 @@ namespace WorldMapStrategyKit {
 				for (int c = 0; c < cc; c++) {
 					copy [c] = _cellsCosts [c];
 					if (copy [c].crossCost != null) {
-						int[] y = new int[6];
+						float[] y = new float[6];
 						Array.Copy (copy [c].crossCost, y, 6);
 						copy [c].crossCost = y;
 					}
@@ -653,8 +654,8 @@ namespace WorldMapStrategyKit {
 		/// <param name="terrainCapability">The allowed terrains for the route. Any/Ground/Water</param>
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxCost</param>
 		/// <param name="maxSearchSteps">Maximum number of steps for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxSteps</param>
-		public List<int> FindRoute (Cell startingCell, Cell destinationCell, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, int maxSearchCost = -1, int maxSearchSteps = -1) {
-			int dummy;
+		public List<int> FindRoute (Cell startingCell, Cell destinationCell, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any, float maxSearchCost = -1, int maxSearchSteps = -1) {
+			float dummy;
 			return FindRoute (startingCell, destinationCell, out dummy, terrainCapability, maxSearchCost, maxSearchSteps);
 		}
 
@@ -668,7 +669,7 @@ namespace WorldMapStrategyKit {
 		/// <param name="maxSearchCost">Maximum search cost for the path finding algorithm. A value of -1 will use the global default defined by pathFindingMaxCost</param>
 		/// <param name="minAltitude">Minimum terrain altitude allowed</param>
 		/// <param name="minAltitude">Maximum terrain altitude allowed</param>
-		public List<int> FindRoute (Cell startingCell, Cell destinationCell, out int totalCost, TERRAIN_CAPABILITY terrainCapability, int maxSearchCost = -1, float minAltitude = 0f, float maxAltitude = 1f, int maxSearchSteps = -1) {
+		public List<int> FindRoute (Cell startingCell, Cell destinationCell, out float totalCost, TERRAIN_CAPABILITY terrainCapability, float maxSearchCost = -1, float minAltitude = 0f, float maxAltitude = 1f, int maxSearchSteps = -1) {
 			ComputeCellsCostsInfo ();
 			totalCost = 0;
 			int startingCellIndex = GetCellIndex (startingCell);
@@ -774,7 +775,7 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// Gets the extra cost for crossing a given cell side
 		/// </summary>
-		public int PathFindingCellGetSideCost (int cellIndex, CELL_SIDE side) {
+		public float PathFindingCellGetSideCost (int cellIndex, CELL_SIDE side) {
 			if (_cellsCosts == null || cellIndex < 0 || cellIndex >= _cellsCosts.Length)
 				return -1;
 			return _cellsCosts [cellIndex].crossCost [(int)side];

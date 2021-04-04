@@ -1,6 +1,7 @@
 ﻿Shader "WMSK/Unlit Country Frontiers Geom" {
  
 Properties {
+	_MainTex ("Base (RGB)", 2D) = "white" {}
     _Color ("Color", Color) = (0,1,0,1)
     _Thickness ("Thickness", Float) = 0.05
 }

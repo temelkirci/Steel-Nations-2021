@@ -146,12 +146,12 @@ namespace WorldMapStrategyKit {
 
 		public int undoRegionsDummyFlag;
 
-		List<List<City>> _undoCitiesList;
+		List<City[]> _undoCitiesList;
 
-		List<List<City>> undoCitiesList {
+		List<City[]> undoCitiesList {
 			get {
 				if (_undoCitiesList == null)
-					_undoCitiesList = new List<List<City>> ();
+					_undoCitiesList = new List<City[]> ();
 				return _undoCitiesList;
 			}
 		}
@@ -227,7 +227,7 @@ namespace WorldMapStrategyKit {
 		public void NewMap () {
 			ClearSelection ();
 			map.mountPoints.Clear ();
-			map.cities = new List<City> ();
+			map.cities = new City[0];
 			map.provinces = new Province[0];
 			map.countries = new Country[0];
 			countryChanges = true;
@@ -584,12 +584,13 @@ namespace WorldMapStrategyKit {
 		}
 
 		public void UndoCitiesInsertAtCurrentPos () {
-			List<City> cities = new List<City> (map.cities.Count);
-			for (int k = 0; k < map.cities.Count; k++)
-				cities.Add (map.cities [k].Clone ());
+			List<City> cities = new List<City> (map.cities.Length);
+			for (int k = 0; k < map.cities.Length; k++) {
+				cities.Add(map.cities[k].Clone());
+			}
 			if (undoCitiesDummyFlag > undoCitiesList.Count)
 				undoCitiesDummyFlag = undoCitiesList.Count;
-			undoCitiesList.Insert (undoCitiesDummyFlag, cities);
+			undoCitiesList.Insert (undoCitiesDummyFlag, cities.ToArray());
 		}
 
 		public void UndoMountPointsPush () {
@@ -620,7 +621,7 @@ namespace WorldMapStrategyKit {
 				if (undoCitiesDummyFlag >= undoCitiesList.Count) {
 					undoCitiesDummyFlag = undoCitiesList.Count - 2;
 				}
-				List<City> savedCities = undoCitiesList [undoCitiesDummyFlag];
+				City[] savedCities = undoCitiesList [undoCitiesDummyFlag];
 				RestoreCities (savedCities);
 			}
 			if (undoMountPointsList != null && undoMountPointsList.Count >= 2) {
@@ -642,7 +643,7 @@ namespace WorldMapStrategyKit {
 			RedrawFrontiers ();
 		}
 
-		void RestoreCities (List<City> savedCities) {
+		void RestoreCities (City[] savedCities) {
 			map.cities = savedCities;
 			lastCityCount = -1;
 			ReloadCityNames ();
@@ -703,7 +704,7 @@ namespace WorldMapStrategyKit {
 		}
 
 		void SplitCities (int sourceCountryIndex, Region regionOtherCountry) {
-			int cityCount = map.cities.Count;
+			int cityCount = map.cities.Length;
 			int targetCountryIndex = map.GetCountryIndex ((Country)regionOtherCountry.entity);
 			for (int k = 0; k < cityCount; k++) {
 				City city = map.cities [k];

@@ -46,6 +46,11 @@ namespace WorldMapStrategyKit
             instance = this;
         }
 
+        public void Init()
+        {
+
+        }
+
         public void HidePanel()
         {
             productionPanel.SetActive(false);
@@ -86,6 +91,8 @@ namespace WorldMapStrategyKit
 
                 if(temp != null)
                 {
+                    temp.GetComponent<WeaponProductionItem>().SetWeapon(weaponTemplate);
+
                     int researchSpeedRotio = 10;// GameEventHandler.Instance.GetPlayer().GetMyCountry().GetProductionSpeed();
 
                     int weaponProductionTime = (weaponTemplate.weaponProductionTime - ( (weaponTemplate.weaponProductionTime * researchSpeedRotio ) / 100 ) );
@@ -106,16 +113,9 @@ namespace WorldMapStrategyKit
                     entry2.callback.AddListener((data) => { HideInfoPanel(); });
                     trigger.triggers.Add(entry2);
 
-                    temp.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(i);
-
-                    temp.gameObject.transform.GetChild(1).transform.GetChild(5).GetComponent<Button>().onClick.AddListener(() => GameEventHandler.Instance.GetPlayer().GetSelectedCountry().ProductWeapon(weaponTemplate));
-
-                    temp.gameObject.transform.GetChild(1).transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", weaponTemplate.weaponCost.ToString()) + " M";
-                    temp.gameObject.transform.GetChild(1).transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = weaponProductionTime.ToString() + " day";
-
                     for(int index=0; index < weaponTemplate.weaponLevel; index++)
                     {
-                        Instantiate(starSprite, temp.gameObject.transform.GetChild(1).transform.GetChild(6).transform);
+                        Instantiate(starSprite, temp.GetComponent<WeaponProductionItem>().generation.transform);
                     }
                 }
             }
@@ -150,78 +150,17 @@ namespace WorldMapStrategyKit
         {
             if (productionPanel.activeSelf == true)
             {
-                foreach (Production production in GameEventHandler.Instance.GetPlayer().GetMyCountry().GetAllProductionsInProgress())
+                foreach (Transform go in landContent.transform)
                 {
-                    if (production.techWeapon.weaponTerrainType == 1)
-                    {
-                        foreach (Transform go in landContent.transform)
-                        {
-                            Slider slider = go.transform.GetChild(1).transform.GetChild(3).transform.GetChild(2).GetComponent<Slider>();
-                            Text progress = go.transform.GetChild(1).transform.GetChild(3).transform.GetChild(3).transform.GetChild(0).GetComponent<Text>();
-                            Text weaponName = go.gameObject.transform.GetChild(1).transform.GetChild(2).GetComponent<Text>();
-
-                            if ((production.techWeapon.weaponName + " " + production.techWeapon.weaponLevel) == weaponName.text)
-                            {
-                                if (production.leftDays > 0)
-                                {
-                                    slider.value = 100f - (production.leftDays * 100f) / production.techWeapon.weaponProductionTime;
-                                }
-                                else
-                                {
-                                    slider.value = 100f;
-                                }
-
-                                progress.text = slider.value.ToString();
-                            }
-                        }
-                    }
-
-                    else if (production.techWeapon.weaponTerrainType == 3)
-                    {
-                        foreach (Transform go in airContent.transform)
-                        {
-                            Slider slider = go.transform.GetChild(1).transform.GetChild(3).transform.GetChild(2).GetComponent<Slider>();
-                            Text progress = go.transform.GetChild(1).transform.GetChild(3).transform.GetChild(3).transform.GetChild(0).GetComponent<Text>();
-                            Text weaponName = go.gameObject.transform.GetChild(1).transform.GetChild(2).GetComponent<Text>();
-
-                            if ((production.techWeapon.weaponName + " " + production.techWeapon.weaponLevel) == weaponName.text)
-                            {
-                                if (production.leftDays > 0)
-                                {
-                                    slider.value = 100f - (production.leftDays * 100f) / production.techWeapon.weaponProductionTime;
-                                }
-                                else
-                                {
-                                    slider.value = 100f;
-                                }
-
-                                progress.text = slider.value.ToString();
-                            }
-                        }
-                    }
-                    else if (production.techWeapon.weaponTerrainType == 4)
-                    {
-                        foreach (Transform go in missileContent.transform)
-                        {
-                            Slider slider = go.transform.GetChild(1).transform.GetChild(3).transform.GetChild(2).GetComponent<Slider>();
-                            Text progress = go.transform.GetChild(1).transform.GetChild(3).transform.GetChild(3).transform.GetChild(0).GetComponent<Text>();
-                            Text weaponName = go.gameObject.transform.GetChild(1).transform.GetChild(2).GetComponent<Text>();
-
-                            if ((production.techWeapon.weaponName + " " + production.techWeapon.weaponLevel) == weaponName.text)
-                            {
-                                if (production.leftDays > 0)
-                                {
-                                    slider.value = 100f - (production.leftDays * 100f) / production.techWeapon.weaponProductionTime;
-                                }
-                                else
-                                {
-                                    slider.value = 100f;
-                                }
-
-                                progress.text = slider.value.ToString();
-                            }
-                        }
-                    }
+                    go.GetComponent<WeaponProductionItem>().UpdateProduction();
+                }
+                foreach (Transform go in airContent.transform)
+                {
+                    go.GetComponent<WeaponProductionItem>().UpdateProduction();
+                }
+                foreach (Transform go in missileContent.transform)
+                {
+                    go.GetComponent<WeaponProductionItem>().UpdateProduction();
                 }
             }
         }

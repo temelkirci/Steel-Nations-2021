@@ -23,18 +23,28 @@ namespace WorldMapStrategyKit
             map = WMSK.instance;
             instance = this;
 
-            map.OnCountryClick += OnCountryClick;
             startButton.GetComponent<Button>().onClick.AddListener(delegate { ChooseCountry(); });
         }
 
-        void OnCountryClick(int countryIndex, int regionIndex, int buttonIndex)
+        public Country GetSelectedCountry()
+        {
+            return selectedCountry;
+        }
+        public void OnCountryClick(int countryIndex, int regionIndex, int buttonIndex)
         {
             if (buttonIndex == 0 && GameEventHandler.Instance.IsGameStarted() == false )
             {
                 selectedCountry = map.GetCountry(countryIndex);
 
-                GovernmentPanel.Instance.ShowSelectCountryPanel(selectedCountry);
-                startButton.SetActive(true);
+                if(GameSettings.Instance.GetSelectedGameMode() == GameSettings.GAME_MODE.QUIZ)
+                {
+                    QuizManager.Instance.ShowQuizGovernmentPanel();
+                }
+                else
+                {
+                    GovernmentPanel.Instance.ShowSelectCountryPanel(selectedCountry);
+                    startButton.SetActive(true);
+                }
             }
         }
 
@@ -54,9 +64,7 @@ namespace WorldMapStrategyKit
             map.OnCountryClick -= OnCountryClick;
 
             GovernmentPanel.Instance.HidePanel();
-
-            foreach(Country country in CountryManager.Instance.GetAllCountriesWhichHaveArmy())
-                DivisionManager.Instance.CreateDivisions(country);
+            QuizManager.Instance.HidePanel();
 
             GameEventHandler.Instance.GameStarted();
         }

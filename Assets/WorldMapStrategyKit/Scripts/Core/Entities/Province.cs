@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace WorldMapStrategyKit {
-	public partial class Province: AdminEntity
-    {
-        int[] _neighbours;
+	public partial class Province: AdminEntity {
+			
+		int[] _neighbours;
 
 		/// <summary>
 		/// Custom array of provinces that could be reached from this province. Useful for Province path-finding.
@@ -61,7 +61,7 @@ namespace WorldMapStrategyKit {
 			this.uniqueId = uniqueId;
 			this.attrib = new JSONObject ();
 			this.mainRegionIndex = -1;
-        }
+		}
 
 		public Province Clone () {
 			Province p = new Province (name, countryIndex, uniqueId);
@@ -79,6 +79,7 @@ namespace WorldMapStrategyKit {
             p.regionsRect2D = regionsRect2D;
 			return p;
 		}
-    }
+
+	}
 }
 

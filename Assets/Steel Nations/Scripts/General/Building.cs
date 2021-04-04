@@ -1,36 +1,38 @@
-﻿public class Building
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+public class Building
 {
     public string buildingName;
+
     public int maxBuildingInCity;
-    public int currentBuildingInCity;
     public int leftConstructionDay;
+    public int requiredEmployee;
+    public int requiredManpower;
+
     public int constructionCost;
     public int constructionTime;
     public int incomeMonthly;
-    public int expenseMonthly;
+
     public string buildingDescription;
-    public int buildingLevel;
     public BUILDING_TYPE buildingType;
-    
-    public Building(string name, int level, BUILDING_TYPE type, int current, int income, int expense, int cost, int time, string description)
+
+    public Texture2D buildingImage;
+
+    public Building(string name, int constTime, int constCost, int income, int employee, int manpower, int maxBuilding, string description)
     {
         buildingName = name;
-        currentBuildingInCity = current;
         leftConstructionDay = 0;
         incomeMonthly = income;
-        expenseMonthly = expense;
-        constructionCost = cost;
-        constructionTime = time;
+        constructionCost = constCost;
+        constructionTime = constTime;
         buildingDescription = description;
-        buildingType = type;
-        buildingLevel = level;
-    }
+        requiredEmployee = employee;
+        requiredManpower = manpower;
+        maxBuildingInCity = maxBuilding;
 
-    public Building Clone()
-    {
-        Building building = new Building(buildingName, buildingLevel, buildingType, currentBuildingInCity, incomeMonthly, expenseMonthly, constructionCost, constructionTime, buildingDescription);
-        building.leftConstructionDay = 0;
+        buildingImage = Resources.Load("buildings/" + buildingName) as Texture2D;
 
-        return building;
+        buildingType = WorldMapStrategyKit.BuildingManager.Instance.GetBuildingTypeByBuildingName(name);
     }
 }

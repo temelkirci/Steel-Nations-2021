@@ -8,7 +8,10 @@ using System.Runtime.CompilerServices;
 using WorldMapStrategyKit.Poly2Tri;
 
 namespace WorldMapStrategyKit {
+
     public static class Drawing {
+
+        public static bool hideInHierarchy = true;
 
         static Dictionary<Vector3, int> hit;
         static Vector2[] uv;
@@ -37,9 +40,14 @@ namespace WorldMapStrategyKit {
         public static Renderer CreateSurface(string name, Vector3[] points, int[] indices, Material material, Rect rect, Vector2 textureScale, Vector2 textureOffset, float textureRotation, DisposalManager disposalManager, bool addVerticesPositionsAsUV2 = false) {
 
             GameObject hexa = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer));
-            if (disposalManager != null)
+            if (disposalManager != null) {
                 disposalManager.MarkForDisposal(hexa);
-            hexa.hideFlags |= HideFlags.HideInHierarchy;
+            }
+#if UNITY_EDITOR
+            if (hideInHierarchy) {
+                hexa.hideFlags |= HideFlags.HideInHierarchy;
+            }
+#endif
             Mesh mesh = new Mesh();
             if (disposalManager != null) {
                 disposalManager.MarkForDisposal(mesh);
@@ -149,7 +157,11 @@ namespace WorldMapStrategyKit {
                 if (disposalManager != null)
                     disposalManager.MarkForDisposal(mesh);
             }
-            hexa.hideFlags |= HideFlags.HideInHierarchy;
+#if UNITY_EDITOR
+            if (hideInHierarchy) {
+                hexa.hideFlags |= HideFlags.HideInHierarchy;
+            }
+#endif
 
             mesh.SetVertices(newPoints);
             // uv mapping
@@ -173,7 +185,8 @@ namespace WorldMapStrategyKit {
             MeshFilter meshFilter = hexa.GetComponent<MeshFilter>();
             meshFilter.mesh = mesh;
 
-            hexa.GetComponent<MeshRenderer>().sharedMaterial = material;
+            MeshRenderer renderer = hexa.GetComponent<MeshRenderer>();
+            renderer.sharedMaterial = material;
             return hexa;
 
         }
@@ -187,7 +200,11 @@ namespace WorldMapStrategyKit {
             // create base text
             GameObject textObj = new GameObject(text);
             textObj.hideFlags = HideFlags.DontSave;
-            textObj.hideFlags |= HideFlags.HideInHierarchy;
+#if UNITY_EDITOR
+            if (hideInHierarchy) {
+                textObj.hideFlags |= HideFlags.HideInHierarchy;
+            }
+#endif
             if (parent != null) {
                 textObj.transform.SetParent(parent.transform, false);
             }

@@ -26,7 +26,7 @@ namespace WorldMapStrategyKit {
 
 		public void MarkForDisposal(Object o) {
 			if (o == null) return;
-			o.hideFlags |= HideFlags.DontSave;
+			o.hideFlags |= HideFlags.DontSaveInEditor;
 			disposeObjects.Add(o);
 		}
 

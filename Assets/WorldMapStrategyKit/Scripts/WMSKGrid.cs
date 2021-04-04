@@ -361,9 +361,10 @@ namespace WorldMapStrategyKit {
         /// </summary>
         /// <returns>The cell path cost.</returns>
         /// <param name="cellIndex">Cell index.</param>
-        public int GetCellPathCost(int cellIndex) {
-            if (cellIndex < 0 || cellIndex >= _cellsCosts.Length)
+        public float GetCellPathCost(int cellIndex) {
+            if (cellIndex < 0 || cellIndex >= _cellsCosts.Length) {
                 return -1;
+            }
             return _cellsCosts[cellIndex].lastPathFindingCost;
         }
 
@@ -457,11 +458,13 @@ namespace WorldMapStrategyKit {
                 if (!renderer.enabled)
                     renderer.enabled = true;
                 // Check if material is ok
-                if (renderer == null)
+                if (renderer == null) {
                     renderer = surf.GetComponent<Renderer>();
+                }
                 surfMaterial = renderer.sharedMaterial;
-                if ((texture == null && !surfMaterial.name.Equals(coloredMat.name)) || (texture != null && !surfMaterial.name.Equals(texturizedMat.name))
-                                || (surfMaterial.color != color && !isHighlighted) || (texture != null && cell.customMaterial.mainTexture != texture)) {
+                if (surfMaterial == null ||
+                    (texture == null && !surfMaterial.name.Equals(coloredMat.name)) || (texture != null && !surfMaterial.name.Equals(texturizedMat.name)) ||
+                    (surfMaterial.color != color && !isHighlighted) || (texture != null && cell.customMaterial.mainTexture != texture)) {
                     Material goodMaterial = GetColoredTexturedMaterial(color, texture, autoChooseTransparentMaterial);
                     if (_gridCutOutBorders && _gridAphaOnWater < 1f) {
                         goodMaterial.EnableKeyword(SKW_WATER_MASK);
@@ -502,9 +505,13 @@ namespace WorldMapStrategyKit {
         public Renderer SetCellTemporaryColor(int cellIndex, Color color) {
             if (cellIndex < 0 || cellIndex >= cells.Length || cellIndex == _cellHighlightedIndex)
                 return null;
-            Renderer renderer = cells[cellIndex].renderer; ;
+            Renderer renderer = cells[cellIndex].renderer;
+            Material clonedMat = null;
             if (renderer != null) {
-                Material clonedMat = Instantiate(renderer.sharedMaterial) as Material;
+                clonedMat = renderer.sharedMaterial;
+            }
+            if (clonedMat != null) {
+                clonedMat = Instantiate(clonedMat);
                 if (disposalManager != null) disposalManager.MarkForDisposal(clonedMat); // clonedMat.hideFlags = HideFlags.DontSave;
                 clonedMat.color = color;
                 renderer.sharedMaterial = clonedMat;
@@ -561,6 +568,29 @@ namespace WorldMapStrategyKit {
             cells[cellIndex].customMaterial = null;
         }
 
+
+        /// <summary>
+        /// Colors a cell. For more options call ToggleCellSurface directly.
+        /// </summary>
+        /// <param name="cellIndices">Cell indices.</param>
+        /// <param name="color">Color.</param>
+        public void CellSetColor(int cellIndex, Color color) {
+            ToggleCellSurface(cellIndex, color);
+        }
+
+        /// <summary>
+        /// Colors a group of cells.
+        /// </summary>
+        /// <param name="cellIndices">Cell indices.</param>
+        /// <param name="color">Color.</param>
+        public void CellSetColor(List<int> cellIndices, Color color) {
+            if (cellIndices == null)
+                return;
+            int cc = cellIndices.Count;
+            for (int k = 0; k < cc; k++) {
+                ToggleCellSurface(cellIndices[k], color);
+            }
+        }
 
         /// <summary>
         /// Colors a cell and fades it out during "duration" in seconds.
@@ -772,6 +802,134 @@ namespace WorldMapStrategyKit {
             return allCells;
         }
 
+
+        /// <summary>
+        /// Returns the integer distance between two cells based on their row/column positions
+        /// </summary>
+        /// <param name="cell1"></param>
+        /// <param name="cell2"></param>
+        /// <returns></returns>
+        public int GetCellStepsDistance(int cell1index, int cell2index) {
+            if (cell1index < 0 || cell1index >= cells.Length) return -1;
+            if (cell2index < 0 || cell2index >= cells.Length) return -1;
+            Cell cell1 = cells[cell1index];
+            Cell cell2 = cells[cell2index];
+            int distX = Mathf.Abs(cell1.column - cell2.column);
+            int distY = Mathf.Abs(cell1.row - cell2.row);
+            return Mathf.Max(distX, distY);
+        }
+
+
+        /// <summary>
+        /// Returns a list of cells indices within a certain distance to a given cell.
+        /// </summary>
+        /// <param name="cellIndex">The cell at the center of the circle</param>
+        /// <param name="radius">Distance to cellIndex in cell steps</param>
+        /// <param name="cellIndices">List where results will be returned. Must be previously initialized.</param>
+        /// <returns>The number of found cells (-1 if some index is out of range)</returns>
+        public int GetCellsWithinRadius(int cellIndex, int radius, List<int> cellIndices) {
+            cellIndices.Clear();
+            if (cellIndex < 0 || cellIndex >= cells.Length) return -1;
+
+            int row = cells[cellIndex].row;
+            int col = cells[cellIndex].column;
+            for (int r = row - radius; r <= row + radius; r++) {
+                if (r < 0 || r >= _gridRows)
+                    continue;
+                for (int c = col - radius; c <= col + radius; c++) {
+                    if (c < 0 || c >= _gridColumns)
+                        continue;
+                    int distance = (int)Mathf.Sqrt((row - r) * (row - r) + (col - c) * (col - c));
+                    if (distance <= radius) {
+                        int foundCellIndex = r * _gridColumns + c;
+                        if (cells[foundCellIndex] == null) continue;
+                        cellIndices.Add(foundCellIndex);
+                    }
+                }
+            }
+            return cellIndices.Count;
+        }
+
+
+
+        /// <summary>
+        /// Returns a list of cells indices within a given rectangle
+        /// </summary>
+        /// <param name="cellIndices">List where results will be returned. Must be previously initialized.</param>
+        /// <returns>The number of found cells (-1 if some index is out of range)</returns>
+        public int GetCellsWithinRectangle(int rowMin, int rowMax, int columnMin, int columnMax, List<int> cellIndices) {
+            cellIndices.Clear();
+            for (int r = rowMin; r <= rowMax; r++) {
+                if (r < 0 || r >= _gridRows)
+                    continue;
+                for (int c = columnMin; c <= columnMax; c++) {
+                    if (c < 0 || c >= _gridColumns)
+                        continue;
+                    int foundCellIndex = r * _gridColumns + c;
+                    if (cells[foundCellIndex] == null) continue;
+                    cellIndices.Add(foundCellIndex);
+                }
+            }
+            return cellIndices.Count;
+        }
+
+
+        /// <summary>
+        /// Returns a list of cells contained in a cone defined by a starting cell, a direction, max distance and an angle for the cone
+        /// </summary>
+        /// <param name="cellIndices">List where results will be returned. Must be previously initialized.</param>
+        /// <returns>The number of found cells (-1 if some index is out of range)</returns>
+        public int GetCellsWithinCone(int cellIndex, Vector2 direction, float maxDistance, float angle, List<int> cellIndices) {
+            cellIndices.Clear();
+            if (cellIndex < 0 || cellIndex >= cells.Length) return -1;
+            Vector2 targetPos = cells[cellIndex].center + direction * maxDistance;
+
+            int targetCellIndex = GetCellIndex(targetPos);
+            return GetCellsWithinCone(cellIndex, targetCellIndex, angle, cellIndices);
+        }
+
+        /// <summary>
+        /// Returns a list of cells contained in a cone defined by a starting cell, a target cellIndex, a max distance and an angle for the cone
+        /// </summary>
+        /// <param name="cellIndices">List where results will be returned. Must be previously initialized.</param>
+        /// <returns>The number of found cells (-1 if some index is out of range)</returns>
+        public int GetCellsWithinCone(int cellIndex, int targetCellIndex, float angle, List<int> cellIndices) {
+            if (cellIndex < 0 || cellIndex >= cells.Length) return -1;
+            if (targetCellIndex < 0 || targetCellIndex >= cells.Length) return -1;
+
+            Vector2 startPos = cells[cellIndex].center;
+            Vector2 endPos = cells[targetCellIndex].center;
+            Vector2 v = endPos - startPos;
+            float maxDistance = v.magnitude;
+            v /= maxDistance;
+            float maxCos = Mathf.Cos(angle * 0.5f * Mathf.Deg2Rad);
+
+            int distX = Mathf.Abs(cells[targetCellIndex].column - cells[cellIndex].column);
+            int distY = Mathf.Abs(cells[targetCellIndex].row - cells[cellIndex].row);
+            int dist = Mathf.CeilToInt(Mathf.Sqrt(distX * distX + distY * distY));
+            int rowMin = Mathf.Max(0, cells[cellIndex].row - dist);
+            int rowMax = Mathf.Min(_gridRows - 1, cells[cellIndex].row + dist);
+            int columnMin = Mathf.Max(0, cells[cellIndex].column - dist);
+            int columnMax = Mathf.Min(_gridColumns - 1, cells[cellIndex].column + dist);
+
+            for (int r = rowMin; r <= rowMax; r++) {
+                for (int c = columnMin; c <= columnMax; c++) {
+                    int foundCellIndex = r * _gridColumns + c;
+                    if (cells[foundCellIndex] == null) continue;
+                    Vector2 pos = cells[foundCellIndex].center;
+                    Vector2 w = pos - startPos;
+                    float mag = w.magnitude;
+                    if (mag > maxDistance) continue;
+                    w /= mag;
+                    float cos = Vector2.Dot(w, v);
+                    if (cos >= maxCos) {
+                        cellIndices.Add(foundCellIndex);
+                    }
+                }
+            }
+            return cellIndices.Count;
+        }
+
         int[] countryCountTmp;
 
         /// <summary>
@@ -824,7 +982,7 @@ namespace WorldMapStrategyKit {
 
             if (countryMax < 0) {
                 // check if there's a small country inside the cell
-                int countryCount = _countriesOrderedBySize.Count;
+                int countryCount = countriesOrderedBySize.Count;
                 for (int oc = 0; oc < countryCount; oc++) {
                     int c = _countriesOrderedBySize[oc];
                     Country country = _countries[c];
@@ -887,7 +1045,7 @@ namespace WorldMapStrategyKit {
         /// <summary>
         /// Get a list of cells which are nearer than a given distance in cell count with optional parameters
         /// </summary>
-        public List<int> GetCellNeighbours(int cellIndex, int distance, int maxSearchCost = 0, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any) {
+        public List<int> GetCellNeighbours(int cellIndex, int distance, float maxSearchCost = 0, TERRAIN_CAPABILITY terrainCapability = TERRAIN_CAPABILITY.Any) {
             if (cellIndex < 0 || cellIndex >= cells.Length)
                 return null;
             distance++;

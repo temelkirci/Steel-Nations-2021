@@ -91,8 +91,8 @@ namespace WorldMapStrategyKit {
 			//			ReadCitiesPackedString ("cities10 2");
 			//			fixedCities = cities;
 			//
-			//			int cityCount = cities.Count;
-			//			int fixedCount = fixedCities.Count;
+			//			int cityCount = cities.Length;
+			//			int fixedCount = fixedcities.Length;
 			//			for (int k = 0; k < fixedCount; k++) {
 			//				City fixedCity = fixedCities [k];
 			//				for (int c=0;c<cityCount;c++) {
@@ -105,7 +105,7 @@ namespace WorldMapStrategyKit {
 			//
 			//				}
 			//			}
-			//			Debug.Log (cities.Count + " " + fixedCities.Count);
+			//			Debug.Log (cities.Length + " " + fixedcities.Length);
 			//
 			//			string fullPathName = "Assets/WorldMapStrategyKit/Resources/WMSK/Geodata/cities10";
 			//			File.WriteAllText(fullPathName, GetCityGeoData(), System.Text.Encoding.UTF8);

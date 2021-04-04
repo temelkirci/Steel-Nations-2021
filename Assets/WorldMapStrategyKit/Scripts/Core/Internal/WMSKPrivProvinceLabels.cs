@@ -39,7 +39,7 @@ namespace WorldMapStrategyKit {
 			}
 			if (disposalManager!=null) disposalManager.MarkForDisposal(fontMaterial); // fontMaterial.hideFlags = HideFlags.DontSave;
 			provLabelsFont.material = fontMaterial;
-			provLabelsShadowMaterial = GameObject.Instantiate(fontMaterial);
+			provLabelsShadowMaterial = Instantiate(fontMaterial);
 			if (disposalManager!=null) disposalManager.MarkForDisposal(provLabelsShadowMaterial); // provLabelsShadowMaterial.hideFlags = HideFlags.DontSave;
 			provLabelsShadowMaterial.renderQueue--;
 		}

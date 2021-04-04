@@ -83,13 +83,13 @@ namespace WorldMapStrategyKit {
 			set { _canCross = value; }
 		}
 
-		int _crossCost = 1;
+		float _crossCost = 1;
 
 		/// <summary>
 		/// Used by pathfinding in country/province. Cost for crossing a country/province. Defaults to 1.
 		/// </summary>
 		/// <value>The cross cost.</value>
-		public int crossCost {
+		public float crossCost {
 			get { return _crossCost; }
 			set { _crossCost = value; }
 		}
@@ -140,11 +140,11 @@ namespace WorldMapStrategyKit {
 				if (value != _labelFont) {
 					_labelFont = value;
 					if (_labelFont != null) {
-						Material fontMaterial = GameObject.Instantiate(_labelFont.material);
-						fontMaterial.hideFlags = HideFlags.DontSave;
+						Material fontMaterial = Object.Instantiate(_labelFont.material);
+						//fontMaterial.hideFlags = HideFlags.DontSave;
 						_labelFont.material = fontMaterial;
-						_labelShadowFontMaterial = GameObject.Instantiate(fontMaterial);
-						_labelShadowFontMaterial.hideFlags = HideFlags.DontSave;
+						_labelShadowFontMaterial = Object.Instantiate(fontMaterial);
+						//_labelShadowFontMaterial.hideFlags = HideFlags.DontSave;
 						_labelShadowFontMaterial.renderQueue--;
 					}
 				}

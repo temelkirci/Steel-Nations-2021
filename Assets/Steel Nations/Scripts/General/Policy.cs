@@ -7,7 +7,7 @@
     public int policyBonusValue;
     public int requiredDefenseBudget;
     public int requiredGSYH;
-    public int costPerWeek;
+    public int tradeBonus;
     public int costPermenant;
     public POLICY_TYPE policyType;
 
@@ -20,7 +20,7 @@
         policyBonusValue = -1;
         requiredDefenseBudget = -1;
         requiredGSYH = -1;
-        costPerWeek = -1;
+        tradeBonus = -1;
         costPermenant = -1;
         policyType = POLICY_TYPE.NONE;
     }

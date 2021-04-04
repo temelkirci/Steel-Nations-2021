@@ -12,14 +12,19 @@ namespace WorldMapStrategyKit {
 		public string countryName;
 
 		/// <summary>
+        /// Decorator attributes will be checked every 10 frames
+        /// </summary>
+		public bool isPersistent = true;
+
+		/// <summary>
 		/// If country is completely hidden.
 		/// </summary>
-		public bool hidden = false;
+		public bool hidden;
 
 		/// <summary>
 		/// Replaces country label text with custom label
 		/// </summary>
-		public bool labelOverride = false;
+		public bool labelOverride;
 
 		/// <summary>
 		/// Custom label that replaces region name
@@ -54,12 +59,12 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// Manual offset of the label with respect to the country center. Setting this value to different than zero will make this country ignore auto-positioning.
 		/// </summary>
-		public Vector2 labelOffset = Misc.Vector2zero;
+		public Vector2 labelOffset;
 		
 		/// <summary>
 		/// Manual rotation of the label in degrees. Setting this value to different than zero will force the label to be rotated to the specified degree.
 		/// </summary>
-		public float labelRotation = 0;
+		public float labelRotation;
 
 
 		/// <summary>
@@ -79,7 +84,7 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// The texture offset.
 		/// </summary>
-		public Vector2 textureOffset = Misc.Vector2zero;
+		public Vector2 textureOffset;
 
 		/// <summary>
 		/// The texture scale.
@@ -89,7 +94,7 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// The texture rotation. Note that applying a rotation will add some performance overhead during preparation of the material but not afterwards.
 		/// </summary>
-		public float textureRotation = 0;
+		public float textureRotation;
 
 		/// <summary>
 		/// Optional font for the label
@@ -99,7 +104,7 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// If the label has its own font size.
 		/// </summary>
-		public bool labelOverridesFontSize = false;
+		public bool labelOverridesFontSize;
 		
 		/// <summary>
 		/// Manual font size for the label. Must set labelOverridesFontSize = true to have effect.

@@ -37,10 +37,10 @@
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex);
             c = max(c, _WrapEnabled * tex2D (_WrappedTex, IN.uv_MainTex));
 			#if WMSK_VIEWPORT_UNLIT
-			o.Emission = c.rgb;
-			o.Albedo = 0;
+				o.Emission = c.rgb;
+				o.Albedo = 0;
 			#else
-			o.Albedo = c.rgb;
+				o.Albedo = c.rgb;
 			#endif
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;

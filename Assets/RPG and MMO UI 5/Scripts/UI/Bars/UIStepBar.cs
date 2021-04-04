@@ -75,9 +75,6 @@ namespace DuloGames.UI
 
             // Update the steps properties
             this.UpdateStepsProperties();
-
-            // Update the bubble
-            this.UpdateBubble();
         }
 
 		/// <summary>
@@ -91,7 +88,7 @@ namespace DuloGames.UI
 			if (this.m_CurrentStep > this.m_StepsCount) this.m_CurrentStep = this.m_StepsCount + 1;
 			
 			// Create the steps grid if required
-			//this.CreateStepsGrid();
+			this.CreateStepsGrid();
 			
 			// Update the grid properties
 			this.UpdateGridProperties();
@@ -292,10 +289,7 @@ namespace DuloGames.UI
 			// Set the bubble as last sibling
 			if (this.m_BubbleRect != null)
 				this.m_BubbleRect.SetAsLastSibling();
-
-            // Clear the steps game objects list
-            this.m_StepsGameObjects.Clear();
-        }
+		}
 		
 		/// <summary>
 		/// Updates the grid properties.
@@ -334,9 +328,9 @@ namespace DuloGames.UI
 		{
 			if (this.m_StepsGridGameObject == null)
 				return;
-            
+			
 			// Check if we already have the steps
-			if (this.m_StepsGameObjects.Count == (this.m_StepsCount + 2))
+			if (this.m_StepsGameObjects.Count == this.m_StepsCount)
 				return;
 			
 			// Destroy the steps

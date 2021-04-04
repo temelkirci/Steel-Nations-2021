@@ -21,6 +21,10 @@ namespace WorldMapStrategyKit
         {
             instance = this;
         }
+        public void Init()
+        {
+
+        }
 
         public void ShowIntelligenceAgency()
         {
@@ -28,9 +32,9 @@ namespace WorldMapStrategyKit
 
             Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
 
-            intelligenceAgencyName.text = myCountry.GetIntelligenceAgency().GetIntelligenceAgencyName();
-            intelligenceAgencyLevel.text = myCountry.GetIntelligenceAgency().GetIntelligenceAgencyLevel().ToString();
-            intelligenceAgencyBudget.text = myCountry.GetIntelligenceAgency().GetIntelligenceAgencyBudget().ToString();
+            intelligenceAgencyName.text = myCountry.Intelligence_Agency.IntelligenceAgencyName;
+            intelligenceAgencyLevel.text = myCountry.Intelligence_Agency.IntelligenceAgencyLevel.ToString();
+            intelligenceAgencyBudget.text = myCountry.Intelligence_Agency.IntelligenceAgencyBudget.ToString();
         }
 
         public void HideIntelligenceAgency()

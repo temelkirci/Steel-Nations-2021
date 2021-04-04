@@ -1,6 +1,6 @@
 ﻿***************************************************
-*             WORLD MAP STRATEGY KIT              *
-* Copyright (C) 2016-2020 Ramiro Oliva (Kronnect) *
+*              WORLD MAP STRATEGY KIT             *
+*  Copyright (C) 2016-2021 Kronnect Technologies  *
 *                  README FILE                    *
 ***************************************************
 
@@ -13,7 +13,7 @@ Later, you should read the documentation and experiment with the API/prefabs.
 
 
 Demo Scenes
------------
+----------- 
 There're several demo scenes, located in "Demos" folder. Just go there from Unity, open them in order to get an idea of the asset possibilities.
 
 
@@ -32,8 +32,8 @@ Support
 -------
 Please read the documentation PDF and browse/play with the demo scene and sample source code included before contacting us for support :-)
 
-* Support: contact@kronnect.me
-* Website-Forum: http://kronnect.me
+* Support: contact@kronnect.com
+* Website-Forum: https://kronnect.com/support
 * Twitter: @KronnectGames
 
 
@@ -41,6 +41,57 @@ Version history
 ---------------
 
 Current version
+   - API: added ToggleCountryMainRegionOutline (main region only), ToggleCountryRegionOutline (specific region), ToggleCountryOutline (all regions)
+   - [Fix] Fixed pathfinding issue with cells and word-wrapping mode
+
+Version 10.1 18/Feb/2021
+   - Added "Highlight Country Recolor" option (defaults to true as normal behaviour). When disabled, the highlight can only draw an outline around countries and keep its current color/texture.
+   - Added example for drawing interior country shadow (demo scene 1 / button "Interior Country Shadow")
+   - API: added GetCellWithinRadius, GetCellWithinRectangle, GetCellsWithinCone
+   - [Fix] Fixed issue when drag damping duration is set to 0
+
+Version 10.0 16/Jan/2021
+   - Added new map servers: MapBox (satellite, traffic, terrain, terrain-rgb, incidents, streets, countries), Google Maps (satellite + relief), ESRI (topo, streets, satellite, national geo style), Maps-For-Free, USGS satellite and OpenStreeMaps Hiking map.
+
+Version 9.9
+   - Decorators: added "Persistent" attribute. By default = true, means the decorator settings will be checked every 10 frames and applied again to the country if needed
+
+Version 9.8.3
+   - Change: switched path-finding cost from integer to float to improve granularity of estimations
+   - General fixes and internal improvements
+   - [Fix] Improvements of Text Mesh Pro integration
+
+Version 9.8.1
+   - Added "Max Cities Per Country". Refers to the max number of visible cities per country.
+   - Added URP support to terrain mode
+   - API: added CityAdd
+   - [Fix] Fixed regression bug related to OnPointerRightDown event
+
+Version 9.7
+   - New UI Viewport mode: new Map Panel UI element will render map features directly inside a Canvas UI in 2D. See https://youtu.be/QuidxfCDkiI
+   - Viewport mode 3D: UI Panel can now be dragged directly into the RenderViewport property to sync WMSK screen location with the UI Panel
+   - Modifying current 2D map location in Game Object Animator inspector now refresh the unit position and altitude in Editor time
+   - [Fix] API: fixed GetCellsInCountry() issue
+   - [Fix] API: fixed lastDistanceFromCamera not being updated when allowUserZoom is disabled and a FlyTo operation is executed
+
+Version 9.6.4
+   - Country frontiers and province borders mesh generation optimizations
+   - [Fix] Enclaves now are visible if "CoastLines" option is disabled
+  
+Version 9.6.3
+   - Removed decorator max font size
+   - Cities are no longer forced visible when opening the map editor
+   - [Fix] Province/city geodata files fixes and additions
+
+Version 9.6.2
+   - [Fix] Fixed GameObjectAnimator unregistration when destroyed by user
+
+Version 9.6.1
+   - [Fix] Fixed aspect ratio of viewport when used with UI panel
+   - [Fix] Fixed viewport shaders for URP
+   - [Fix] Improved memory handling for temporary objects
+
+Version 9.6
    - Performance optimization of GameObjectAnimators
    - Added zoom damping duration option
    - Improved zoom clamp when exceeding min/max distance

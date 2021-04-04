@@ -703,7 +703,7 @@ namespace WorldMapStrategyKit {
             }
             Color initialColor = Misc.ColorClear;
             Renderer renderer = cells[cellIndex].renderer;
-            if (renderer == null) {
+            if (renderer == null || renderer.sharedMaterial == null) {
                 renderer = SetCellTemporaryColor(cellIndex, initialColor);
             } else {
                 if (renderer.enabled) {

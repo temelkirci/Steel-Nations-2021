@@ -393,9 +393,10 @@ namespace WorldMapStrategyKit {
 				committingProgress = 0.95f;
 			} else {
 				// Update city references
-				int citiesCount = map.cities.Count;
+				int citiesCount = map.cities.Length;
+				List<City> cities = new List<City>(map.cities);
 				for (int k = 0; k < citiesCount; k++) {
-					City city = map.cities [k];
+					City city = cities [k];
 					int countryIndex = map.GetCountryIndex (city.unity2DLocation);
 					if (countryIndex >= 0) {
 						if (city.countryIndex != countryIndex) {
@@ -403,12 +404,13 @@ namespace WorldMapStrategyKit {
 							map.editor.cityChanges = true;
 						}
 					} else {
-						map.cities.RemoveAt (k);
+						cities.RemoveAt (k);
 						map.editor.cityChanges = true;
 						k--;
 						citiesCount--;
 					}
 				}
+				map.cities = cities.ToArray();
 
 				// Update mount points references
 				if (map.mountPoints != null) {
@@ -493,7 +495,7 @@ namespace WorldMapStrategyKit {
 				committingProgress = 0.95f;
 			} else {
 				// Update city references
-				int citiesCount = map.cities.Count;
+				int citiesCount = map.cities.Length;
 				for (int k = 0; k < citiesCount; k++) {
 					City city = map.cities [k];
 					int provinceIndex = map.GetProvinceIndex (city.unity2DLocation);

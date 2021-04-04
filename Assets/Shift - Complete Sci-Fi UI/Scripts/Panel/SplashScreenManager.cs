@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using WorldMapStrategyKit;
 
 namespace Michsky.UI.Shift
 {
@@ -25,7 +26,7 @@ namespace Michsky.UI.Shift
             ssTimedEvent = splashScreen.GetComponent<TimedEvent>();
             mainPanelsAnimator = mainPanels.GetComponent<Animator>();
             mpm = gameObject.GetComponent<MainPanelManager>();
-
+            
             if (disableSplashScreen == true)
             {
                 splashScreen.SetActive(false);
@@ -53,7 +54,7 @@ namespace Michsky.UI.Shift
                 mainPanelsAnimator.Play("Invisible");
                 splashScreenAnimator.Play("Login");
             }
-
+            
             if (enableLoginScreen == false && enablePressAnyKeyScreen == false && disableSplashScreen == false)
             {
                 splashScreen.SetActive(true);
@@ -62,7 +63,7 @@ namespace Michsky.UI.Shift
                 ssTimedEvent.StartIEnumerator();
             }
         }
-
+        
         public void LoginScreenCheck()
         {
             if (enableLoginScreen == true && enablePressAnyKeyScreen == true)
@@ -80,5 +81,6 @@ namespace Michsky.UI.Shift
                 ssTimedEvent.StartIEnumerator();
             }
         }
+        
     }
 }

@@ -27,6 +27,11 @@ namespace WorldMapStrategyKit
             instance = this;
         }
 
+        public void Init()
+        {
+
+        }
+
         public void AddPolicy(Policy policy)
         {
             policyList.Add(policy);
@@ -106,7 +111,7 @@ namespace WorldMapStrategyKit
                 "Policy Bonus : " + policy.policyBonus + "\n" +
                 "Policy Bonus Value : %" + policy.policyBonusValue.ToString() + "\n" +
             "Required Defense Budget : " + " $ " + string.Format("{0:#,0}", float.Parse(policy.requiredDefenseBudget.ToString())) + "M" + "\n" +
-            "Cost Per Week : " + " $ " + string.Format("{0:#,0}", float.Parse(policy.costPerWeek.ToString())) + "M" + "\n" +
+            "Trade Bonus : " + " $ " + string.Format("{0:#,0}", float.Parse(policy.tradeBonus.ToString())) + "M" + "\n" +
             "Permenant Cost : " + " $ " + string.Format("{0:#,0}", float.Parse(policy.costPermenant.ToString())) + "M" + "\n" + " ";
 
             //temp.gameObject.transform.GetChild(3).GetComponent<RawImage>().texture = weapon.weaponIcon;
@@ -127,11 +132,11 @@ namespace WorldMapStrategyKit
             if (IsAcceptable(policy) == false)
                 return;
 
-            int leftDefenseBudget = GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().GetDefenseBudget() - policy.requiredDefenseBudget;
-            float leftBudget = GameEventHandler.Instance.GetPlayer().GetMyCountry().GetBudget() - policy.costPermenant;
+            int leftDefenseBudget = GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().Defense_Budget - policy.requiredDefenseBudget;
+            long leftBudget = GameEventHandler.Instance.GetPlayer().GetMyCountry().Budget - policy.costPermenant;
 
-            GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().SetDefenseBudget(leftDefenseBudget);
-            GameEventHandler.Instance.GetPlayer().GetMyCountry().SetBudget(leftBudget);
+            GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().Defense_Budget = leftDefenseBudget;
+            GameEventHandler.Instance.GetPlayer().GetMyCountry().Budget = leftBudget;
 
             GameEventHandler.Instance.GetPlayer().GetMyCountry().AddPolicy(policy);
 
@@ -144,13 +149,13 @@ namespace WorldMapStrategyKit
 
         bool IsAcceptable(Policy policy)
         {
-            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().GetDefenseBudget() < policy.requiredDefenseBudget)
+            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().Defense_Budget < policy.requiredDefenseBudget)
             {
                 //Debug.Log("Defense Budget is not enough");
                 return false;
             }
 
-            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetBudget() < policy.costPermenant)
+            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().Budget < policy.costPermenant)
             {
                 //Debug.Log("Budget is not enough");
                 return false;

@@ -45,7 +45,7 @@ namespace WorldMapStrategyKit {
 
 		void GenerateMaterial () {
 			blinkMaterial = Instantiate (blinkMaterial);
-			blinkMaterial.hideFlags = HideFlags.DontSave;
+			//blinkMaterial.hideFlags = HideFlags.DontSave;
 			GetComponent<Renderer> ().sharedMaterial = blinkMaterial;
 		}
 	}

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Steel Nations/Scenes/Menu Scene.unity
+    guid: 1a1c606b83fa83b4d86e378cb9e4376c
+  - enabled: 1
     path: Assets/Steel Nations/Scenes/Game Scene.unity
     guid: 8275fb7b6a375c14db0ad5b96fbc5476
   m_configObjects: {}

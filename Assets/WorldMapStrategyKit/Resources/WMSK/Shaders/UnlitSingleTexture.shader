@@ -1,6 +1,8 @@
 ﻿Shader "WMSK/Unlit Single Texture"{
 
-Properties { _MainTex ("Texture", 2D) = "" }
+Properties {
+    _MainTex ("Texture", 2D) = ""
+}
 SubShader {
 	    Tags {
         "Queue"="Geometry"

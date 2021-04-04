@@ -325,7 +325,7 @@ namespace WorldMapStrategyKit {
 				}
 			}
 			// Updates country index in cities
-			for (int k = 0; k < map.cities.Count; k++) {
+			for (int k = 0; k < map.cities.Length; k++) {
 				if (map.cities[k].countryIndex > countryIndex) {
 					map.cities[k].countryIndex--;
 				}
@@ -678,8 +678,9 @@ namespace WorldMapStrategyKit {
 
 			// Update cities
 			List<City> cities = _map.GetCities(region);
-			if (cities.Count > 0) {
-				for (int k = 0; k < cities.Count; k++) {
+			int citiesCount = cities.Count;
+			if (citiesCount > 0) {
+				for (int k = 0; k < citiesCount; k++) {
 					if (cities [k].countryIndex != countryIndex) {
 						cities [k].countryIndex = countryIndex;
 						cityChanges = true;

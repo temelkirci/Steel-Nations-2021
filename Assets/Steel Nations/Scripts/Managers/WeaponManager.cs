@@ -152,6 +152,15 @@ public class WeaponManager : Singleton<WeaponManager>
         return weaponTemplateList;
     }
 
+    public WeaponTemplate GetWeaponByWeaponTypeAndTech(WEAPON_TYPE weaponType, int weaponTech)
+    {
+        foreach (WeaponTemplate weaponTemplate in weaponTemplateList)
+            if (weaponTemplate.weaponType == weaponType && weaponTemplate.weaponLevel == weaponTech)
+                return weaponTemplate;
+
+        return null;
+    }
+
     public Texture2D GetWeaponTemplateIconByID(int weaponID)
     {
         foreach(WeaponTemplate weaponTemplate in weaponTemplateList)
@@ -160,6 +169,19 @@ public class WeaponManager : Singleton<WeaponManager>
                 return Resources.Load("weapons/" + weaponTemplate.weaponName + "/" + weaponTemplate.weaponImageDirectory) as Texture2D;
         }
         return null;
+    }
+
+    public int GetLowestGenerationByWeaponName(string weaponName)
+    {
+        int lowest = 10;
+
+        foreach (WeaponTemplate weaponTemplate in weaponTemplateList)
+        {
+            if (weaponTemplate.weaponName == weaponName)
+                if (weaponTemplate.weaponLevel < lowest)
+                    lowest = weaponTemplate.weaponLevel;
+        }
+        return lowest;
     }
 
     public List<WeaponTemplate> GetWeaponTemplateListByName(string weaponName)

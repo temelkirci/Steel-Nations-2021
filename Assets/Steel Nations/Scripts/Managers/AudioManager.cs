@@ -19,6 +19,11 @@ public class AudioManager : MonoBehaviour
         instance = this;
     }
 
+    public void Init()
+    {
+
+    }
+
     public void PlayVoice(VOICE_TYPE voiceType, bool isLoop = false)
     {
 

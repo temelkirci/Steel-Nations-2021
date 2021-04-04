@@ -168,8 +168,6 @@ namespace WorldMapStrategyKit {
             InitMapGenerator();
 
             emptyStringArray = new string[0];
-            _map.showCities = true;
-            _map.minPopulation = 0; // make sure all cities are visible
 
             _editor.snapPrecisionDigits = EditorPrefs.GetInt("SnapUnit", 7);
 
@@ -1976,13 +1974,12 @@ namespace WorldMapStrategyKit {
                 scaler.ScaleCities(0.1f);
             } else {
                 // This should not happen but maybe the user deleted the layer. Forces refresh.
-                _map.showCities = true;
                 _map.DrawCities();
             }
         }
 
         void ShowCitySelected() {
-            if (_editor.cityIndex < 0 || _editor.cityIndex >= _map.cities.Count)
+            if (_editor.cityIndex < 0 || _editor.cityIndex >= _map.cities.Length)
                 return;
             Vector3 cityPos = _map.cities[_editor.cityIndex].unity2DLocation;
             Vector3 worldPos = _map.transform.TransformPoint(cityPos);
@@ -1992,7 +1989,7 @@ namespace WorldMapStrategyKit {
         }
 
         void ExecuteCityMoveTool() {
-            if (_editor.cityIndex < 0 || _editor.cityIndex >= _map.cities.Count)
+            if (_editor.cityIndex < 0 || _editor.cityIndex >= _map.cities.Length)
                 return;
 
             Transform mapTransform = _map.transform;
@@ -2562,7 +2559,7 @@ namespace WorldMapStrategyKit {
                 }
             }
             if (_map.cities != null) {
-                int cityCount = _map.cities.Count;
+                int cityCount = _map.cities.Length;
                 backupCities = new List<City>(cityCount);
                 for (int k = 0; k < cityCount; k++) {
                     backupCities.Add(_map.cities[k].Clone());
@@ -2624,7 +2621,7 @@ namespace WorldMapStrategyKit {
                 _editor.provinceChanges = true;
             }
             if (_map.cities != null) {
-                int cityCount = _map.cities.Count;
+                int cityCount = _map.cities.Length;
                 if (cityCount > 0) {
                     for (int c = 0; c < cityCount; c++) {
                         City city = _map.cities[c];

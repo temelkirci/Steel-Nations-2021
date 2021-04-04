@@ -107,13 +107,13 @@ namespace WorldMapStrategyKit
 				if (_font != value) {
 					_font = value;
 					if (_font != null) {
-						Material fontMaterial = GameObject.Instantiate (Resources.Load<Material>("WMSK/Materials/Font")); // this material is linked to a shader that has into account zbuffer
+						Material fontMaterial = UnityEngine.Object.Instantiate(Resources.Load<Material>("WMSK/Materials/Font")); // this material is linked to a shader that has into account zbuffer
 						fontMaterial.mainTexture = _font.material.mainTexture;
-						fontMaterial.hideFlags = HideFlags.DontSave;
+						//fontMaterial.hideFlags = HideFlags.DontSave;
 						fontMaterial.renderQueue += 5;
 						_font.material = fontMaterial;
-						_shadowMaterial = GameObject.Instantiate (_font.material);
-						_shadowMaterial.hideFlags = HideFlags.DontSave;
+						_shadowMaterial = UnityEngine.Object.Instantiate(_font.material);
+						//_shadowMaterial.hideFlags = HideFlags.DontSave;
 						_shadowMaterial.renderQueue--;
 					} else {
 						_shadowMaterial = null;

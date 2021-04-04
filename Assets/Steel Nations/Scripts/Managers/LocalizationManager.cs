@@ -12,6 +12,11 @@ namespace WorldMapStrategyKit
             get { return instance; }
         }
 
+        public void Init()
+        {
+
+        }
+
         public enum LANGUAGE
         {
             ENGLISH,

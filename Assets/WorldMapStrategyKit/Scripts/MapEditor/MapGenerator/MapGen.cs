@@ -62,11 +62,11 @@ namespace WorldMapStrategyKit {
 		}
 
 		[SerializeField, Range (0.001f, 0.1f)]
-		public float edgeMaxLength = 0.1f;
+		public float edgeMaxLength = 0.05f;
 
 
 		[SerializeField, Range (0f, 1f)]
-		public float edgeNoise = 0.0f;
+		public float edgeNoise = 0.25f;
 
 		public MapGenerationQuality mapGenerationQuality;
 

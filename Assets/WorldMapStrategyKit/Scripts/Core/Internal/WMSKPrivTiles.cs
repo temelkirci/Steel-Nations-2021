@@ -283,17 +283,6 @@ namespace WorldMapStrategyKit {
 					loadQueue [k].visible = false;
 				}
 
-                //#if !UNITY_WEBGL && !UNITY_IOS && !UNITY_WSA // TODO: RML
-                //    GeometryUtilityNonAlloc.CalculateFrustumPlanes (cameraPlanes, currentCamera.projectionMatrix * currentCamera.worldToCameraMatrix);
-                //    if (_wrapHorizontally && _wrapCamera.enabled) {
-                //        GeometryUtilityNonAlloc.CalculateFrustumPlanes (wrapCameraPlanes, _wrapCamera.projectionMatrix * _wrapCamera.worldToCameraMatrix);
-                //    }
-                //#else
-                //    cameraPlanes = GeometryUtility.CalculateFrustumPlanes (currentCamera);
-                //    if (_wrapHorizontally && _wrapCamera.enabled) {
-                //        cameraPlanes = GeometryUtility.CalculateFrustumPlanes (_wrapCamera);
-                //    }
-                //#endif
                 GeometryUtility.CalculateFrustumPlanes(currentCamera.projectionMatrix * currentCamera.worldToCameraMatrix, cameraPlanes);
                 if (_wrapHorizontally && _wrapCamera.enabled) {
                     GeometryUtility.CalculateFrustumPlanes(_wrapCamera.projectionMatrix * _wrapCamera.worldToCameraMatrix, wrapCameraPlanes);
@@ -722,11 +711,11 @@ namespace WorldMapStrategyKit {
 			TileInfo parent = ti.parent != null ? ti.parent : ti;
 			if (parent.normalMat == null) {
 				parent.normalMat = Instantiate (tileMatRef);
-				parent.normalMat.hideFlags = HideFlags.DontSave;
+				if (disposalManager != null) disposalManager.MarkForDisposal(parent.normalMat);
 			}
 			if (parent.transMat == null) {
 				parent.transMat = Instantiate (tileMatTransRef);
-				parent.transMat.hideFlags = HideFlags.DontSave;
+				if (disposalManager != null) disposalManager.MarkForDisposal(parent.transMat);
 			}
 			
 			Material tileMat = ti.zoomLevel < TILE_MIN_ZOOM_LEVEL ? parent.normalMat : parent.transMat;

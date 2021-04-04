@@ -260,8 +260,23 @@ namespace WorldMapStrategyKit {
 		/// Returns true if render viewport is a terrain
 		/// </summary>
 		public bool renderViewportIsTerrain {
-			get { return _renderViewportIsTerrain; }
+			get { return viewportMode == ViewportMode.Terrain; }
 		}
+
+		/// <summary>
+		/// Returns true if render viewport is a map panel UI element
+		/// </summary>
+		public bool renderViewportIsMapPanel {
+			get { return viewportMode == ViewportMode.MapPanel; }
+		}
+
+		/// <summary>
+		/// Returns true if render viewport is a 3D viewport
+		/// </summary>
+		public bool renderViewportIs3DViewport {
+			get { return viewportMode == ViewportMode.Viewport3D; }
+		}
+		
 
 		[SerializeField]
 		FilterMode _renderViewportFilterMode = FilterMode.Trilinear;
@@ -478,8 +493,9 @@ namespace WorldMapStrategyKit {
 
 		#region Viewport APIs
 
-		[NonSerialized]
-		public bool renderViewportIsEnabled;
+		public bool renderViewportIsEnabled {
+			get { return viewportMode != ViewportMode.None; }
+        }
 
 		/// <summary>
 		/// Computes the interpolated, perspective adjusted or not, height on given position.
@@ -492,19 +508,19 @@ namespace WorldMapStrategyKit {
 			position.x += 0.5f;
 			position.y += 0.5f;
 			
-			int x0 = Mathf.FloorToInt(position.x * EARTH_ELEVATION_WIDTH);
-			int y0 = Mathf.FloorToInt(position.y * EARTH_ELEVATION_HEIGHT);
+			int x0 = Mathf.FloorToInt(position.x * heightmapTextureWidth);
+			int y0 = Mathf.FloorToInt(position.y * heightmapTextureHeight);
 			int x1 = x0 + 1;
-			if (x1 >= EARTH_ELEVATION_WIDTH - 1)
-				x1 = EARTH_ELEVATION_WIDTH - 1;
+			if (x1 >= heightmapTextureWidth - 1)
+				x1 = heightmapTextureWidth - 1;
 			int y1 = y0 + 1;
-			if (y1 >= EARTH_ELEVATION_HEIGHT - 1)
-				y1 = EARTH_ELEVATION_HEIGHT - 1;
+			if (y1 >= heightmapTextureHeight - 1)
+				y1 = heightmapTextureHeight - 1;
 			
-			int pos00 = (int)(y0 * EARTH_ELEVATION_WIDTH + x0);
-			int pos10 = (int)(y0 * EARTH_ELEVATION_WIDTH + x1);
-			int pos01 = (int)(y1 * EARTH_ELEVATION_WIDTH + x0);
-			int pos11 = (int)(y1 * EARTH_ELEVATION_WIDTH + x1);
+			int pos00 = (int)(y0 * heightmapTextureWidth + x0);
+			int pos10 = (int)(y0 * heightmapTextureWidth + x1);
+			int pos01 = (int)(y1 * heightmapTextureWidth + x0);
+			int pos11 = (int)(y1 * heightmapTextureWidth + x1);
 			float elev00 = viewportElevationPoints[pos00];
 			float elev10 = viewportElevationPoints[pos10];
 			float elev01 = viewportElevationPoints[pos01];
@@ -516,8 +532,8 @@ namespace WorldMapStrategyKit {
 				elev11 *= _renderViewportElevationFactor;
 			}
 			
-			float cellWidth = 1.0f / EARTH_ELEVATION_WIDTH;
-			float cellHeight = 1.0f / EARTH_ELEVATION_HEIGHT;
+			float cellWidth = 1.0f / heightmapTextureWidth;
+			float cellHeight = 1.0f / heightmapTextureHeight;
 			float cellx = (position.x - (float)x0 * cellWidth) / cellWidth;
 			float celly = (position.y - (float)y0 * cellHeight) / cellHeight;
 			
@@ -540,7 +556,7 @@ namespace WorldMapStrategyKit {
 					mapPosition.x += 1f;
 			}
 			Vector3 worldPos;
-			if (_renderViewportIsTerrain) {
+			if (renderViewportIsTerrain) {
 				// Terrain mode
 				worldPos = transform.TransformPoint(mapPosition);
 				worldPos.y -= WMSK_TERRAIN_MODE_Y_OFFSET;
@@ -555,7 +571,7 @@ namespace WorldMapStrategyKit {
 		/// Returns the surface normal of the renderViewport at the position in World coordinates.
 		/// </summary>
 		public bool RenderViewportGetNormal(Vector3 worldPosition, out Vector3 normal) {
-			if (_renderViewportIsTerrain) {
+			if (renderViewportIsTerrain) {
 				float dist = terrain.terrainData.size.y;
 				Ray ray = new Ray(worldPosition + Misc.Vector3up * dist, Misc.Vector3down);
 				if (terrainHits == null)

@@ -24,12 +24,12 @@ namespace WorldMapStrategyKit {
 
 		#region Public properties
 
-		List<City> _cities;
+		City[] _cities;
 
 		/// <summary>
 		/// Complete list of cities with their names and country names.
 		/// </summary>
-		public List<City> cities {
+		public City[] cities {
 			get { 
 				if (_cities == null)
 					ReadCitiesPackedString();
@@ -265,14 +265,34 @@ namespace WorldMapStrategyKit {
 			}
 			set {
 				if (value != _minPopulation) {
-					_minPopulation = value;
+					_minPopulation = Mathf.Max(0, value);
 					isDirty = true;
 					DrawCities();
 				}
 			}
 		}
 
-		
+
+
+
+		[SerializeField]
+		int
+			_maxCitiesPerCountry;
+
+		public int maxCitiesPerCountry {
+			get {
+				return _maxCitiesPerCountry;
+			}
+			set {
+				if (value != _maxCitiesPerCountry) {
+					_maxCitiesPerCountry = Mathf.Max(0, value);
+					isDirty = true;
+					DrawCities();
+				}
+			}
+		}
+
+
 		[SerializeField]
 		int _cityClassAlwaysShow;
 
@@ -320,18 +340,20 @@ namespace WorldMapStrategyKit {
 		public void CitiesDeleteFromContinent(string continentName) {
 			HideCityHighlights();
 			int k = -1;
-			int cityCount = cities.Count;
+			int cityCount = this.cities.Length;
+			List<City> cities = new List<City>(this.cities);
 			while (++k < cityCount) {
-				int cindex = _cities[k].countryIndex;
+				int cindex = cities[k].countryIndex;
 				if (cindex >= 0) {
 					string cityContinent = _countries[cindex].continent;
 					if (cityContinent.Equals(continentName)) {
-						_cities.RemoveAt(k);
+						cities.RemoveAt(k);
 						k--;
 						cityCount--;
 					}
 				}
 			}
+			this.cities = cities.ToArray();
 		}
 
 		/// <summary>
@@ -346,7 +368,7 @@ namespace WorldMapStrategyKit {
 		/// Returns the index of a city in the global cities collection. Note that country and province indices should be supplied due to repeated city names.
 		/// </summary>
 		public int GetCityIndex(string cityName, int countryIndex = -1, int provinceIndex = -1) {
-			int cityCount = cities.Count;
+			int cityCount = cities.Length;
 			string provinceName = "";
 			if (provinceIndex >= 0 && provinceIndex<provinces.Length) {
 				provinceName = GetProvince (provinceIndex).name;
@@ -365,6 +387,17 @@ namespace WorldMapStrategyKit {
 				}
 			}
 			return -1;
+		}
+
+		/// <summary>
+        /// Adds a city to the list of map cities
+        /// </summary>
+		public void CityAdd(City newCity) {
+			if (tmpCities == null) tmpCities = new List<City>(this.cities.Length); else tmpCities.Clear();
+			tmpCities.AddRange(this.cities);
+			tmpCities.Add(newCity);
+			this.cities = tmpCities.ToArray();
+			lastCityLookupCount = -1;
 		}
 
 		/// <summary>
@@ -458,7 +491,7 @@ namespace WorldMapStrategyKit {
 		/// Starts navigation to target city by index with provided duration and zoom level
 		/// </summary>
 		public void FlyToCity(int cityIndex, float duration, float zoomLevel) {
-			if (cities == null || cityIndex < 0 || cityIndex >= cities.Count)
+			if (cities == null || cityIndex < 0 || cityIndex >= cities.Length)
 				return;
 			SetDestination(cities[cityIndex].unity2DLocation, duration, zoomLevel);
 		}
@@ -500,7 +533,7 @@ namespace WorldMapStrategyKit {
 		/// Returns city object by its index.
 		/// </summary>
 		public City GetCity(int cityIndex) {
-			if (cityIndex < 0 || cityIndex >= _cities.Count)
+			if (cityIndex < 0 || cityIndex >= _cities.Length)
 				return null;
 			return _cities[cityIndex];
 		}
@@ -512,7 +545,7 @@ namespace WorldMapStrategyKit {
 		/// <returns>The city.</returns>
 		/// <param name="country">Country object.</param>
 		public City GetCityRandom(Country country) {
-			int cityCount = cities.Count;
+			int cityCount = cities.Length;
 			int countryIndex = GetCountryIndex(country);
 			List<City> cc = new List<City>(100);
 			for (int k = 0; k < cityCount; k++) {
@@ -533,7 +566,7 @@ namespace WorldMapStrategyKit {
 		/// <returns>The city.</returns>
 		/// <param name="province">Province object.</param>
 		public City GetCityRandom(Province province) {
-			int cityCount = cities.Count;
+			int cityCount = cities.Length;
 			int countryIndex = province.countryIndex;
 			List<City> cc = new List<City>(100);
 			for (int k = 0; k < cityCount; k++) {
@@ -589,7 +622,7 @@ namespace WorldMapStrategyKit {
 		/// Gets the city index with that unique Id.
 		/// </summary>
 		public int GetCityIndex(int uniqueId) {
-			int cityCount = cities.Count;
+			int cityCount = cities.Length;
 			for (int k = 0; k < cityCount; k++) {
 				if (cities[k].uniqueId == uniqueId)
 					return k;
@@ -750,7 +783,7 @@ namespace WorldMapStrategyKit {
 		/// Returns an array with the city names.
 		/// </summary>
 		public string[] GetCityNames() {
-			int cityCount = cities.Count;
+			int cityCount = cities.Length;
 			List<string> c = new List<string>(cityCount);
 			for (int k = 0; k < cityCount; k++) {
 				c.Add(_cities[k].name + " (" + k + ")");
@@ -763,7 +796,7 @@ namespace WorldMapStrategyKit {
 		/// Returns an array with the city names.
 		/// </summary>
 		public string[] GetCityNames(int countryIndex) {
-			int cityCount = cities.Count;
+			int cityCount = cities.Length;
 			List<string> c = new List<string>(cityCount);
 			for (int k = 0; k < cityCount; k++) {
 				if (_cities[k].countryIndex == countryIndex) {
@@ -780,7 +813,7 @@ namespace WorldMapStrategyKit {
 		/// </summary>
 		public List<City> GetCities(AttribPredicate predicate) {
 			List <City> selectedCities = new List<City>();
-			int cityCount = cities.Count;
+			int cityCount = cities.Length;
 			for (int k = 0; k < cityCount; k++) {
 				City city = _cities[k];
 				if (predicate(city.attrib))
@@ -797,7 +830,7 @@ namespace WorldMapStrategyKit {
 		/// <param name="cityFilters">Optional city class filter. Use WMSK.CITY_CLASS_FILTER constants to filter by specific types. You can combine several filters using | (OR) operator.</param>
 		public List<City>GetCities(bool onlyVisible = false, int cityFilters = WMSK.CITY_CLASS_FILTER_ANY) {
 			List<City> theCities = new List<City>();
-			int count = cities.Count;
+			int count = cities.Length;
 			for (int k = 0; k < count; k++) {
 				City city = _cities[k];
 				if ((city.isVisible || !onlyVisible) && ((int)city.cityClass & cityFilters) != 0) {
@@ -818,7 +851,7 @@ namespace WorldMapStrategyKit {
 				return null;
 			List<City> countryCities = new List<City>();
 			int countryIndex = GetCountryIndex(country);
-			int count = cities.Count;
+			int count = cities.Length;
 			for (int k = 0; k < count; k++) {
 				City city = _cities[k];
 				if (city.countryIndex == countryIndex && (city.isVisible || !onlyVisible) && ((int)city.cityClass & cityFilters) != 0) {
@@ -840,7 +873,7 @@ namespace WorldMapStrategyKit {
 				return null;
 			int countryIndex = province.countryIndex;
 			List<City> provinceCities = new List<City>();
-			int count = cities.Count;
+			int count = cities.Length;
 			for (int k = 0; k < count; k++) {
 				City city = _cities[k];
 				if (city.countryIndex == countryIndex && (city.isVisible || !onlyVisible) && province.name.Equals(city.province) && ((int)city.cityClass & cityFilters) != 0) {
@@ -856,7 +889,7 @@ namespace WorldMapStrategyKit {
 		/// <param name="cityFilters">Optional city class filter. Use WMSK.CITY_CLASS_FILTER constants to filter by specific types. You can combine several filters using | (OR) operator.</param>
 		/// </summary>
 		public List<City> GetCities(Region region, bool onlyVisible = false, int cityFilters = WMSK.CITY_CLASS_FILTER_ANY) {
-			int citiesCount = cities.Count;
+			int citiesCount = cities.Length;
 			List<City> cc = new List<City>();
 			for (int k = 0; k < citiesCount; k++) {
 				City city = _cities[k];
@@ -876,7 +909,7 @@ namespace WorldMapStrategyKit {
 		/// </summary>
 		public string GetCityGeoData() {
 			StringBuilder sb = new StringBuilder();
-			for (int k = 0; k < cities.Count; k++) {
+			for (int k = 0; k < cities.Length; k++) {
 				City city = cities[k];
 				if (k > 0)
 					sb.Append("|");
@@ -908,17 +941,26 @@ namespace WorldMapStrategyKit {
 			
 			string[] cityList = s.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 			int cityCount = cityList.Length;
-			_cities = new List<City>(cityCount);
+			_cities = new City[cityCount];
 			char[] separatorCities = new char[] { '$' };
 			int cityIndex = 0;
+			int unknownCountryIndex = -1;
 			for (int k = 0; k < cityCount; k++) {
 				string[] cityInfo = cityList[k].Split(separatorCities);
 				string country = cityInfo[2];
 				int countryIndex = GetCountryIndex(country);
+				if (countryIndex<0) {
+					if (unknownCountryIndex<0) {
+						Country uc = new Country("Unknown", "None", 9999999);
+						unknownCountryIndex = CountryAdd(uc);
+					}
+					countryIndex = unknownCountryIndex;
+                }
 				if (countryIndex >= 0) {
 					string name = cityInfo[0];
 					string province = cityInfo[1];
 					int population = int.Parse(cityInfo[3], Misc.InvariantCulture);
+
 					float x = float.Parse(cityInfo[4], Misc.InvariantCulture);
 					float y = float.Parse(cityInfo[5], Misc.InvariantCulture);
 					CITY_CLASS cityClass = (CITY_CLASS)int.Parse(cityInfo[6], Misc.InvariantCulture);
@@ -926,13 +968,13 @@ namespace WorldMapStrategyKit {
 					if (cityInfo.Length >= 8) {
 						uniqueId = int.Parse(cityInfo[7], Misc.InvariantCulture);
 					} else {
-						uniqueId = GetUniqueId (new List<IExtendableAttribute>(_cities.ToArray()));
+						uniqueId = GetUniqueId (new List<IExtendableAttribute>(_cities));
 					}
 					if (cityClass == CITY_CLASS.COUNTRY_CAPITAL) {
 						_countries [countryIndex].capitalCityIndex = cityIndex;
 					}
 					City city = new City(name, province, countryIndex, population, new Vector3(x, y), cityClass, uniqueId);
-					_cities.Add(city);
+					_cities[k] = city;
 					cityIndex++;
 				}
 			}

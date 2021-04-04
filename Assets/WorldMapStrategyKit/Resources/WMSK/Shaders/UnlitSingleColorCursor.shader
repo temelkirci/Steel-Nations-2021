@@ -1,6 +1,7 @@
 ﻿Shader "WMSK/Unlit Single Color Cursor" {
  
 Properties {
+	_MainTex ("Base (RGB)", 2D) = "white" {}
     _Color ("Color", Color) = (1,1,1)
     _Orientation ("Orientation", Float) = 0 // 0 = horizontal, 1 = vertical
 }

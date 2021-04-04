@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace WorldMapStrategyKit {
+
 	public partial class Region: IFader {
 		/// <summary>
 		/// Region border
@@ -60,7 +61,7 @@ namespace WorldMapStrategyKit {
 		/// <summary>
 		/// Optional custom texture for borders. Overrides any general outline setting.
 		/// </summary>
-		public Texture2D customBorderTexture;
+		public Texture customBorderTexture;
 		public float customBorderWidth = 0.1f;
 		public float customBorderTextureTiling = 1f;
 		public Color customBorderTintColor = Color.white;
@@ -69,6 +70,19 @@ namespace WorldMapStrategyKit {
 		public float customBorderAnimationAcumOffset;
 
 		static Dictionary<Vector2,bool> dictPoints;
+
+		public struct CurvedLabelInfo {
+			public Vector2 axisStart;
+			public Vector2 axisEnd;
+			public float axisAngle;
+			public Vector2 axisAveragedThickness;
+			public Vector2 axisMidDisplacement;
+			public Vector2 p0, p1;
+			public bool isDirty;
+		}
+
+		public CurvedLabelInfo curvedLabelInfo;
+
 
 		public Region (IAdminEntity entity, int regionIndex) {
 			this.entity = entity;
@@ -181,6 +195,7 @@ namespace WorldMapStrategyKit {
 			rect2D = new Rect (0, 0, 0, 0);
 			rect2DArea = 0;
 			neighbours.Clear ();
+			curvedLabelInfo.isDirty = true;
 		}
 
 
@@ -197,6 +212,7 @@ namespace WorldMapStrategyKit {
 					points [k] = newPoints [k];
 				}
 			}
+			curvedLabelInfo.isDirty = true;
 			ComputeBounds ();
 		}
 
@@ -208,6 +224,7 @@ namespace WorldMapStrategyKit {
 		public void UpdatePointsAndRect (Vector2[] newPoints, bool inflate = false) {
 			sanitized = false;
 			points = newPoints;
+			curvedLabelInfo.isDirty = true;
 			ComputeBounds ();
 			if (inflate) {
 				Vector2 tmp = Misc.Vector2zero;
@@ -228,6 +245,7 @@ namespace WorldMapStrategyKit {
 			rect2D = fromRegion.rect2D;
 			rect2DArea = fromRegion.rect2DArea;
 			center = fromRegion.center;
+			curvedLabelInfo.isDirty = true;
 		}
 
 

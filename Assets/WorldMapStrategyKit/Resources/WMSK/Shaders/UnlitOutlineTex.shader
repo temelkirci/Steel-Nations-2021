@@ -14,7 +14,12 @@ SubShader {
        "RenderType"="Opaque"
   	}
   	ZWrite Off
-//  	Offset -2, -2
+	Stencil {
+		Ref 4
+		Comp NotEqual
+		Pass Replace
+		Fail Keep
+    }
   	Blend SrcAlpha OneMinusSrcAlpha
     Pass {
     	CGPROGRAM
@@ -35,9 +40,9 @@ SubShader {
 		void vert(inout AppData v) {
 			v.vertex = UnityObjectToClipPos(v.vertex);
 			#if UNITY_REVERSED_Z
-			v.vertex.z+= 0.00002;
+				v.vertex.z += 0.001;
 			#else
-			v.vertex.z-=0.00002;
+				v.vertex.z -= 0.001;
 			#endif	
 			v.uv = TRANSFORM_TEX(v.uv, _MainTex);
 			v.uv.x += _AnimationAcumOffset + _AnimationSpeed * (_Time.y - _AnimationStartTime);

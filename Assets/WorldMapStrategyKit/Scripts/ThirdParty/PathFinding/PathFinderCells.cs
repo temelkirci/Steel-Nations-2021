@@ -18,342 +18,350 @@ using System.Collections.Generic;
 
 namespace WorldMapStrategyKit.PathFinding {
 
-				public class PathFinderCells : IPathFinder {
+    public class PathFinderCells : IPathFinder {
 
-								// Heap variables are initializated to default, but I like to do it anyway
-								private CellCosts[] mGrid = null;
-								private PriorityQueueB<int> mOpen = null;
-								private List<PathFinderNode> mClose = new List<PathFinderNode> ();
-								private HeuristicFormula mFormula = HeuristicFormula.Manhattan;
-								private int mHEstimate = 1;
-								private int mMaxSteps = 2000;
-								private int mMaxSearchCost = 100000;
-								private PathFinderNodeFast[] mCalcGrid = null;
-								private byte mOpenNodeValue = 1;
-								private byte mCloseNodeValue = 2;
-								private OnCellCross mOnCellCross = null;
-								private float mMinAltitude = 0;
-								private float mMaxAltitude = 1f;
+        // Heap variables are initializated to default, but I like to do it anyway
+        private CellCosts[] mGrid = null;
+        private PriorityQueueB<int> mOpen = null;
+        private List<PathFinderNode> mClose = new List<PathFinderNode>();
+        private HeuristicFormula mFormula = HeuristicFormula.Manhattan;
+        private float mHEstimate = 1;
+        private int mMaxSteps = 2000;
+        private float mMaxSearchCost = 100000;
+        private PathFinderNodeFast[] mCalcGrid = null;
+        private byte mOpenNodeValue = 1;
+        private byte mCloseNodeValue = 2;
+        private OnCellCross mOnCellCross = null;
+        private float mMinAltitude = 0;
+        private float mMaxAltitude = 1f;
 
-								//Promoted local variables to member variables to avoid recreation between calls
-								private int mH = 0;
-								private int mLocation = 0;
-								private int mNewLocation = 0;
-								private ushort mLocationX = 0;
-								private ushort mLocationY = 0;
-								private ushort mNewLocationX = 0;
-								private ushort mNewLocationY = 0;
-								private int mCloseNodeCounter = 0;
-								private ushort mGridX = 0;
-								private ushort mGridY = 0;
-								private bool mFound = false;
-								private sbyte[,] mDirectionHex0 = new sbyte[6, 2] {
-												{ 0, -1 },
-												{ 1, 0 },
-												{ 0, 1 },
-												{ -1, 0 }, 
-												{	1,	1	}, 
-												{	-1,	1	}
-								};
-								private sbyte[,] mDirectionHex1 = new sbyte[6, 2] {
-												{ 0, -1 },
-												{ 1, 0 },
-												{ 0, 1 },
-												{ -1, 0 },
-												{	-1,	-1	}, 
-												{ 1, -1 }
-								};
-								private int[] mCellSide0 = new int[6] {
-												(int)CELL_SIDE.Bottom,
-												(int)CELL_SIDE.BottomRight,
-												(int)CELL_SIDE.Top,
-												(int)CELL_SIDE.BottomLeft,
-												(int)CELL_SIDE.TopRight,
-												(int)CELL_SIDE.TopLeft
-								};
-								private int[] mCellSide1 = new int[6] {
-												(int)CELL_SIDE.Bottom,
-												(int)CELL_SIDE.TopRight,
-												(int)CELL_SIDE.Top,
-												(int)CELL_SIDE.TopLeft,
-												(int)CELL_SIDE.BottomLeft,
-												(int)CELL_SIDE.BottomRight
-								};
-								private int mEndLocation = 0;
-								private int mNewG = 0;
-								private TERRAIN_CAPABILITY mTerrainCapability = TERRAIN_CAPABILITY.Any;
-								private int callNumber = 0;
+        //Promoted local variables to member variables to avoid recreation between calls
+        private float mH;
+        private int mLocation;
+        private int mNewLocation;
+        private int mLocationX;
+        private int mLocationY;
+        private int mNewLocationX;
+        private int mNewLocationY;
+        private int mCloseNodeCounter;
+        private int mGridX;
+        private int mGridY;
+        private bool mFound = false;
+        private readonly sbyte[,] mDirectionHex0 = new sbyte[6, 2] {
+                                                { 0, -1 },
+                                                { 1, 0 },
+                                                { 0, 1 },
+                                                { -1, 0 },
+                                                {   1,  1   },
+                                                {   -1, 1   }
+                                };
+        private readonly sbyte[,] mDirectionHex1 = new sbyte[6, 2] {
+                                                { 0, -1 },
+                                                { 1, 0 },
+                                                { 0, 1 },
+                                                { -1, 0 },
+                                                {   -1, -1  },
+                                                { 1, -1 }
+                                };
+        private readonly int[] mCellSide0 = new int[6] {
+                                                (int)CELL_SIDE.Bottom,
+                                                (int)CELL_SIDE.BottomRight,
+                                                (int)CELL_SIDE.Top,
+                                                (int)CELL_SIDE.BottomLeft,
+                                                (int)CELL_SIDE.TopRight,
+                                                (int)CELL_SIDE.TopLeft
+                                };
+        private readonly int[] mCellSide1 = new int[6] {
+                                                (int)CELL_SIDE.Bottom,
+                                                (int)CELL_SIDE.TopRight,
+                                                (int)CELL_SIDE.Top,
+                                                (int)CELL_SIDE.TopLeft,
+                                                (int)CELL_SIDE.BottomLeft,
+                                                (int)CELL_SIDE.BottomRight
+                                };
+        private int mEndLocation;
+        private float mNewG;
+        private TERRAIN_CAPABILITY mTerrainCapability = TERRAIN_CAPABILITY.Any;
+        private int callNumber;
 
-								public PathFinderCells (CellCosts[] grid, int gridWidth, int gridHeight) { 
-												if (grid == null)
-																throw new Exception ("Grid cannot be null");
+        public PathFinderCells(CellCosts[] grid, int gridWidth, int gridHeight) {
+            if (grid == null)
+                throw new Exception("Grid cannot be null");
 
-												mGrid = grid;
-												mGridX = (ushort)gridWidth;
-												mGridY = (ushort)gridHeight;
+            mGrid = grid;
+            mGridX = gridWidth;
+            mGridY = gridHeight;
 
-												if (mCalcGrid == null || mCalcGrid.Length != (mGridX * mGridY))
-																mCalcGrid = new PathFinderNodeFast[mGridX * mGridY];
+            if (mCalcGrid == null || mCalcGrid.Length != (mGridX * mGridY))
+                mCalcGrid = new PathFinderNodeFast[mGridX * mGridY];
 
-												mOpen = new PriorityQueueB<int> (new ComparePFNodeMatrix (mCalcGrid));
-								}
+            mOpen = new PriorityQueueB<int>(new ComparePFNodeMatrix(mCalcGrid));
+        }
 
-								public void SetCustomCellsCosts (CellCosts[] cellsCosts) {
-												mGrid = cellsCosts;
-								}
+        public void SetCustomCellsCosts(CellCosts[] cellsCosts) {
+            mGrid = cellsCosts;
+        }
 
-								public HeuristicFormula Formula {
-												get { return mFormula; }
-												set { mFormula = value; }
-								}
+        public HeuristicFormula Formula {
+            get { return mFormula; }
+            set { mFormula = value; }
+        }
 
-								public TERRAIN_CAPABILITY TerrainCapability {
-												get { return mTerrainCapability; }
-												set { mTerrainCapability = value; }
-								}
+        public TERRAIN_CAPABILITY TerrainCapability {
+            get { return mTerrainCapability; }
+            set { mTerrainCapability = value; }
+        }
 
-								public int HeuristicEstimate {
-												get { return mHEstimate; }
-												set { mHEstimate = value; }
-								}
+        public float HeuristicEstimate {
+            get { return mHEstimate; }
+            set { mHEstimate = value; }
+        }
 
-								public int MaxSearchCost {
-												get { return mMaxSearchCost; }
-												set { mMaxSearchCost = value; }
-								}
+        public float MaxSearchCost {
+            get { return mMaxSearchCost; }
+            set { mMaxSearchCost = value; }
+        }
 
-								public int MaxSteps {
-												get { return mMaxSteps; }
-												set { mMaxSteps = value; }
-								}
+        public int MaxSteps {
+            get { return mMaxSteps; }
+            set { mMaxSteps = value; }
+        }
 
-								public OnCellCross OnCellCross {
-												get { return mOnCellCross; }
-												set { mOnCellCross = value; }
-								}
+        public OnCellCross OnCellCross {
+            get { return mOnCellCross; }
+            set { mOnCellCross = value; }
+        }
 
-								public float MinAltitude {
-												get { return mMinAltitude; }
-												set { mMinAltitude = value; }
-								}
+        public float MinAltitude {
+            get { return mMinAltitude; }
+            set { mMinAltitude = value; }
+        }
 
-								public float MaxAltitude {
-												get { return mMaxAltitude; }
-												set { mMaxAltitude = value; }
-								}
+        public float MaxAltitude {
+            get { return mMaxAltitude; }
+            set { mMaxAltitude = value; }
+        }
 
-								public List<PathFinderNode> FindPath (Point start, Point end, out int totalCost) {
-												totalCost = 0;
+        public List<PathFinderNode> FindPath(Point start, Point end, out float totalCost) {
+            totalCost = 0;
 
-												mFound = false;
-												mCloseNodeCounter = 0;
-												if (mOpenNodeValue > 250) {
-																Array.Clear (mCalcGrid, 0, mCalcGrid.Length);
-																mOpenNodeValue = 1;
-																mCloseNodeValue = 2;
-												} else {
-																mOpenNodeValue += 2;
-																mCloseNodeValue += 2;
-												}
-												mOpen.Clear ();
-												mClose.Clear ();
-												callNumber++;
+            mFound = false;
+            mCloseNodeCounter = 0;
+            if (mOpenNodeValue > 250) {
+                Array.Clear(mCalcGrid, 0, mCalcGrid.Length);
+                mOpenNodeValue = 1;
+                mCloseNodeValue = 2;
+            } else {
+                mOpenNodeValue += 2;
+                mCloseNodeValue += 2;
+            }
+            mOpen.Clear();
+            mClose.Clear();
+            callNumber++;
 
-												mLocation = (start.Y * mGridX) + start.X;
-												mEndLocation = (end.Y * mGridX) + end.X;
-												mCalcGrid [mLocation].G = 0;
-												mCalcGrid [mLocation].F = mHEstimate;
-												mCalcGrid [mLocation].PX = (ushort)start.X;
-												mCalcGrid [mLocation].PY = (ushort)start.Y;
-												mCalcGrid [mLocation].Status = mOpenNodeValue;
+            mLocation = (start.Y * mGridX) + start.X;
+            mEndLocation = (end.Y * mGridX) + end.X;
+            mCalcGrid[mLocation].G = 0;
+            mCalcGrid[mLocation].F = mHEstimate;
+            mCalcGrid[mLocation].PX = (ushort)start.X;
+            mCalcGrid[mLocation].PY = (ushort)start.Y;
+            mCalcGrid[mLocation].Status = mOpenNodeValue;
 
-												mOpen.Push (mLocation);
-												while (mOpen.Count > 0) {
-																mLocation = mOpen.Pop ();
+            mOpen.Push(mLocation);
+            while (mOpen.Count > 0) {
+                mLocation = mOpen.Pop();
 
-																// Is it in closed list? means this node was already processed
-																if (mCalcGrid [mLocation].Status == mCloseNodeValue)
-																				continue;
+                // Is it in closed list? means this node was already processed
+                if (mCalcGrid[mLocation].Status == mCloseNodeValue)
+                    continue;
 
-																if (mLocation == mEndLocation) {
-																				mCalcGrid [mLocation].Status = mCloseNodeValue;
-																				mFound = true;
-																				break;
-																}
+                if (mLocation == mEndLocation) {
+                    mCalcGrid[mLocation].Status = mCloseNodeValue;
+                    mFound = true;
+                    break;
+                }
 
-																if (mCloseNodeCounter > mMaxSteps) {
-																				return null;
-																}
+                if (mCloseNodeCounter > mMaxSteps) {
+                    return null;
+                }
 
-																mLocationX = (ushort)(mLocation % mGridX);
-																mLocationY = (ushort)(mLocation / mGridX);
+                mLocationX = mLocation % mGridX;
+                mLocationY = mLocation / mGridX;
 
-																//Lets calculate each successors
-																for (int i = 0; i < 6; i++) {
-																				int cellSide;
-																				if (mLocationX % 2 == 0) {
-																								mNewLocationX = (ushort)(mLocationX + mDirectionHex0 [i, 0]);
-																								mNewLocationY = (ushort)(mLocationY + mDirectionHex0 [i, 1]);
-																								cellSide = mCellSide0 [i];
-																				} else {
-																								mNewLocationX = (ushort)(mLocationX + mDirectionHex1 [i, 0]);
-																								mNewLocationY = (ushort)(mLocationY + mDirectionHex1 [i, 1]);
-																								cellSide = mCellSide1 [i];
-																				}
+                //Lets calculate each successors
+                for (int i = 0; i < 6; i++) {
+                    int cellSide;
+                    if (mLocationX % 2 == 0) {
+                        mNewLocationX = mLocationX + mDirectionHex0[i, 0];
+                        mNewLocationY = mLocationY + mDirectionHex0[i, 1];
+                        cellSide = mCellSide0[i];
+                    } else {
+                        mNewLocationX = mLocationX + mDirectionHex1[i, 0];
+                        mNewLocationY = mLocationY + mDirectionHex1[i, 1];
+                        cellSide = mCellSide1[i];
+                    }
 
-																				if (mNewLocationY >= mGridY)
-																								continue;
+                    if (mNewLocationY >= mGridY) {
+                        mNewLocationY = 0;
+                    } else if (mNewLocationY < 0) {
+                        mNewLocationY = mGridY - 1;
+                    }
 
-																				if (mNewLocationX >= mGridX)
-																								continue;
+                    if (mNewLocationX >= mGridX) {
+                        mNewLocationX = 0;
+                    } else if (mNewLocationX < 0) {
+                        mNewLocationX = mGridX - 1;
+                    }
 
-																				// Unbreakeable?
-																				mNewLocation = (mNewLocationY * mGridX) + mNewLocationX;
-																				if (mGrid [mNewLocation].isBlocked)
-																								continue;
+                    // Unbreakeable?
+                    mNewLocation = (mNewLocationY * mGridX) + mNewLocationX;
+                    if (mGrid[mNewLocation].isBlocked)
+                        continue;
 
-																				if (mGrid [mNewLocation].altitude < mMinAltitude || mGrid [mNewLocation].altitude > mMaxAltitude)
-																								continue;
+                    if (mGrid[mNewLocation].altitude < mMinAltitude || mGrid[mNewLocation].altitude > mMaxAltitude)
+                        continue;
 
-																				if (mTerrainCapability != TERRAIN_CAPABILITY.Any) {
-																								bool isWater = mGrid [mNewLocation].isWater;
-																								if (mTerrainCapability == TERRAIN_CAPABILITY.OnlyGround) {
-																												if (isWater)
-																																continue;
-																								} else {
-																												if (!isWater)
-																																continue;
-																								}
-																				}
+                    if (mTerrainCapability != TERRAIN_CAPABILITY.Any) {
+                        bool isWater = mGrid[mNewLocation].isWater;
+                        if (mTerrainCapability == TERRAIN_CAPABILITY.OnlyGround) {
+                            if (isWater)
+                                continue;
+                        } else {
+                            if (!isWater)
+                                continue;
+                        }
+                    }
 
-																				int gridValue = 1;
-																				int[] sideCosts = mGrid [mLocation].crossCost;
-																				if (sideCosts != null) {
-																								gridValue = sideCosts [cellSide];
-																				}
+                    float gridValue = 1;
+                    float[] sideCosts = mGrid[mLocation].crossCost;
+                    if (sideCosts != null) {
+                        gridValue = sideCosts[cellSide];
+                    }
 
-																				// Check custom validator
-																				if (mOnCellCross != null) {
-																								if (mGrid [mNewLocation].cachedCallNumber != callNumber) {
-																												mGrid [mNewLocation].cachedCallNumber = callNumber;
-																												mGrid [mNewLocation].cachedEventCostValue = mOnCellCross (mNewLocation);
-																								}
-																								gridValue += mGrid [mNewLocation].cachedEventCostValue;
-																				}
-																				if (gridValue <= 0)
-																								gridValue = 1;
+                    // Check custom validator
+                    if (mOnCellCross != null) {
+                        if (mGrid[mNewLocation].cachedCallNumber != callNumber) {
+                            mGrid[mNewLocation].cachedCallNumber = callNumber;
+                            mGrid[mNewLocation].cachedEventCostValue = mOnCellCross(mNewLocation);
+                        }
+                        gridValue += mGrid[mNewLocation].cachedEventCostValue;
+                    }
+                    if (gridValue <= 0)
+                        gridValue = 1;
 
-																				mNewG = mCalcGrid [mLocation].G + gridValue;
+                    mNewG = mCalcGrid[mLocation].G + gridValue;
 
-																				if (mNewG > mMaxSearchCost)
-																								continue;
+                    if (mNewG > mMaxSearchCost)
+                        continue;
 
-																				//Is it open or closed?
-																				if (mCalcGrid [mNewLocation].Status == mOpenNodeValue || mCalcGrid [mNewLocation].Status == mCloseNodeValue) {
-																								// The current node has less code than the previous? then skip this node
-																								if (mCalcGrid [mNewLocation].G <= mNewG)
-																												continue;
-																				}
+                    //Is it open or closed?
+                    if (mCalcGrid[mNewLocation].Status == mOpenNodeValue || mCalcGrid[mNewLocation].Status == mCloseNodeValue) {
+                        // The current node has less code than the previous? then skip this node
+                        if (mCalcGrid[mNewLocation].G <= mNewG)
+                            continue;
+                    }
 
-																				mCalcGrid [mNewLocation].PX = mLocationX;
-																				mCalcGrid [mNewLocation].PY = mLocationY;
-																				mCalcGrid [mNewLocation].G = mNewG;
+                    mCalcGrid[mNewLocation].PX = (ushort)mLocationX;
+                    mCalcGrid[mNewLocation].PY = (ushort)mLocationY;
+                    mCalcGrid[mNewLocation].G = mNewG;
 
-																				int dist = Math.Abs (mNewLocationX - end.X);
-																				switch (mFormula) {
-																				default:
-																				case HeuristicFormula.Manhattan:
-																								mH = mHEstimate * (dist + Math.Abs (mNewLocationY - end.Y));
-																								break;
-																				case HeuristicFormula.MaxDXDY:
-																								mH = mHEstimate * (Math.Max (dist, Math.Abs (mNewLocationY - end.Y)));
-																								break;
-																				case HeuristicFormula.DiagonalShortCut:
-																								int h_diagonal = Math.Min (dist, Math.Abs (mNewLocationY - end.Y));
-																								int h_straight = (dist + Math.Abs (mNewLocationY - end.Y));
-																								mH = (mHEstimate * 2) * h_diagonal + mHEstimate * (h_straight - 2 * h_diagonal);
-																								break;
-																				case HeuristicFormula.Euclidean:
-																								mH = (int)(mHEstimate * Math.Sqrt (Math.Pow (dist, 2) + Math.Pow ((mNewLocationY - end.Y), 2)));
-																								break;
-																				case HeuristicFormula.EuclideanNoSQR:
-																								mH = (int)(mHEstimate * (Math.Pow (dist, 2) + Math.Pow ((mNewLocationY - end.Y), 2)));
-																								break;
-																				case HeuristicFormula.Custom1:
-																								Point dxy = new Point (dist, Math.Abs (end.Y - mNewLocationY));
-																								int Orthogonal = Math.Abs (dxy.X - dxy.Y);
-																								int Diagonal = Math.Abs (((dxy.X + dxy.Y) - Orthogonal) / 2);
-																								mH = mHEstimate * (Diagonal + Orthogonal + dxy.X + dxy.Y);
-																								break;
-																				}
-																				mCalcGrid [mNewLocation].F = mNewG + mH;
+                    int dist = Math.Abs(mNewLocationX - end.X);
+                    dist = Math.Min(dist, mGridX - dist);
 
-																				mOpen.Push (mNewLocation);
-																				mCalcGrid [mNewLocation].Status = mOpenNodeValue;
-																}
+                    switch (mFormula) {
+                        default:
+                        case HeuristicFormula.Manhattan:
+                            mH = mHEstimate * (dist + Math.Abs(mNewLocationY - end.Y));
+                            break;
+                        case HeuristicFormula.MaxDXDY:
+                            mH = mHEstimate * (Math.Max(dist, Math.Abs(mNewLocationY - end.Y)));
+                            break;
+                        case HeuristicFormula.DiagonalShortCut:
+                            float h_diagonal = Math.Min(dist, Math.Abs(mNewLocationY - end.Y));
+                            float h_straight = (dist + Math.Abs(mNewLocationY - end.Y));
+                            mH = (mHEstimate * 2) * h_diagonal + mHEstimate * (h_straight - 2 * h_diagonal);
+                            break;
+                        case HeuristicFormula.Euclidean:
+                            mH = mHEstimate * Mathf.Sqrt(Mathf.Pow(dist, 2) + Mathf.Pow((mNewLocationY - end.Y), 2));
+                            break;
+                        case HeuristicFormula.EuclideanNoSQR:
+                            mH = mHEstimate * (Mathf.Pow(dist, 2) + Mathf.Pow((mNewLocationY - end.Y), 2));
+                            break;
+                        case HeuristicFormula.Custom1:
+                            Point dxy = new Point(dist, Math.Abs(end.Y - mNewLocationY));
+                            float Orthogonal = Math.Abs(dxy.X - dxy.Y);
+                            float Diagonal = Math.Abs(((dxy.X + dxy.Y) - Orthogonal) / 2);
+                            mH = mHEstimate * (Diagonal + Orthogonal + dxy.X + dxy.Y);
+                            break;
+                    }
+                    mCalcGrid[mNewLocation].F = mNewG + mH;
 
-																mCloseNodeCounter++;
-																mCalcGrid [mLocation].Status = mCloseNodeValue;
-												}
+                    mOpen.Push(mNewLocation);
+                    mCalcGrid[mNewLocation].Status = mOpenNodeValue;
+                }
 
-												if (mFound) {
-																mClose.Clear ();
-																int posX = end.X;
-																int posY = end.Y;
+                mCloseNodeCounter++;
+                mCalcGrid[mLocation].Status = mCloseNodeValue;
+            }
 
-																PathFinderNodeFast fNodeTmp = mCalcGrid [mEndLocation];
-																totalCost = fNodeTmp.G;
-																mGrid [mEndLocation].lastPathFindingCost = totalCost;
-																PathFinderNode fNode;
-																fNode.F = fNodeTmp.F;
-																fNode.G = fNodeTmp.G;
-																fNode.H = 0;
-																fNode.PX = fNodeTmp.PX;
-																fNode.PY = fNodeTmp.PY;
-																fNode.X = end.X;
-																fNode.Y = end.Y;
+            if (mFound) {
+                mClose.Clear();
+                int posX = end.X;
+                int posY = end.Y;
 
-																while (fNode.X != fNode.PX || fNode.Y != fNode.PY) {
-																				mClose.Add (fNode);
-																				posX = fNode.PX;
-																				posY = fNode.PY;
-																				int loc = (posY * mGridX) + posX;
-																				fNodeTmp = mCalcGrid [loc];
-																				fNode.F = fNodeTmp.F;
-																				fNode.G = fNodeTmp.G;
-																				mGrid [loc].lastPathFindingCost = fNodeTmp.G;
-																				fNode.H = 0;
-																				fNode.PX = fNodeTmp.PX;
-																				fNode.PY = fNodeTmp.PY;
-																				fNode.X = posX;
-																				fNode.Y = posY;
-																} 
+                PathFinderNodeFast fNodeTmp = mCalcGrid[mEndLocation];
+                totalCost = fNodeTmp.G;
+                mGrid[mEndLocation].lastPathFindingCost = totalCost;
+                PathFinderNode fNode;
+                fNode.F = fNodeTmp.F;
+                fNode.G = fNodeTmp.G;
+                fNode.H = 0;
+                fNode.PX = fNodeTmp.PX;
+                fNode.PY = fNodeTmp.PY;
+                fNode.X = end.X;
+                fNode.Y = end.Y;
 
-																mClose.Add (fNode);
+                while (fNode.X != fNode.PX || fNode.Y != fNode.PY) {
+                    mClose.Add(fNode);
+                    posX = fNode.PX;
+                    posY = fNode.PY;
+                    int loc = (posY * mGridX) + posX;
+                    fNodeTmp = mCalcGrid[loc];
+                    fNode.F = fNodeTmp.F;
+                    fNode.G = fNodeTmp.G;
+                    mGrid[loc].lastPathFindingCost = fNodeTmp.G;
+                    fNode.H = 0;
+                    fNode.PX = fNodeTmp.PX;
+                    fNode.PY = fNodeTmp.PY;
+                    fNode.X = posX;
+                    fNode.Y = posY;
+                }
 
-																return mClose;
-												}
-												return null;
-								}
+                mClose.Add(fNode);
 
-								internal class ComparePFNodeMatrix : IComparer<int> {
-												protected PathFinderNodeFast[] mMatrix;
+                return mClose;
+            }
+            return null;
+        }
 
-												public ComparePFNodeMatrix (PathFinderNodeFast[] matrix) {
-																mMatrix = matrix;
-												}
+        internal class ComparePFNodeMatrix : IComparer<int> {
+            protected PathFinderNodeFast[] mMatrix;
 
-												public int Compare (int a, int b) {
-																if (mMatrix [a].F > mMatrix [b].F)
-																				return 1;
-																else if (mMatrix [a].F < mMatrix [b].F)
-																				return -1;
-																return 0;
-												}
+            public ComparePFNodeMatrix(PathFinderNodeFast[] matrix) {
+                mMatrix = matrix;
+            }
 
-												public void SetMatrix (PathFinderNodeFast[] matrix) {
-																mMatrix = matrix;
-												}
-								}
-				}
+            public int Compare(int a, int b) {
+                if (mMatrix[a].F > mMatrix[b].F)
+                    return 1;
+                else if (mMatrix[a].F < mMatrix[b].F)
+                    return -1;
+                return 0;
+            }
+
+            public void SetMatrix(PathFinderNodeFast[] matrix) {
+                mMatrix = matrix;
+            }
+        }
+    }
 }

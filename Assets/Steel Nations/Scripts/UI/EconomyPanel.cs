@@ -31,8 +31,11 @@ namespace WorldMapStrategyKit
 
         public Slider taxesSlider;
 
-        public BarChart incomeBar;
-        public BarChart expenseBar;
+        //public BarChart incomeBar;
+        //public BarChart expenseBar;
+        public PieChart incomePieChart;
+        public PieChart expensePieChart;
+
 
         // Start is called before the first frame update
         void Start()
@@ -40,13 +43,15 @@ namespace WorldMapStrategyKit
             instance = this;
         }
 
+       
+
         public void ChangedTaxes()
         {
             int newValue = Convert.ToInt32(taxesSlider.value);
 
-            GameEventHandler.Instance.GetPlayer().GetMyCountry().attrib["Taxes"] = newValue;
+            GameEventHandler.Instance.GetPlayer().GetMyCountry().Individual_Tax = newValue;
 
-            taxes.text = "$ " + GameEventHandler.Instance.GetPlayer().GetMyCountry().attrib["Taxes"];
+            taxes.text = "$ " + GameEventHandler.Instance.GetPlayer().GetMyCountry().Individual_Tax;
         }
 
         public void ShowEconomyPanel()
@@ -62,12 +67,12 @@ namespace WorldMapStrategyKit
             {
                 Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
 
-                previousNationalIncome.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.GetPreviousGDP().ToString())) + "M";
-                currentNationalIncome.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.GetCurrentGDP().ToString())) + "M";
-                taxes.text = "$ " + myCountry.GetIndividualTax().ToString();
-                exportPerWeek.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.GetExportMonthly().ToString())) + "M";
-                importPerWeek.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.GetImportMonthly().ToString())) + "M";
-                tradeRatio.text = "% " + myCountry.GetTradeRatio();
+                previousNationalIncome.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.Previous_GDP.ToString())) + "M";
+                currentNationalIncome.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.Current_GDP.ToString())) + "M";
+                taxes.text = "$ " + myCountry.Individual_Tax.ToString();
+                exportPerWeek.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.Individual_Tax.ToString())) + "M";
+                importPerWeek.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.Debt.ToString())) + "M";
+                tradeRatio.text = "% " + CountryManager.Instance.GetGDPTradeBonus(myCountry);
 
                 SetIncomeBarChart();
                 SetExpenseBarChart();
@@ -85,17 +90,46 @@ namespace WorldMapStrategyKit
         {
             Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
 
-            incomeBar.GetChartData().DataSets.Clear();
+            //incomeBar.GetChartData().DataSets.Clear();
+
+            incomePieChart.GetChartData().DataSet.Clear();
 
             //	Create	data	set	for	entries
+            PieDataSet set = new PieDataSet();
+
+            int mineralIncome = myCountry.Mineral_Income;
+            int gunIncome = myCountry.Gun_Income;
+            int oilIncome = myCountry.Oil_Income;
+            int individualTax = (int)CountryManager.Instance.GetIndividualTaxIncomeMonthly(myCountry);
+
+            if (mineralIncome > 0)
+                set.AddEntry(new PieEntry(mineralIncome, "Mineral Income", Color.green));
+
+            if(gunIncome > 0)
+                set.AddEntry(new PieEntry(gunIncome, "Gun Income", Color.red));
+
+            if(oilIncome > 0)
+                set.AddEntry(new PieEntry(oilIncome, "Oil Income", Color.gray));
+
+            if (individualTax > 0)
+                set.AddEntry(new PieEntry(individualTax, "Individual Tax", Color.blue));
+
+            //	Add	data	set	to	chart	data
+            incomePieChart.GetChartData().DataSet = set;
+            //	Refresh	chart	after	data	change
+            incomePieChart.SetDirty();
+
+            /*
+            //	Create	data	set	for	entries
             BarDataSet set = new BarDataSet();
+
             //	Add	entries	to	data	set									
             set.AddEntry(new BarEntry(0, myCountry.GetMineralIncome()));
             set.AddEntry(new BarEntry(1, myCountry.GetGunIncome()));
-            set.AddEntry(new BarEntry(2, myCountry.GetIndividualTaxIncomeMonthly()));
-            set.AddEntry(new BarEntry(3, myCountry.GetCorporationTaxIncomeMonthly()));
+            set.AddEntry(new BarEntry(2, CountryManager.Instance.GetIndividualTaxIncomeMonthly(myCountry)));
+            set.AddEntry(new BarEntry(3, CountryManager.Instance.GetCorporationTaxIncomeMonthly(myCountry)));
             set.AddEntry(new BarEntry(4, myCountry.GetOilIncome()));
-
+            
             //	Set	bars	color
             set.BarColors.Add(Color.red);
             set.BarColors.Add(Color.gray);
@@ -117,11 +151,37 @@ namespace WorldMapStrategyKit
 
             //	Refresh	chart	after	data	change							
             incomeBar.SetDirty();
+            */
         }
         public void SetExpenseBarChart()
         {
             Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
 
+            expensePieChart.GetChartData().DataSet.Clear();
+
+            //	Create	data	set	for	entries
+            PieDataSet set = new PieDataSet();
+
+            int armyMaintanence = myCountry.GetArmy().GetArmyExpenseMonthly();
+            int intelligenceAgency = myCountry.Intelligence_Agency.IntelligenceAgencyBudget / 12;
+            int debt = myCountry.Debt;
+
+            if (armyMaintanence > 0)
+                set.AddEntry(new PieEntry(myCountry.GetArmy().GetArmyExpenseMonthly(), "Army Maintanence", Color.red));
+
+            if(intelligenceAgency > 0)
+                set.AddEntry(new PieEntry(intelligenceAgency, "Intelligence Agency", Color.green));
+
+            if(debt > 0)
+                set.AddEntry(new PieEntry(debt, "Debt", Color.blue));
+
+            //	Add	data	set	to	chart	data
+            expensePieChart.GetChartData().DataSet = set;
+
+            //	Refresh	chart	after	data	change
+            expensePieChart.SetDirty();
+
+            /*
             expenseBar.GetChartData().DataSets.Clear();
 
             //	Create	data	set	for	entries
@@ -156,6 +216,7 @@ namespace WorldMapStrategyKit
 
             //	Refresh	chart	after	data	change							
             expenseBar.SetDirty();
+            */
         }
 
         public void HideEconomyPanel()

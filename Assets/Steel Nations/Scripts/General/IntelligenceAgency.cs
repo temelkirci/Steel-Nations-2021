@@ -1,47 +1,54 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿
 public class IntelligenceAgency
 {
     string intelligenceAgencyName;
     int intelligenceAgencyLevel;
     int intelligenceAgencyBudget;
 
-    public void SetIntelligenceAgencyName(string name)
+    int militaryCoup;
+    int reverseEnginering;
+    int assassination;
+
+    public void Init()
     {
-        intelligenceAgencyName = name;
-    }
-    public string GetIntelligenceAgencyName()
-    {
-        return intelligenceAgencyName;
+        reverseEnginering = intelligenceAgencyLevel * intelligenceAgencyLevel;
+        assassination = intelligenceAgencyLevel * intelligenceAgencyLevel;
+        militaryCoup = (intelligenceAgencyLevel * intelligenceAgencyLevel) / 2;
     }
 
-    public void SetIntelligenceAgencyLevel(int level)
+    public string IntelligenceAgencyName
     {
-        intelligenceAgencyLevel = level;
-    }
-    public int GetIntelligenceAgencyLevel()
-    {
-        return intelligenceAgencyLevel;
+        get { return intelligenceAgencyName; }
+        set { intelligenceAgencyName = value; }
     }
 
-    public void SetIntelligenceAgencyBudget(int budget)
+    public int IntelligenceAgencyLevel
     {
-        intelligenceAgencyBudget = budget;
-    }
-    public int GetIntelligenceAgencyBudget()
-    {
-        return intelligenceAgencyBudget;
+        get { return intelligenceAgencyLevel; }
+        set { intelligenceAgencyLevel = value; }
     }
 
-
-    public int GetAssassinationOfPresident()
+    public int IntelligenceAgencyBudget
     {
-        return intelligenceAgencyLevel * 5; 
+        get { return intelligenceAgencyBudget; }
+        set { intelligenceAgencyBudget = value; }
     }
-    public int GetStoleTechnology()
+
+    public int Assassination
     {
-        return intelligenceAgencyLevel * 8;
+        get { return assassination; }
+        set { assassination = value; }
+    }
+
+    public int ReverseEnginering
+    {
+        get { return reverseEnginering; }
+        set { reverseEnginering = value; }
+    }
+
+    public int MilitaryCoup
+    {
+        get { return militaryCoup; }
+        set { militaryCoup = value; }
     }
 }

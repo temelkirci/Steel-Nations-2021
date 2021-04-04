@@ -1,18 +1,16 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 namespace Michsky.UI.ModernUIPack
 {
-    public class CustomInputField : MonoBehaviour
+    public class CustomInputField : MonoBehaviour, IPointerClickHandler
     {
-        [Header("ANIMATORS")]
-        public Animator inputFieldAnimator;
-
-        [Header("OBJECTS")]
+        [Header("RESOURCES")]
         public GameObject fieldTrigger;
-        public TMP_InputField inputText;
+        private TMP_InputField inputText;
+        private Animator inputFieldAnimator;
 
         // [Header("SETTINGS")]
         private bool isEmpty = true;
@@ -22,27 +20,22 @@ namespace Michsky.UI.ModernUIPack
 
         void Start()
         {
+            inputFieldAnimator = gameObject.GetComponent<Animator>();
+            inputText = gameObject.GetComponent<TMP_InputField>();
+
             // Check if text is empty or not
             if (inputText.text.Length == 0 || inputText.text.Length <= 0)
-            {
                 isEmpty = true;
-            }
 
             else
-            {
                 isEmpty = false;
-            }
 
             // Animate if it's empty
             if (isEmpty == true)
-            {
                 inputFieldAnimator.Play(outAnim);
-            }
 
             else
-            {
                 inputFieldAnimator.Play(inAnim);
-            }
         }
 
         void Update()
@@ -80,6 +73,11 @@ namespace Michsky.UI.ModernUIPack
                 fieldTrigger.SetActive(false);
                 isClicked = false;
             }
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            Animate();
         }
     }
 }

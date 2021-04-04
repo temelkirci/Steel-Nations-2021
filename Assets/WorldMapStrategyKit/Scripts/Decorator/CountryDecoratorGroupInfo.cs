@@ -45,16 +45,18 @@ namespace WorldMapStrategyKit {
 		#region Lifecycle events
 
 		void OnEnable () {
-			if (decorators == null)
-				decorators = new List<CountryDecorator> ();
+			if (decorators == null) {
+				decorators = new List<CountryDecorator>();
+			}
+			UpdateDecorators(true, true);
 		}
 
 		void Start () {
-			UpdateDecorators (true);
+			UpdateDecorators (true, true);
 		}
 
 		// Update is called once per frame
-		void Update () {
+		void LateUpdate () {
 			if (!active)
 				return;
 			if (++lastCheck % 10 == 0) {
@@ -63,8 +65,8 @@ namespace WorldMapStrategyKit {
 			}
 		}
 
-
 		#endregion
+
 
 
 		int GetDecoratorIndex (string countryName) {
@@ -111,7 +113,7 @@ namespace WorldMapStrategyKit {
 			decorators.Clear ();
 		}
 
-		public void UpdateDecorators (bool ignoreActive) {
+		public void UpdateDecorators (bool ignoreActive, bool firstTime = false) {
 			if (!active && !ignoreActive)
 				return;
 			if (decorators == null || map == null)
@@ -122,6 +124,8 @@ namespace WorldMapStrategyKit {
 
 			for (int k = 0; k < decorators.Count; k++) {
 				CountryDecorator decorator = decorators [k];
+
+				if (!decorator.isPersistent && !firstTime) continue;
 
 				// Check if something needs to be changed
 				int countryIndex = map.GetCountryIndex (decorator.countryName);
