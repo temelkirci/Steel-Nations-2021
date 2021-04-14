@@ -137,6 +137,28 @@ namespace WorldMapStrategyKit
             return organizationList;
         }
 
+        public int GetOrganizationsPower(Country country)
+        {
+            int power = 0;
+
+            foreach (Organization organization in GetAllOrganizations())
+                if (organization.isAttackForMember && organization.isFullMemberCountry(country) == false)
+                    foreach (Country member in organization.GetFullMemberList())
+                        if (member.GetArmy() != null)
+                            power += member.GetArmy().GetArmyPower();
+
+            return power;
+        }
+
+        public bool AreTheseCountriesInSameOrganization(Country country, Country target)
+        {
+            foreach (Organization organization in GetAllOrganizations())
+                if (organization.isFullMemberCountry(country) && organization.isFullMemberCountry(target))
+                    return true;
+
+            return false;
+        }
+
         public Texture2D GetOrganizationLogoByName(string organizationName)
         {
             foreach (Organization org in organizationList)

@@ -294,6 +294,8 @@ namespace WorldMapStrategyKit
 
         public void SaveGame()
         {
+            HUDManager.Instance.PrivateNotification("Auto Saving !... ");
+
             Debug.Log("Game Saving...");
 
             SaveCountry();

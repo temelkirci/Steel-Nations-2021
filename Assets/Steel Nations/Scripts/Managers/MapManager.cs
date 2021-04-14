@@ -30,7 +30,6 @@ namespace WorldMapStrategyKit
         GameObject marker;
         WMSK map;
 
-        // Start is called before the first frame update
         void Start()
         {
             instance = this;
@@ -82,7 +81,7 @@ namespace WorldMapStrategyKit
                     }
 
 
-                    //if (GetPlayer().GetMouseOverUnit() != null)
+                    if (GameEventHandler.Instance.GetPlayer().GetMouseOverUnit() != null)
                     {
                         ShowTooltip();
                     }
@@ -112,6 +111,30 @@ namespace WorldMapStrategyKit
             marker.SetActive(true);
 
             map.UpdateMarker3DObjectPosition(marker, location);
+        }
+
+        public List<City> GetCitiesNearOcean(Country country, bool show)
+        {
+            // Get a list of cities within a given distance to the shore/coast line
+            List<City> citiesNearWater = new List<City>();
+
+            float shoreDistance = 0.001f;
+            map.GetCities(country).ForEach((City city) => {
+                Vector2 waterPos;
+                if (map.ContainsWater(city.unity2DLocation, shoreDistance, out waterPos))
+                    citiesNearWater.Add(city);
+            });
+            
+            if(show)
+            {
+                // For each found city, add a sphere marker on its position
+                citiesNearWater.ForEach((City city) => {
+                    GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    sphere.WMSK_MoveTo(city.unity2DLocation, false);
+                });
+            }
+
+            return citiesNearWater;
         }
 
         void RectangleSelectionCallback(Rect rect, bool finishRectangleSelection)
@@ -379,13 +402,13 @@ namespace WorldMapStrategyKit
 
             if(player.GetMyCountry().GetArmy() != null)
             {
-                foreach (GameObjectAnimator vehicle in player.GetMyCountry().GetArmy().GetAllDivisionInArmy())
+                foreach (GameObjectAnimator division in player.GetMyCountry().GetArmy().GetAllDivisionInArmy())
                 {
                     // Listen to unit-level events (if you need unit-level events...)
-                    vehicle.OnPointerEnter += (GameObjectAnimator anim) => player.SetMouseOverUnit(anim);
-                    vehicle.OnPointerExit += (GameObjectAnimator anim) => player.SetMouseOverUnit(null);
-                    vehicle.OnPointerUp += (GameObjectAnimator anim) => SingleDivisionSelection(anim);
-                    vehicle.OnPointerDown += (GameObjectAnimator anim) => SingleDivisionSelection(anim);
+                    division.OnPointerEnter += (GameObjectAnimator anim) => player.SetMouseOverUnit(anim);
+                    division.OnPointerExit += (GameObjectAnimator anim) => player.SetMouseOverUnit(null);
+                    division.OnPointerUp += (GameObjectAnimator anim) => SingleDivisionSelection(anim);
+                    division.OnPointerDown += (GameObjectAnimator anim) => SingleDivisionSelection(anim);
                 }
             }
 
@@ -596,7 +619,7 @@ namespace WorldMapStrategyKit
         public bool CityHasCoast(City city)
         {
             Vector2 waterPos;
-            if (map.ContainsWater(city.unity2DLocation, 0.01f, out waterPos))
+            if (map.ContainsWater(city.unity2DLocation, 0.001f, out waterPos))
             {
                 return true;
             }
@@ -654,31 +677,11 @@ namespace WorldMapStrategyKit
 
         public void ColorizeWorld()
         {   
-            foreach(Country country in map.countries)
+            foreach(Country country in CountryManager.Instance.GetAllCountries())
             {
-                ColorizeCountry(country);
+                if (country != null)
+                    ColorizeCountry(country);
             }
-        }
-
-        public void TextureCountry(Country country)
-        {
-            Debug.Log("Start");
-            // Assign a flag texture to country
-            ///string countryName = country.name;
-            //CountryDecorator decorator = new CountryDecorator();
-            //decorator.isColorized = true;
-
-            if(country.GetCountryFlag() == null)
-                Debug.Log("Flag is null");
-
-            //decorator.texture = country.GetCountryFlag();
-            //map.decorator.SetCountryDecorator(0, countryName, decorator);
-
-            map.ToggleCountryMainRegionSurface(map.GetCountryIndex(country), true, country.GetCountryFlag());
-
-            map.Redraw();
-            Debug.Log("Finish");
-
         }
 
         public void ColorizeCountry(Country country)
@@ -688,7 +691,7 @@ namespace WorldMapStrategyKit
 
             country.SurfaceColor = color;
 
-            map.ToggleCountrySurface(map.GetCountryIndex(country), true, country.SurfaceColor);
+            map.ToggleCountrySurface(country.name, true, color);
         }
 
         /// <summary>

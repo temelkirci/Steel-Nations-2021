@@ -546,7 +546,7 @@ public class WarManager : MonoBehaviour
 
         int distance = 100000000;
         GameObjectAnimator GOA = null;
-        Debug.Log(unit.name + " is looking for dockyard");
+
         foreach(City city in CountryManager.Instance.GetAllCitiesInCountry(country))
         {
             GameObjectAnimator dockyard = city.Dockyard;

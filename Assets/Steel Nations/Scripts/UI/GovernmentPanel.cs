@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using AwesomeCharts;
+using System;
 
 namespace WorldMapStrategyKit
 {
@@ -45,6 +46,12 @@ namespace WorldMapStrategyKit
 
         public GameObject flag_country;
 
+        public GameObject president;
+        public RawImage presidentPicture;
+        public TextMeshProUGUI presidentName;
+        public TextMeshProUGUI since;
+        public TextMeshProUGUI birthDate;
+
         public GameObject diplomacyButton;
 
         public TextMeshProUGUI countryName;
@@ -87,23 +94,41 @@ namespace WorldMapStrategyKit
 
             ClearAllContents();
 
-            CreateOverviewButton("Manpower", string.Format("{0:#,0}", CountryManager.Instance.GetAvailableManpower(country)));
-            CreateOverviewButton("Tension", country.Tension.ToString());
-
-            if(country.GetArmy() != null)
+            if (country.President != null)
             {
-                CreateOverviewButton("Defense Budget", "$ " + string.Format("{0:#,0}", float.Parse(country.GetArmy().Defense_Budget.ToString())) + " M");
+                president.SetActive(true);
+
+                presidentName.text = country.President.PersonName;
+                since.text = country.President.RoleStartDate.ToString() + " ~ Present";
+
+                string[] date = country.President.BirthDate.Split('.');
+
+                int age = 0;
+
+                if (GameEventHandler.Instance.IsGameStarted() == false)
+                    age = 2020 - Int32.Parse(date[2]);
+                else
+                    age = GameEventHandler.Instance.GetCurrentYear() - Int32.Parse(date[2]);
+
+                birthDate.text = age.ToString();
+
+                presidentPicture.texture = country.President.PersonPicture;
             }
             else
             {
-                CreateOverviewButton("Defense Budget", "$ 0");
+                president.SetActive(false);
             }
 
-            CreateOverviewButton("Religion", country.Religion);
+            CreateOverviewButton("Manpower", string.Format("{0:#,0}", CountryManager.Instance.GetAvailableManpower(country)));
+            CreateOverviewButton("Tension", country.Tension.ToString());
+
+            CreateOverviewButton("Budget", "$ " + string.Format("{0:#,0}", float.Parse(country.Budget.ToString())) + " M");
+
+            CreateOverviewButton("Religion", CountryManager.Instance.GetReligionNameByReligionType(country.Religion));
             CreateOverviewButton("System Of Government", country.System_Of_Government);
             CreateOverviewButton("Unemployment Rate", country.Unemployment_Rate.ToString());
             CreateOverviewButton("Birth Rate", country.Fertility_Rate_PerWeek.ToString());
-            CreateOverviewButton("Rank", country.Military_Rank.ToString());
+            CreateOverviewButton("Military Rank", country.Military_Rank.ToString());
 
             CreateMineralButton("Oil", country.GetMineral(MINERAL_TYPE.OIL).ToString()).GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.OIL));
             CreateMineralButton("Uranium", country.GetMineral(MINERAL_TYPE.URANIUM).ToString()).GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.URANIUM));
@@ -119,7 +144,6 @@ namespace WorldMapStrategyKit
             {
                 CreateRelation(allyCountry, enemyContent.transform);
             }
-
             foreach (Country allyCountry in CountryManager.Instance.GetAtWarCountryList(country))
             {
                 CreateRelation(allyCountry, atWarContent.transform);

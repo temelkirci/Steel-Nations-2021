@@ -161,6 +161,17 @@ public class WeaponManager : Singleton<WeaponManager>
         return null;
     }
 
+    public List<int> GetWeaponIDListByWeaponType(WEAPON_TYPE weaponType)
+    {
+        List<int> weaponIDList = new List<int>();
+
+        foreach (WeaponTemplate weaponTemplate in weaponTemplateList)
+            if (weaponTemplate.weaponType == weaponType)
+                weaponIDList.Add(weaponTemplate.weaponID);
+
+        return weaponIDList;
+    }
+
     public Texture2D GetWeaponTemplateIconByID(int weaponID)
     {
         foreach(WeaponTemplate weaponTemplate in weaponTemplateList)
@@ -171,17 +182,49 @@ public class WeaponManager : Singleton<WeaponManager>
         return null;
     }
 
-    public int GetLowestGenerationByWeaponName(string weaponName)
+    public int GetLowestGenerationByWeaponType(WEAPON_TYPE weaponType)
     {
         int lowest = 10;
 
         foreach (WeaponTemplate weaponTemplate in weaponTemplateList)
         {
-            if (weaponTemplate.weaponName == weaponName)
+            if (weaponTemplate.weaponType == weaponType)
                 if (weaponTemplate.weaponLevel < lowest)
                     lowest = weaponTemplate.weaponLevel;
         }
         return lowest;
+    }
+
+    public int GetLowestGenerationWeaponIDByWeaponType(WEAPON_TYPE weaponType)
+    {
+        int lowest = 10;
+        int weaponID = 0;
+
+        foreach (WeaponTemplate weaponTemplate in weaponTemplateList)
+        {
+            if (weaponTemplate.weaponType == weaponType)
+            {
+                if (weaponTemplate.weaponLevel < lowest)
+                {
+                    lowest = weaponTemplate.weaponLevel;
+                    weaponID = weaponTemplate.weaponID;
+                }
+            }
+        }
+        return weaponID;
+    }
+
+    public int GetHighestGenerationByWeaponType(WEAPON_TYPE weaponType)
+    {
+        int highest = 1;
+
+        foreach (WeaponTemplate weaponTemplate in weaponTemplateList)
+        {
+            if (weaponTemplate.weaponType == weaponType)
+                if (weaponTemplate.weaponLevel > highest)
+                    highest = weaponTemplate.weaponLevel;
+        }
+        return highest;
     }
 
     public List<WeaponTemplate> GetWeaponTemplateListByName(string weaponName)

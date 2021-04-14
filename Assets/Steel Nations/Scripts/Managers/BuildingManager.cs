@@ -62,7 +62,8 @@ namespace WorldMapStrategyKit
                 {
                     if (city.Constructible_Dockyard_Area == 1)
                     {
-                        int desiredBuildingNumber = city.CityIncome / (GetBuildingIncomeMonthly(BUILDING_TYPE.TRADE_PORT));
+                        int desiredBuildingNumber = 1;
+                        //int desiredBuildingNumber = city.CityIncome / (GetBuildingIncomeMonthly(BUILDING_TYPE.TRADE_PORT));
                         if (IsPossibleConstructionInCity(city, building.buildingType))
                         {
                             if (desiredBuildingNumber > building.maxBuildingInCity)
@@ -74,26 +75,37 @@ namespace WorldMapStrategyKit
 
                 if (building.buildingType == BUILDING_TYPE.DOCKYARD)
                 {
-                    if (city.Constructible_Dockyard_Area == 1)
+                    string countryName = map.GetCityCountryName(city);
+                    Country country = CountryManager.Instance.GetCountryByName(countryName);
+
+                    if (country.GetArmy() != null)
                     {
-                        if (IsPossibleConstructionInCity(city, building.buildingType))
+                        if (country.GetArmy().Defense_Budget > 5000 && city.Constructible_Dockyard_Area == 1)
                         {
-                            city.AddBuilding(building.buildingType, 1);
-                            Add3DBuilding(city, MY_UNIT_TYPE.DOCKYARD);
+                            if (IsPossibleConstructionInCity(city, building.buildingType))
+                            {
+                                city.AddBuilding(building.buildingType, 1);
+                                Add3DBuilding(city, MY_UNIT_TYPE.DOCKYARD);
+                            }
                         }
                     }
                 }
 
                 if (building.buildingType == BUILDING_TYPE.GARRISON)
                 {
-                    if (IsPossibleConstructionInCity(city, building.buildingType))
+                    string countryName = map.GetCityCountryName(city);
+
+                    if(CountryManager.Instance.GetCountryByName(countryName).GetArmy() != null)
                     {
-                        if (city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
-                            city.AddBuilding(building.buildingType, 4);
-                        if (city.cityClass == CITY_CLASS.REGION_CAPITAL)
-                            city.AddBuilding(building.buildingType, 2);
-                        if (city.cityClass == CITY_CLASS.CITY)
-                            city.AddBuilding(building.buildingType, 1);
+                        if (IsPossibleConstructionInCity(city, building.buildingType))
+                        {
+                            if (city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
+                                city.AddBuilding(building.buildingType, 4);
+                            if (city.cityClass == CITY_CLASS.REGION_CAPITAL)
+                                city.AddBuilding(building.buildingType, 2);
+                            if (city.cityClass == CITY_CLASS.CITY)
+                                city.AddBuilding(building.buildingType, 1);
+                        }
                     }
                 }
 
@@ -134,22 +146,33 @@ namespace WorldMapStrategyKit
 
                 if (building.buildingType == BUILDING_TYPE.MILITARY_FACTORY)
                 {
-                    int desiredBuildingNumber = city.population / building.requiredEmployee;
-                    if (IsPossibleConstructionInCity(city, building.buildingType))
-                    {
-                        if (desiredBuildingNumber > building.maxBuildingInCity)
-                            desiredBuildingNumber = building.maxBuildingInCity;
+                    string countryName = map.GetCityCountryName(city);
+                    Country country = CountryManager.Instance.GetCountryByName(countryName);
 
-                        if (city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
-                            city.AddBuilding(building.buildingType, desiredBuildingNumber);
-                        if (city.cityClass == CITY_CLASS.REGION_CAPITAL)
-                            city.AddBuilding(building.buildingType, desiredBuildingNumber / 2);
+                    if (country.GetArmy() != null)
+                    {
+                        if(country.GetArmy().Defense_Budget > 5000)
+                        {
+                            int desiredBuildingNumber = city.population / building.requiredEmployee;
+                            if (IsPossibleConstructionInCity(city, building.buildingType))
+                            {
+                                if (desiredBuildingNumber > building.maxBuildingInCity)
+                                    desiredBuildingNumber = building.maxBuildingInCity;
+
+                                if (city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
+                                    city.AddBuilding(building.buildingType, desiredBuildingNumber);
+                                if (city.cityClass == CITY_CLASS.REGION_CAPITAL)
+                                    city.AddBuilding(building.buildingType, desiredBuildingNumber / 2);
+                            }
+                        }
                     }
                 }
 
                 if (building.buildingType == BUILDING_TYPE.NUCLEAR_FACILITY)
                 {
-                    if (MapManager.Instance.CityHasCoast(city))
+                    string countryName = map.GetCityCountryName(city);
+
+                    if(CountryManager.Instance.GetCountryByName(countryName).Nuclear_Power == true)
                     {
                         int desiredBuildingNumber = 1;
                         if (IsPossibleConstructionInCity(city, building.buildingType))
@@ -197,7 +220,7 @@ namespace WorldMapStrategyKit
                     }
                 }
             }
-
+            
             city.CityIncome = 0;
             city.CityIncome = city.CityIncome + city.GetBuildingNumber(BUILDING_TYPE.FACTORY) * GetBuildingIncomeMonthly(BUILDING_TYPE.FACTORY);
             city.CityIncome = city.CityIncome + city.GetBuildingNumber(BUILDING_TYPE.TRADE_PORT) * GetBuildingIncomeMonthly(BUILDING_TYPE.TRADE_PORT);
@@ -225,7 +248,7 @@ namespace WorldMapStrategyKit
 
             return false;
         }
-        
+        /*
         public void UpdateConstructionInCity(City city)
         {
             Dictionary<BUILDING_TYPE, int> buildingsInConstruction = city.GetAllBuildingsInConstruction();
@@ -240,7 +263,15 @@ namespace WorldMapStrategyKit
                 }
             }
         }
-        
+        */
+
+        /*
+         map.AddMarker2DSprite(star, planeLocation, 0.02f, true);
+        MarkerClickHandler handler = star.GetComponent<MarkerClickHandler>();
+        handler.OnMarkerMouseDown += (buttonIndex => Debug.Log("Click on sprite with button " +
+        buttonIndex + "!"));
+        */
+
         public void Add3DBuilding(City city, MY_UNIT_TYPE unitType)
         {
             GameObject go = null;
@@ -249,16 +280,17 @@ namespace WorldMapStrategyKit
             {
                 go = Instantiate(HarborBuilding);
 
-                go.transform.localScale = Misc.Vector3one * 0.0005f;
-
+                go.isStatic = true;
+                go.transform.localScale = Misc.Vector3one * 0.0005f;                
+              
                 GameObjectAnimator anim = go.WMSK_MoveTo(city.unity2DLocation);
                 anim.name = city.name + " Dockyard";
                 anim.type = (int)unitType;
                 anim.pivotY = 0.5f;
-
                 anim.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter 
                 anim.updateWhenOffScreen = false;
                 anim.enabled = false;
+                
                 city.Dockyard = anim;
             }
             else if (unitType == MY_UNIT_TYPE.COUNTRY_CAPITAL_BUILDING)

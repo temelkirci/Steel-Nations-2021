@@ -55,11 +55,6 @@ namespace WorldMapStrategyKit
             instance = this;
         }
 
-        public void Init()
-        {
-
-        }
-
         public void AddWeapon(WeaponTemplate weapon, GameObject lineGOs)
         {
             GameObject temp = null;

@@ -54,36 +54,55 @@ namespace WorldMapStrategyKit
                 HUDManager.Instance.UpdateHUD();
                 NotificationManager.Instance.ShowNews();
 
-                if (GameSettings.Instance.GetSelectedGameMode() == GameSettings.GAME_MODE.QUIZ)
-                {
-
-                }
-                else
+                if (GameSettings.Instance.GetSelectedGameMode() != GameSettings.GAME_MODE.QUIZ)
                 {
                     CountryManager.Instance.DailyUpdateForAllCountries();
 
-                    if (GetDayOfMonth() == 5)
+                    if (GetDayOfMonth() == 1)
                     {
-                        HUDManager.Instance.PrivateNotification("Auto Saving !... ");
-                        //SaveLoadManager.Instance.SaveGame();
-                        CountryManager.Instance.MonthlyUpdateForAllCountries();
-
                         if (GetMonthOfYear() == 1)
                         {
-                            // new year
+                            // stop game
+                            Debug.Log("New Year");
+                            if (GameSettings.Instance.GetFinishYear() == GetCurrentYear())
+                            {
+                                // finish game
+                            }
+                            else
+                            {
+                                foreach (Country country in CountryManager.Instance.GetAllCountries())
+                                    CountryManager.Instance.InitBudget(country);
+                            }
+                        }
+                        else
+                        {
+                            //SaveLoadManager.Instance.SaveGame();
                         }
                     }
-
-                    if (GetDayOfMonth() == 15)
+                    else
                     {
-                        int index = UnityEngine.Random.Range(0, OrganizationManager.Instance.GetAllOrganizations().Count);
+                        if (GetDayOfMonth() == 7)
+                        {
+                            //CountryManager.Instance.MonthlyUpdateForAllCountries();
+                            CountryManager.Instance.UpdateBirthRate();
+                        }
 
-                        OrganizationManager.Instance.GetAllOrganizations()[index].ResultForApply();
-                    }
+                        if (GetDayOfMonth() == 14)
+                        {
+                            CountryManager.Instance.UpdateResources();
+                        }
 
-                    if (GetDayOfMonth() == 28)
-                    {
-                        //CountryManager.Instance.MonthlyUpdateForAllCountries();
+                        if (GetDayOfMonth() == 21)
+                        {
+                            int index = UnityEngine.Random.Range(0, OrganizationManager.Instance.GetAllOrganizations().Count);
+
+                            OrganizationManager.Instance.GetAllOrganizations()[index].ResultForApply();
+                        }
+
+                        if (GetDayOfMonth() == 28)
+                        {
+                            CountryManager.Instance.UpdateEconomy();
+                        }
                     }
 
                     UIManager.Instance.UpdatePanels();
@@ -114,13 +133,13 @@ namespace WorldMapStrategyKit
         {
             gameStarted = true;
 
+            //today = new DateTime(2019, 12, 28);
             today = new DateTime(2020, 1, 1);
 
             HUDManager.Instance.ShowHUD();
 
             if (GameSettings.Instance.GetSelectedGameMode() == GameSettings.GAME_MODE.QUIZ)
             {
-                MapManager.Instance.ColorizeCountry(GetPlayer().GetMyCountry());
                 //MapManager.Instance.TextureCountry(GetPlayer().GetMyCountry());
 
                 QuizManager.Instance.Init();
@@ -130,6 +149,12 @@ namespace WorldMapStrategyKit
             }
             else
             {
+                /*
+                foreach(Country country in CountryManager.Instance.GetAllCountries())
+                {
+                    MapManager.Instance.ColorizeCountry(country);
+                }
+                */
                 GameSettings.Instance.SetGameSpeed_X1();
                 ArmyPanel.Instance.Init();
 
@@ -142,24 +167,7 @@ namespace WorldMapStrategyKit
                 MapManager.Instance.ListenVehicleEvents();
 
                 MapManager.Instance.StartListeningCountries();
-                UIManager.Instance.StartButtonListeners();           
-
-                /*
-                if (GetPlayer().GetMyCountry().GetArmy() != null)
-                {
-                    Dictionary<WeaponTemplate, int> allWeapons = GetPlayer().GetMyCountry().GetArmy().GetAllWeaponsInArmyInventory();
-                    foreach (WeaponTemplate weaponTemplate in WeaponManager.Instance.GetWeaponTemplateList())
-                    {
-                        int number = 0;
-                        allWeapons.TryGetValue(weaponTemplate, out number);
-
-                        if (number > 0)
-                        {
-                            Debug.Log(weaponTemplate.weaponName + " -> " + number);
-                        }
-                    }
-                }
-                */
+                UIManager.Instance.StartButtonListeners();                         
             }
 
             coroutine = IncreaseDay();

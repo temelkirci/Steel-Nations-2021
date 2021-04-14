@@ -19,6 +19,29 @@ public class Division
     int secondWeaponNumber;
     int thirdWeaponNumber;
 
+    int morale;
+    int experience;
+    int ability;
+
+    public int Morale
+    {
+        get { return morale; }
+        set { morale = value; }
+    }
+
+    public int Experience
+    {
+        get { return experience; }
+        set { experience = value; }
+    }
+
+    public int Ability
+    {
+        get { return ability; }
+        set { ability = value; }
+    }
+
+
     public int MainWeaponNumber
     {
         get { return mainWeaponNumber; }
@@ -57,14 +80,7 @@ public class Division
 
     public Texture2D GetDivisionIcon()
     {
-        if(divisionTemplate.mainUnitIDList.Count > 0)
-            return WeaponManager.Instance.GetWeaponTemplateIconByID(divisionTemplate.mainUnitIDList[0]);
-        if (divisionTemplate.secondUnitList.Count > 0)
-            return WeaponManager.Instance.GetWeaponTemplateIconByID(divisionTemplate.secondUnitList[0]);
-        if (divisionTemplate.thirdUnitList.Count > 0)
-            return WeaponManager.Instance.GetWeaponTemplateIconByID(divisionTemplate.thirdUnitList[0]);
-
-        return null;
+        return WeaponManager.Instance.GetWeaponTemplateIconByID(mainWeaponID);
     }
 
     public void AddWeaponToDivision(Weapon weapon)

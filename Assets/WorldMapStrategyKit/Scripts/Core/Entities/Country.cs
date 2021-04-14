@@ -39,20 +39,23 @@ namespace WorldMapStrategyKit {
         List<Research> researchProgress = new List<Research>();
         List<Production> productionProgress = new List<Production>();
 
-        Dictionary<WEAPON_TYPE, int> weaponTech = new Dictionary<WEAPON_TYPE, int>();
         Dictionary<MINERAL_TYPE, int> mineral = new Dictionary<MINERAL_TYPE, int>();
+        Dictionary<RELIGION, int> religionList = new Dictionary<RELIGION, int>();
 
         Dictionary<Country, int> militaryAccess = new Dictionary<Country, int>();
+        Dictionary<string, int> diplomaticRelations = new Dictionary<string, int>();
 
         Person president;
         Person vicePresident;
+        RELIGION religion;
 
         Color countryColor;
         float intelligenceBudgetByGDP;
         float defenseBudgetByGDP;
         int taxRate;
+        int debtPaymentMonthly;
+        int debtPaymentRate;
 
-        string religion;
         int tension;
         float unemploymentRate;
         int productionSpeed;
@@ -91,6 +94,68 @@ namespace WorldMapStrategyKit {
             set { countryColor = value; }
         }
 
+        public RELIGION Religion
+        {
+            get { return religion; }
+            set { religion = value; }
+        }
+
+        public float GetTraitInCountry(TRAIT traitEnum)
+        {
+            float value = 0.0f;
+
+            foreach(Policy policy in acceptedPolicyList)
+            {
+                Dictionary<TRAIT, float> trait = policy.GetTraits();
+
+                if (trait.ContainsKey(traitEnum))
+                {
+                    float temp;
+                    trait.TryGetValue(traitEnum, out temp);
+
+                    value += temp;
+                }
+            }
+
+            return value;
+        }
+
+        public void SetReligion(RELIGION religionType, int rate)
+        {
+            if (religionList.ContainsKey(religionType))
+            {
+                religionList[religionType] = rate;
+            }
+            else
+            {
+                religionList.Add(religionType, rate);
+            }
+        }
+
+        public void SetRelations(string countryName, int relation)
+        {
+            if (diplomaticRelations.ContainsKey(countryName))
+            {
+                diplomaticRelations[countryName] = relation;
+            }
+            else
+            {
+                diplomaticRelations.Add(countryName, relation);
+            }
+        }
+
+        public int GetRelation(string countryName)
+        {
+            if (diplomaticRelations.ContainsKey(countryName))
+            {
+                return diplomaticRelations[countryName];
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public void AddTradeTreaty(Country country)
         {
             tradeTreaty.Add(country);
@@ -119,10 +184,22 @@ namespace WorldMapStrategyKit {
             set { previousGDPPerCapita = value; }
         }
 
-        public string Religion
+        public int Tax_Rate // between 1% and 5%
         {
-            get { return religion; }
-            set { religion = value; }
+            get { return taxRate; }
+            set { taxRate = value; }
+        }
+
+        public int Debt_Payment
+        {
+            get { return debtPaymentMonthly; }
+            set { debtPaymentMonthly = value; }
+        }
+
+        public int Debt_Payment_Rate
+        {
+            get { return debtPaymentRate; }
+            set { debtPaymentRate = value; }
         }
 
         #region Arm Embargo
@@ -150,18 +227,16 @@ namespace WorldMapStrategyKit {
             return armsEmbargo;
         }
 
-
-        public void AddMinister(Person person)
-        {
-            ministerList.Add(person);
-        }
-
         public void AddMineral(MINERAL_TYPE mineralType, int number)
         {
             if (mineral.ContainsKey(mineralType))
-                mineral[mineralType] = number;
+            {
+                mineral[mineralType] += number;
+            }
             else
+            {
                 mineral.Add(mineralType, number);
+            }
         }
         public int GetMineral(MINERAL_TYPE mineralType)
         {
@@ -169,19 +244,6 @@ namespace WorldMapStrategyKit {
             mineral.TryGetValue(mineralType, out number);
 
             return number;
-        }
-
-        public void SetWeaponTech(WEAPON_TYPE weaponType, int techLevel)
-        {
-            if(weaponType != WEAPON_TYPE.NONE)
-                weaponTech.Add(weaponType, techLevel);
-        }
-        public int GetWeaponTech(WEAPON_TYPE weaponType)
-        {
-            int tech = 0;
-            weaponTech.TryGetValue(weaponType, out tech);
-
-            return tech;
         }
 
         public bool CountryIsContainsInActionList(Country country, ACTION_TYPE actionType)

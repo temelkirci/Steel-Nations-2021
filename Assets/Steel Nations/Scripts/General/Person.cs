@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine;
 
 public class Person
 {
-    RawImage personPicture;
+    Texture2D personPicture;
     PERSON_TYPE personType;
 
     string personName;
     int personAge;
+    int startDate;
+    string birthDate;
 
     public Person()
     {
@@ -24,10 +27,22 @@ public class Person
         set { personAge = value; }
     }
 
+    public int RoleStartDate
+    {
+        get { return startDate; }
+        set { startDate = value; }
+    }
+
     public string PersonName
     {
         get { return personName; }
         set { personName = value; }
+    }
+
+    public string BirthDate
+    {
+        get { return birthDate; }
+        set { birthDate = value; }
     }
 
     public PERSON_TYPE PersonType
@@ -36,7 +51,7 @@ public class Person
         set { personType = value; }
     }
 
-    public RawImage PersonPicture
+    public Texture2D PersonPicture
     {
         get { return personPicture; }
         set { personPicture = value; }

@@ -61,12 +61,10 @@ namespace WorldMapStrategyKit
         }
         public void MonthlyUpdateForAllCountries()
         {
-            UpdateResources();
-            UpdateEconomy();
-            UpdateBirthRate();
+            
         }
 
-        void UpdateResources()
+        public void UpdateResources()
         {
             foreach (Country tempCountry in countryList)
             {
@@ -76,7 +74,7 @@ namespace WorldMapStrategyKit
                 }
             }
         }
-        void UpdateEconomy()
+        public void UpdateEconomy()
         {
             foreach (Country country in countryList)
             {
@@ -87,7 +85,7 @@ namespace WorldMapStrategyKit
             }
         }
 
-        void UpdateBirthRate()
+        public void UpdateBirthRate()
         {
             foreach (Country tempCountry in countryList)
             {
@@ -106,7 +104,7 @@ namespace WorldMapStrategyKit
 
         public void CountryAI()
         {
-            foreach (Country country in countryList.ToList())
+            foreach (Country country in countryList.ToArray())
             {
                 if (country == null)
                     countryList.Remove(country);
@@ -125,48 +123,99 @@ namespace WorldMapStrategyKit
                         UpdateAllConstructionInCountry(country);
                         UpdateResearchInProgress(country);
                         UpdateProductionInProgress(country);
-                        ActionManager.Instance.UpdateActionsInProgress(country);
-
-                        int random = Random.Range(0, 100);
-                        int enemyNumber = GetAllEnemies(country).Count;
-                        /*
-                        if (random <= enemyNumber)
-                        {
-                            ActionManager.Instance.CreateAction(country, GetAllEnemies(country)[random], ACTION_TYPE.Declare_War, MINERAL_TYPE.NONE,
-                            0,
-                            null,
-                            0,
-                            null,
-                            null,
-                            0,
-                            0,
-                            0);
-                        }
-                        */
-                        if (country.GetWarList().Count > 0)
-                        {
-                            WarManager.Instance.WarStrategy(country);
-                        }
-                        else
-                        {
-                            if (enemyNumber > 0)
-                            {
-
-                            }
-                            else
-                            {
-
-                            }
-                        }
+                        ActionManager.Instance.UpdateActionsInProgress(country); 
                     }
                 }
 
             }
         }
 
+        public void WarDecision(Country country, Country enemy)
+        {
+            int myArmyPower = country.GetArmy().GetArmyPower();
+
+            int danger = 0;
+
+            if (enemy.GetArmsEmbargo().Contains(country))
+                danger += 5;
+            if (enemy.GetTradeEmbargo().Contains(country))
+                danger += 10;
+
+            int countrySupportOrganizationPower = OrganizationManager.Instance.GetOrganizationsPower(country);
+            int enemySupportOrganizationPower = OrganizationManager.Instance.GetOrganizationsPower(enemy);
+
+            danger *= (countrySupportOrganizationPower / enemySupportOrganizationPower);
+
+
+            if (enemy.GetArmy() == null)
+            {
+
+            }
+            else
+            {
+                int powerRate = 0;
+                int enemyMilitaryPower = enemy.GetArmy().GetArmyPower();
+
+                if (enemyMilitaryPower > 0)
+                    powerRate = myArmyPower / enemyMilitaryPower;
+
+                if (enemy.Nuclear_Power)
+                    danger -= 25;
+                if (country.Nuclear_Power)
+                    danger += 25;
+
+                danger *= powerRate;
+
+                Debug.Log(country.name + " -> " + enemy.name + " -> " + danger);
+            }
+
+            int random = Random.Range(0, 10000);
+
+            if (random < danger)
+            {
+                /*
+                ActionManager.Instance.CreateAction(country, enemy, ACTION_TYPE.Declare_War, MINERAL_TYPE.NONE,
+                0,
+                null,
+                0,
+                null,
+                null,
+                0,
+                0,
+                0);
+                */
+            }
+        }
+
+        public void InitBudget(Country country)
+        {
+            country.Current_GDP_Annual_Growth_Rate = ((country.Current_GDP * 100.0f) / country.Previous_GDP) - 100.0f;
+
+            country.Previous_GDP = country.Current_GDP;
+            country.Current_GDP = 0;
+
+            //country.Debt = debt;
+            //country.Debt_Payment_Rate = 100;
+            //country.Debt_Payment = debt / 100;
+
+            if (country.GetArmy() != null)
+            {
+                country.Budget += country.GetArmy().Defense_Budget;
+                country.GetArmy().Defense_Budget = (int)(country.Previous_GDP * country.Defense_Budget_By_GDP) / 100;
+            }
+
+            if (country.Intelligence_Agency != null)
+            {
+                country.Intelligence_Agency.IntelligenceAgencyBudget = (int)(country.Previous_GDP * country.Intelligence_Agency_Budget_By_GDP) / 100;
+            }
+
+            if (country.Budget <= 0)
+                country.Tax_Rate++;
+        }
+
         public int GetWeaponPrice(Country country1, Country country2, WeaponTemplate template, int amount)
         {
-            int weaponCost = (template.weaponCost * amount) - ((template.weaponCost * amount) * country2.attrib[country1.name]) / 100;
+            int weaponCost = (template.weaponCost * amount) - ((template.weaponCost * amount) * country2.GetRelation(country1.name)) / 100;
 
             return weaponCost;
         }
@@ -179,7 +228,7 @@ namespace WorldMapStrategyKit
                 country.GetMineral(MINERAL_TYPE.STEEL) >= weapon.requiredSteel &&
                 country.GetMineral(MINERAL_TYPE.ALUMINIUM) >= weapon.requiredAluminium)
                 {
-                    country.GetArmy().Defense_Budget = country.GetArmy().Defense_Budget - weapon.weaponCost;
+                    country.GetArmy().Defense_Budget -= weapon.weaponCost;
 
                     country.AddMineral(MINERAL_TYPE.IRON, -weapon.requiredIron);
                     country.AddMineral(MINERAL_TYPE.STEEL, -weapon.requiredSteel);
@@ -286,17 +335,6 @@ namespace WorldMapStrategyKit
             return 0;
         }
 
-        public void SetStartingResources(int multipler)
-        {
-            foreach (Country country in GetAllCountries())
-            {
-                country.AddMineral(MINERAL_TYPE.OIL, multipler * country.GetMineral(MINERAL_TYPE.OIL));
-                country.AddMineral(MINERAL_TYPE.IRON, multipler * country.GetMineral(MINERAL_TYPE.IRON));
-                country.AddMineral(MINERAL_TYPE.ALUMINIUM, multipler * country.GetMineral(MINERAL_TYPE.ALUMINIUM));
-                country.AddMineral(MINERAL_TYPE.URANIUM, multipler * country.GetMineral(MINERAL_TYPE.URANIUM));
-                country.AddMineral(MINERAL_TYPE.STEEL, multipler * country.GetMineral(MINERAL_TYPE.STEEL));
-            }
-        }
         public void DecreaseMilitaryAccess(Country country)
         {
             foreach (var pair in country.GetMilitaryAccess())
@@ -348,6 +386,39 @@ namespace WorldMapStrategyKit
             return cityList;
         }
 
+        public int GetEmptyGarrisonNumberInCountry(Country country)
+        { 
+            int garrison = 0;
+            foreach (City city in GetAllCitiesInCountry(country))
+                garrison += city.GetEmptyGarrison();
+            return garrison;
+        }
+
+        public City GetRandomEmptyGarrisonInCountry(Country country)
+        {
+            if (GetEmptyGarrisonNumberInCountry(country) == 0)
+                return null;
+
+            while(true)
+            {
+                City city = map.GetCityRandom(country);
+
+                if (city.GetEmptyGarrison() > 0)
+                    return city;
+            }
+        }
+
+        public List<City> GetCitiesHaveBuilding(Country country, BUILDING_TYPE buildingType)
+        {
+            List<City> cityList = new List<City>();
+
+            foreach(City city in GetAllCitiesInCountry(country))
+            {
+                if (city.GetBuildingNumber(buildingType) > 0)
+                    cityList.Add(city);
+            }
+            return cityList;
+        }
 
         public int GetTotalBuildings(Country country, BUILDING_TYPE building)
         {
@@ -362,47 +433,80 @@ namespace WorldMapStrategyKit
             return totalBuildings;
         }
 
+        public void AcceptPolicy(Country country, Policy policy)
+        {
+            int leftDefenseBudget = country.GetArmy().Defense_Budget - policy.requiredDefenseBudget;
+            long leftBudget = country.Budget - policy.costPermenant;
+
+            country.GetArmy().Defense_Budget = leftDefenseBudget;
+            country.Budget = leftBudget;
+
+            country.AddPolicy(policy);
+        }
+
+        public bool IsPolicyAcceptable(Country country, Policy policy)
+        {
+            if (country.GetArmy() != null)
+            {
+                if (country.GetArmy().Defense_Budget < policy.requiredDefenseBudget)
+                {
+                    //Debug.Log("Defense Budget is not enough");
+                    return false;
+                }
+            }
+
+            if (country.Budget < policy.costPermenant)
+            {
+                //Debug.Log("Budget is not enough");
+                return false;
+            }
+
+            if (country.GetAcceptedPolicyList().Contains(policy) == true)
+            {
+                //Debug.Log("You already have it");
+                return false;
+            }
+
+            return true;
+        }
+
         public float GetGDPTradeBonus(Country country)
         {
             int gdp = GetTotalGDPInWorld();
 
             if (gdp == 0)
                 return 0;
-            return (country.Current_GDP * 100) / gdp;
+            return (country.Current_GDP * 100.0f) / gdp;
         }
 
-        public int GetTotalTradeBonus(Country country)
+        public float GetTotalTradeBonus(Country country)
         {
             float totalTradeBonus = 0;
-
-            float organizationTradeBonus = 0;
-            float politiksTradeBonus = 0;
+            float GDPBonus = GetGDPTradeBonus(country);
 
             foreach (Organization organization in OrganizationManager.Instance.GetAllOrganizations())
             {
                 if (organization.isTrade)
                 {
                     if (organization.isFullMemberCountry(country))
-                        organizationTradeBonus = organizationTradeBonus + organization.GetTradeBonus();
+                        totalTradeBonus += (organization.GetTradeBonus() - GDPBonus);
                 }
             }
 
             foreach (Country embargo in country.GetTradeEmbargo())
             {
-                organizationTradeBonus = organizationTradeBonus - GetGDPTradeBonus(embargo);
+                totalTradeBonus -= GetGDPTradeBonus(embargo);
             }
             foreach (Country embargo in country.GetTradeTreaty())
             {
-                organizationTradeBonus = organizationTradeBonus + GetGDPTradeBonus(embargo) * 10;
+                totalTradeBonus += GetGDPTradeBonus(embargo);
             }
             foreach (Policy policy in country.GetAcceptedPolicyList())
             {
-                politiksTradeBonus = politiksTradeBonus + policy.tradeBonus;
+                totalTradeBonus += policy.GetValue(TRAIT.GDP_BONUS);
             }
 
-            totalTradeBonus = organizationTradeBonus + politiksTradeBonus;
-
-            return (int)totalTradeBonus;
+            return totalTradeBonus;
         }
 
         public void UpdateEconomy(Country country)
@@ -420,12 +524,17 @@ namespace WorldMapStrategyKit
                 cityIncome = cityIncome + tradePortIncome + factoryIncome;
             }
 
-            int tradeBonus = GetTotalTradeBonus(country);
-            int export = (cityIncome * tradeBonus) / 100;
+            float tradeBonus = GetTotalTradeBonus(country);
+            int export = (int)((cityIncome * tradeBonus) / 100.0f);
+
+            country.Budget += export;
+            country.Budget += taxIncome;
+
+            PayDebt(country);
 
             country.Current_GDP = country.Current_GDP + cityIncome + export + taxIncome;
 
-            Debug.Log(country.name + " -> " + country.Current_GDP + "   City Income -> " + cityIncome + "   Tax Income -> " + taxIncome + "   tradeBonus -> " + tradeBonus);
+            //Debug.Log(country.name + " -> " + country.Current_GDP + "   City Income -> " + cityIncome + "   Tax Income -> " + taxIncome + "   tradeBonus -> " + tradeBonus);
         }
 
         public int GetTotalGDPInWorld()
@@ -434,7 +543,10 @@ namespace WorldMapStrategyKit
 
             foreach (Country country in countryList)
             {
-                totalGDP = totalGDP + country.Current_GDP;
+                if (country.Current_GDP == 0)
+                    totalGDP += country.Previous_GDP;
+                else
+                    totalGDP += country.Current_GDP;
             }
 
             return totalGDP;
@@ -443,7 +555,7 @@ namespace WorldMapStrategyKit
         public int GetIndividualTaxIncomeMonthly(Country country)
         {
             ulong countryTaxIncome = ((ulong)GetAvailableManpower(country) * (ulong)country.Individual_Tax) / 1000000;
-            //Debug.Log("Individual_Tax -> " + country.Individual_Tax + "   Country_Tax_Income -> " + countryTaxIncome);
+
             if (countryTaxIncome < 1)
                 countryTaxIncome = 1;
 
@@ -455,50 +567,92 @@ namespace WorldMapStrategyKit
             country.Mineral_Income += income;
         }
 
-        public void SetReligion(Country country, int christian, int muslim, int irreligion, int hindu, int buddist, int folk, int jewish, string religion)
+        public RELIGION GetReligionByReligionName(string religionName)
         {
-            /*
-            country.attrib["Christian"] = christian;
-            country.attrib["Muslim"] = muslim;
-            country.attrib["Irreligion"] = irreligion;
-            country.attrib["Hindu"] = hindu;
-            country.attrib["Buddist"] = buddist;
-            country.attrib["Folk Religion"] = folk;
-            country.attrib["Jewish"] = jewish;
-            */
-            country.Religion = religion;
+            if (religionName == "Muslim")
+                return RELIGION.MUSLIM;
+            if (religionName == "Christian")
+                return RELIGION.CHRISTIAN;
+            if (religionName == "Irreligion")
+                return RELIGION.IRRELIGION;
+            if (religionName == "Hindu")
+                return RELIGION.HINDU;
+            if (religionName == "Buddist")
+                return RELIGION.BUDDIST;
+            if (religionName == "Folk Religion")
+                return RELIGION.FOLK_RELIGION;
+            if (religionName == "Jewish")
+                return RELIGION.JEWISH;
+
+            return RELIGION.NONE;
+        }
+        public string GetReligionNameByReligionType(RELIGION religionType)
+        {
+            if (religionType == RELIGION.MUSLIM)
+                return "Muslim";
+            if (religionType == RELIGION.CHRISTIAN)
+                return "Christian";
+            if (religionType == RELIGION.BUDDIST)
+                return "Buddist";
+            if (religionType == RELIGION.FOLK_RELIGION)
+                return "Folk Religion";
+            if (religionType == RELIGION.HINDU)
+                return "Hindu";
+            if (religionType == RELIGION.JEWISH)
+                return "Jewish";
+            if (religionType == RELIGION.IRRELIGION)
+                return "Irreligion";
+
+            return string.Empty;
         }
 
         public void UpdateResourcesInCountry(Country country)
+        {
+            if(country != null)
+            {
+                List<City> cityList = GetAllCitiesInCountry(country);
+
+                foreach (City city in cityList)
+                {
+                    int mineralFactory = city.GetBuildingNumber(BUILDING_TYPE.MINERAL_FACTORY);
+                    int oilRafinery = city.GetBuildingNumber(BUILDING_TYPE.OIL_RAFINERY);
+
+                    if (mineralFactory > 0)
+                    {
+                        country.AddMineral(MINERAL_TYPE.ALUMINIUM, city.GetMineralResources(MINERAL_TYPE.ALUMINIUM) * mineralFactory);
+                        country.AddMineral(MINERAL_TYPE.IRON, city.GetMineralResources(MINERAL_TYPE.IRON) * mineralFactory);
+                        country.AddMineral(MINERAL_TYPE.STEEL, city.GetMineralResources(MINERAL_TYPE.STEEL) * mineralFactory);
+                        country.AddMineral(MINERAL_TYPE.URANIUM, city.GetMineralResources(MINERAL_TYPE.URANIUM) * mineralFactory);
+                    }
+
+                    if (oilRafinery > 0)
+                    {
+                        country.AddMineral(MINERAL_TYPE.OIL, city.GetMineralResources(MINERAL_TYPE.OIL) * oilRafinery);
+                    }
+                }
+            }           
+        }
+
+        public void UpdateAllConstructionInCountry(Country country)
         {
             List<City> cityList = GetAllCitiesInCountry(country);
 
             foreach (City city in cityList)
             {
-                int mineralFactory = city.GetBuildingNumber(BUILDING_TYPE.MINERAL_FACTORY);
+                Dictionary<BUILDING_TYPE, int> buildingList = city.GetAllBuildingsInConstruction();
 
-                if (mineralFactory > 0)
+                foreach (var buildings in buildingList.ToArray())
                 {
-                    country.AddMineral(MINERAL_TYPE.ALUMINIUM, city.GetMineralResources(MINERAL_TYPE.ALUMINIUM) * mineralFactory);
-                    country.AddMineral(MINERAL_TYPE.IRON, city.GetMineralResources(MINERAL_TYPE.IRON) * mineralFactory);
-                    country.AddMineral(MINERAL_TYPE.STEEL, city.GetMineralResources(MINERAL_TYPE.STEEL) * mineralFactory);
-                    country.AddMineral(MINERAL_TYPE.URANIUM, city.GetMineralResources(MINERAL_TYPE.URANIUM) * mineralFactory);
+                    int leftDay = buildings.Value - 1;
+                    buildingList[buildings.Key] = leftDay;
+
+                    if (buildings.Value == 0)
+                    {
+                        city.AddBuilding(buildings.Key, 1);
+
+                        city.GetAllBuildingsInConstruction().Remove(buildings.Key);
+                    }
                 }
-
-                int oilRafinery = city.GetBuildingNumber(BUILDING_TYPE.OIL_RAFINERY);
-
-                if (oilRafinery > 0)
-                {
-                    country.AddMineral(MINERAL_TYPE.OIL, city.GetMineralResources(MINERAL_TYPE.OIL) * oilRafinery);
-                }
-            }
-        }
-
-        public void UpdateAllConstructionInCountry(Country country)
-        {
-            foreach (City city in GetAllCitiesInCountry(country))
-            {
-                //city.UpdateConstructionInCity();
             }
         }
 
@@ -543,7 +697,7 @@ namespace WorldMapStrategyKit
                 research.leftDays = weapon.weaponResearchTime;
                 research.totalResearchDay = weapon.weaponResearchTime;
 
-                country.GetArmy().Defense_Budget = country.GetArmy().Defense_Budget - weapon.weaponResearchCost;
+                country.GetArmy().Defense_Budget -= weapon.weaponResearchCost;
                 country.GetAllResearchsInProgress().Add(research);
 
                 HUDManager.Instance.PrivateNotification("Research has started " + weapon.weaponName);
@@ -562,8 +716,11 @@ namespace WorldMapStrategyKit
         {
             foreach (City city in GetAllCitiesInCountry(country))
             {
-                city.population = city.population + ((city.population * country.attrib["Country Natality"]) / 5000);
-                city.population = city.population - ((city.population * country.attrib["Corona"]) / 10000);
+                city.population += (int)((city.population * country.Fertility_Rate_PerWeek) / 5000);
+                city.population -= (int)((city.population * country.Pandemic_Death_Rate_Monthly) / 10000);
+
+                if (city.population < 0)
+                    city.population = 0;
             }
         }
 
@@ -605,25 +762,24 @@ namespace WorldMapStrategyKit
             foreach (City city in map.GetCities())
             {
                 if (city.Constructible_Dockyard_Area > 0)
-                    totalDockyardArea = totalDockyardArea + 1;
+                    totalDockyardArea++;
             }
 
             return totalDockyardArea;
         }
-        /*
+        
         public void PayDebt(Country country)
         {
-            if (country.Debt >= country.attrib["Debt Per Week"] && country.Debt >= 0)
-            {
-                country.attrib["Debt"] = country.attrib["Debt"] - country.attrib["Debt Per Week"];
-
-                if (country.attrib["Debt"] <= 0)
-                    country.attrib["Debt"] = 0;
-
-                country.attrib["Debt"] = country.attrib["Debt"] - country.attrib["Debt Per Week"];
+            if ( country.Debt > 0)
+            {              
+                if ( country.Budget >= country.Debt_Payment )
+                {
+                    country.Debt -= country.Debt_Payment;
+                    country.Budget -= country.Debt_Payment;
+                }
             }
         }
-        */
+        
         public void CalculateCountryPerCapitaIncome(Country country)
         {
             int manpower = GetAvailableManpower(country);
@@ -638,7 +794,7 @@ namespace WorldMapStrategyKit
                     if (total < 0)
                         total = 0;
                     country.Previous_GDP_per_Capita = (int)total;
-                    country.Individual_Tax = country.Previous_GDP_per_Capita / 100;
+                    country.Individual_Tax = (country.Previous_GDP_per_Capita * country.Tax_Rate) / 100;
                 }
                 else
                 {
@@ -667,9 +823,6 @@ namespace WorldMapStrategyKit
 
         public List<City> GetAllCitiesInCountry(Country country)
         {
-            if (map == null)
-                map = WMSK.instance;
-
             return map.GetCities(country);
         }
 
@@ -719,7 +872,7 @@ namespace WorldMapStrategyKit
 
             foreach (Country tempCountry in GetAllCountries())
             {
-                if (tempCountry != country && country.attrib[tempCountry.name] >= 50)
+                if (tempCountry != country && country.GetRelation(tempCountry.name) >= 50)
                 {
                     temp.Add(tempCountry);
                 }
@@ -732,7 +885,7 @@ namespace WorldMapStrategyKit
 
             foreach (Country tempCountry in GetAllCountries())
             {
-                if (tempCountry != country && country.attrib[tempCountry.name] <= -50)
+                if (tempCountry != country && country.GetRelation(tempCountry.name) <= -50)
                 {
                     temp.Add(tempCountry);
                 }
@@ -740,9 +893,21 @@ namespace WorldMapStrategyKit
             return temp;
         }
 
+        public int GetAllEnemiesPower(Country country)
+        {
+            int power = 0;
+
+            foreach (Country tempCountry in GetAllEnemies(country))
+            {
+                if (tempCountry.GetArmy() != null)
+                    power += tempCountry.GetArmy().GetArmyPower();
+            }
+            return power;
+        }
+
         public void SignPeaceOfTreaty(Country requestCountry, Country targetCountry)
         {
-            UpdateRelation(requestCountry, targetCountry, -50);
+            requestCountry.SetRelations(targetCountry.name, -50);
 
             RemoveEnemyCountryAtWar(requestCountry, targetCountry);
             RemoveEnemyCountryAtWar(targetCountry, requestCountry);
@@ -765,16 +930,6 @@ namespace WorldMapStrategyKit
                     division.visible = show;
                 }
             }
-        }
-        public void UpdateRelation(Country country_1, Country country_2, int relation)
-        {
-            country_1.attrib[country_2.name] = relation;
-            country_2.attrib[country_1.name] = relation;
-        }
-        public void AddRelation(Country country_1, Country country_2, int relation)
-        {
-            country_1.attrib[country_2.name] += relation;
-            country_2.attrib[country_1.name] += relation;
         }
 
         public int GetTotalDockyard(Country country)

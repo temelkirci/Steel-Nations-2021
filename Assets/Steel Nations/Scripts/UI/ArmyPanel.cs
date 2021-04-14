@@ -154,11 +154,11 @@ namespace WorldMapStrategyKit
                         temp.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = "$ " + string.Format("{0:#,0}", float.Parse(weaponCost.ToString())) + " M";
                         temp.transform.GetChild(6).GetComponent<TextMeshProUGUI>().text = selectedWeaponTemplate.weaponProductionTime.ToString() + " days";
 
-                        temp.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
+                        temp.transform.GetChild(0).transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
 
                         temp.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate
                         {
-                            BuyWeapon(country, weaponCost, Int32.Parse(temp.transform.GetChild(0).transform.GetChild(7).GetComponent<TMP_InputField>().text));
+                            BuyWeapon(country, weaponCost, Int32.Parse(temp.transform.GetChild(7).GetComponent<TMP_InputField>().text));
                         });
 
                         break;
@@ -226,8 +226,11 @@ namespace WorldMapStrategyKit
             militaryFactory.text = CountryManager.Instance.GetTotalBuildings(myCountry, BUILDING_TYPE.MILITARY_FACTORY).ToString();
             dockyard.text = CountryManager.Instance.GetTotalDockyard(myCountry).ToString();
 
-            foreach(WeaponTemplate weapon in WeaponManager.Instance.GetWeaponTemplateList())
-                CreateWeaponButton(weapon.weaponName, myCountry.GetWeaponTech(weapon.weaponType));
+            foreach (int ID in GameEventHandler.Instance.GetPlayer().GetMyCountry().GetProducibleWeapons())
+            {
+                WeaponTemplate weapon = WeaponManager.Instance.GetWeaponTemplateByID(ID);
+                CreateWeaponButton(weapon.weaponName, weapon.weaponLevel);
+            }
 
             foreach(GameObjectAnimator division in GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().GetAllDivisionInArmy())
             {
@@ -277,16 +280,19 @@ namespace WorldMapStrategyKit
                 Destroy(child.gameObject);
 
             GameObject GO = Instantiate(divisionListItem, weaponsContent.transform);
-            GO.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.GetDivision().divisionTemplate.mainUnitIDList[0]).weaponName;
-            GO.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.GetDivision().divisionTemplate.mainUnitIDList[0]);
+            GO.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.GetDivision().MainWeapon).weaponName;
+            GO.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.GetDivision().MainWeapon);
+            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = division.GetDivision().MainWeaponNumber.ToString();
 
             GameObject GO1 = Instantiate(divisionListItem, weaponsContent.transform);
-            GO1.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.GetDivision().divisionTemplate.secondUnitList[0]).weaponName;
-            GO1.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.GetDivision().divisionTemplate.secondUnitList[0]);
+            GO1.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.GetDivision().SecondWeapon).weaponName;
+            GO1.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.GetDivision().SecondWeapon);
+            GO1.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = division.GetDivision().SecondWeaponNumber.ToString();
 
             GameObject GO2 = Instantiate(divisionListItem, weaponsContent.transform);
-            GO2.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.GetDivision().divisionTemplate.thirdUnitList[0]).weaponName;
-            GO2 .transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.GetDivision().divisionTemplate.thirdUnitList[0]);
+            GO2.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.GetDivision().ThirdWeapon).weaponName;
+            GO2 .transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.GetDivision().ThirdWeapon);
+            GO2.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = division.GetDivision().ThirdWeaponNumber.ToString();
         }
 
         public void HidePanel()

@@ -171,6 +171,11 @@ public class ActionManager : MonoBehaviour
         giveControlOfRegionDropdown.dropdownEvent.AddListener(GiveControlOfRegionSelectProvince);
         licenseDropdown.dropdownEvent.AddListener(RequestLicenseProduction);
 
+        mineralInputField.onValueChanged.AddListener(delegate { CalculateMineralCost(); });
+        moneyAmountInputField.onValueChanged.AddListener(delegate { GiveMoneySupport(); });
+        //giveMilitaryAccessAmountInputField.onValueChanged.AddListener(delegate { GiveMoneySupport(); });
+        //giveGunAmountInputField.onValueChanged.AddListener(delegate { GiveMoneySupport(); });
+
         giveGarrisonSupportButton.GetComponent<Button>().onClick.AddListener(() => CreateAction(
                 GameEventHandler.Instance.GetPlayer().GetMyCountry(),
                 GameEventHandler.Instance.GetPlayer().GetSelectedCountry(),
@@ -591,6 +596,7 @@ public class ActionManager : MonoBehaviour
             }
             else
             {
+                CountryManager.Instance.WarDecision(country, action.Country);
                 if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                     HUDManager.Instance.PrivateNotification(action.Country.name + " has denied your request to take control of " + action.Province.name);
             }
@@ -616,8 +622,8 @@ public class ActionManager : MonoBehaviour
 
                 long addMoney = (action.Country.Budget * addMoneyPerc) / 100;
 
-                country.Budget = country.Budget + addMoney;
-                action.Country.Budget = action.Country.Budget - addMoney;
+                country.Budget += addMoney;
+                action.Country.Budget -= addMoney;
             }
             else
             {
@@ -631,12 +637,14 @@ public class ActionManager : MonoBehaviour
             {
                 WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification("The president of " + action.Country.name + " was killed");
 
-                int currentTension = action.Country.Tension - 25;
-                action.Country.Tension = currentTension;
+                action.Country.Tension -= 25;
+
+                CountryManager.Instance.WarDecision(country, action.Country);
             }
             else
             {
                 WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification("The president of " + action.Country.name + " was saved");
+                CountryManager.Instance.WarDecision(country, action.Country);
 
                 if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 {
@@ -655,21 +663,16 @@ public class ActionManager : MonoBehaviour
 
         if (action.ActionType == ACTION_TYPE.Buy_Mineral)
         {
-            if (action.SuccessRate >= success)
-            {
-                long buyerBudget = country.Budget - action.PayMoney;
-                country.AddMineral(action.MineralType, action.MineralAmount);
-                country.Budget = buyerBudget;
+            country.AddMineral(action.MineralType, action.MineralAmount);
+            country.Budget -= action.PayMoney;
 
-                long sellerBudget = action.Country.Budget + action.PayMoney;
-                action.Country.AddMineral(action.MineralType, -action.MineralAmount);
-                action.Country.Budget = sellerBudget;
+            action.Country.AddMineral(action.MineralType, -action.MineralAmount);
+            action.Country.Budget += action.PayMoney;
 
-                HUDManager.Instance.PrivateNotification("You have bought " + MineralManager.Instance.GetMineralNameByType(action.MineralType) + "x" + action.MineralAmount);
+            HUDManager.Instance.PrivateNotification("You have bought " + MineralManager.Instance.GetMineralNameByType(action.MineralType) + "x" + action.MineralAmount);
 
-                GovernmentPanel.Instance.ShowGovernmentPanel();
-                HUDManager.Instance.UpdateMyResources();
-            }
+            GovernmentPanel.Instance.ShowGovernmentPanel();
+            HUDManager.Instance.UpdateMyResources();
         }
 
         if (action.ActionType == ACTION_TYPE.Cancel_Military_Access)
@@ -677,6 +680,7 @@ public class ActionManager : MonoBehaviour
             if (action.SuccessRate >= success)
             {
                 CountryManager.Instance.CancelMilitaryAccess(country, action.Country);
+                CountryManager.Instance.WarDecision(country, action.Country);
             }
         }
 
@@ -785,10 +789,13 @@ public class ActionManager : MonoBehaviour
 
                 int currentTension = action.Country.Tension - 30;
                 action.Country.Tension = currentTension;
+                CountryManager.Instance.WarDecision(country, action.Country);
             }
             else
             {
-                CountryManager.Instance.AddRelation(action.Country, country, -35);
+                action.Country.SetRelations(country.name, -35);
+                country.SetRelations(action.Country.name, -35);
+                CountryManager.Instance.WarDecision(country, action.Country);
 
                 WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification(action.Country.name + " has prevented a military coup");
 
@@ -804,6 +811,7 @@ public class ActionManager : MonoBehaviour
             if (action.SuccessRate >= success)
             {
                 country.PlaceArmsEmbargo(action.Country);
+                CountryManager.Instance.WarDecision(country, action.Country);
             }
         }
 
@@ -812,6 +820,7 @@ public class ActionManager : MonoBehaviour
             if (action.SuccessRate >= success)
             {
                 country.PlaceTradeEmbargo(action.Country);
+                CountryManager.Instance.WarDecision(country, action.Country);
             }
         }
 
@@ -875,11 +884,11 @@ public class ActionManager : MonoBehaviour
         }
 
         if (action.ActionType == ACTION_TYPE.Steal_Technology)
-        if (action.ActionType == ACTION_TYPE.Steal_Technology)
         {
             if (action.SuccessRate >= success)
             {
                 country.AddProducibleWeaponToInventory(action.Weapon.weaponID);
+                CountryManager.Instance.WarDecision(country, action.Country);
 
                 if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 {
@@ -892,6 +901,8 @@ public class ActionManager : MonoBehaviour
             }
             else
             {
+                CountryManager.Instance.WarDecision(country, action.Country);
+
                 if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 {
                     HUDManager.Instance.PrivateNotification("Fail...You could not steal " + action.Weapon.weaponName);
@@ -901,11 +912,11 @@ public class ActionManager : MonoBehaviour
 
         if (action.SuccessRate >= success)
         {
-            CountryManager.Instance.AddRelation(country, action.Country, action.EffectInCountryRelationOnSuccess);
+            country.SetRelations(action.Country.name, action.EffectInCountryRelationOnSuccess);
         }
         else
         {
-            CountryManager.Instance.AddRelation(country, action.Country, action.EffectInCountryRelationOnFailure);
+            country.SetRelations(action.Country.name, action.EffectInCountryRelationOnFailure);
         }
     }
 

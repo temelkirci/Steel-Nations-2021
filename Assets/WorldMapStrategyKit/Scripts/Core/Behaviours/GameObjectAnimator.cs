@@ -69,9 +69,9 @@ namespace WorldMapStrategyKit {
             shield.transform.localPosition = new Vector3(currentMap2DLocation.x, currentMap2DLocation.y, 0);
         }
 
-        public void CreateDivisionGameObject()
+        public void SetDivision(Division tempDivision)
         {
-            division = new Division();
+            division = tempDivision;
         }
 
         public bool isBuilding()

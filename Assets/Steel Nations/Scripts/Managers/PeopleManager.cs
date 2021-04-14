@@ -1,7 +1,8 @@
-﻿
+﻿using UnityEngine;
+
 public class PeopleManager : Singleton<PeopleManager>
 {
-    public Person CreatePerson(PERSON_TYPE personType, string personName, WorldMapStrategyKit.Country country)
+    public Person CreatePerson(PERSON_TYPE personType, string personName)
     {
         Person person = new Person();
 
@@ -9,11 +10,29 @@ public class PeopleManager : Singleton<PeopleManager>
         person.PersonType = personType;
 
         if (personName == string.Empty)
-            person.PersonName = GetPersonNameByPersonType(country, personType);
+            person.PersonName = GetPersonNameByPersonType(personType);
         else
             person.PersonName = personName;
 
         return person;
+    }
+
+    public Person CreatePresident(string personName, string countryName, int since, string birthDate)
+    {
+        Person person = new Person();
+
+        person.PersonType = PERSON_TYPE.PRESIDENT;
+        person.PersonName = personName;
+        person.PersonPicture = LoadPeoplePicture(countryName);
+        person.RoleStartDate = since;
+        person.BirthDate = birthDate;
+
+        return person;
+    }
+
+    Texture2D LoadPeoplePicture(string dir)
+    {
+        return Resources.Load("People/President/" + dir) as Texture2D;
     }
 
     int GetPersonAgeByPersonType(PERSON_TYPE personType)
@@ -34,7 +53,7 @@ public class PeopleManager : Singleton<PeopleManager>
         return 0;
     }
 
-    string GetPersonNameByPersonType(WorldMapStrategyKit.Country country, PERSON_TYPE personType)
+    string GetPersonNameByPersonType(PERSON_TYPE personType)
     {
         if (personType == PERSON_TYPE.PRESIDENT)
             return "President";

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 
 public class DivisionTemplate
 {
@@ -8,76 +7,37 @@ public class DivisionTemplate
     public int minimumSoldier;
     public int maximumSoldier;
 
-    public List<int> mainUnitIDList = new List<int>();
+    public WEAPON_TYPE mainWeaponType;
+    public int mainUnitMinimum;
     public int mainUnitMaximum;
 
-    public List<int> secondUnitList = new List<int>();
+    public WEAPON_TYPE secondWeaponType;
+    public int secondUnitMinimum;
     public int secondUnitMaximum;
 
-    public List<int> thirdUnitList = new List<int>();
+    public WEAPON_TYPE thirdWeaponType;
+    public int thirdUnitMinimum;
     public int thirdUnitMaximum;
 
-    public void SetDivisionMainWeaponByWeaponName(string[] tempWeaponID, int maxUnit)
+
+    public void SetDivisionMainWeaponByWeaponName(WEAPON_TYPE weaponType, int minUnit, int maxUnit)
     {
-        foreach (string ID in tempWeaponID)
-        {
-            if(ID != string.Empty)
-                mainUnitIDList.Add(Int32.Parse(ID));
-        }
+        mainWeaponType = weaponType;
         mainUnitMaximum = maxUnit;
+        mainUnitMinimum = minUnit;
     }
-    public void SetDivisionSecondWeaponByWeaponName(string[] tempWeaponID, int maxUnit)
+    public void SetDivisionSecondWeaponByWeaponName(WEAPON_TYPE weaponType, int minUnit, int maxUnit)
     {
-        foreach (string ID in tempWeaponID)
-        {
-            if (ID != string.Empty)
-                secondUnitList.Add(Int32.Parse(ID));
-        }
+        secondWeaponType = weaponType;
         secondUnitMaximum = maxUnit;
+        secondUnitMinimum = minUnit;
     }
-    public void SetDivisionThirdWeaponByWeaponName(string[] tempWeaponID, int maxUnit)
+    public void SetDivisionThirdWeaponByWeaponName(WEAPON_TYPE weaponType, int minUnit, int maxUnit)
     {
-        foreach (string ID in tempWeaponID)
-        {
-            if (ID != string.Empty)
-                thirdUnitList.Add(Int32.Parse(ID));
-        }
+        thirdWeaponType = weaponType;
         thirdUnitMaximum = maxUnit;
+        thirdUnitMinimum = minUnit;
     }
 
-    public void SetDivisionTypeByDivisionName(string tempDivisionName)
-    {
-        if (tempDivisionName == "Armored Infantry Division")
-        {
-            divisionType = DIVISION_TYPE.ARMORED_DIVISION;
-        }
-        if (tempDivisionName == "Mechanized Infantry Division")
-        {
-            divisionType = DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION;
-        }
-        if (tempDivisionName == "Motorized Infantry Division")
-        {
-            divisionType = DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION;
-        }
-        if (tempDivisionName == "Air Division")
-        {
-            divisionType = DIVISION_TYPE.AIR_DIVISION;
-        }
-        if (tempDivisionName == "Bomber Aviation Division")
-        {
-            divisionType = DIVISION_TYPE.BOMBER_DIVISION;
-        }
-        if (tempDivisionName == "Submarine Division")
-        {
-            divisionType = DIVISION_TYPE.SUBMARINE_DIVISION;
-        }
-        if (tempDivisionName == "Destroyer Division")
-        {
-            divisionType = DIVISION_TYPE.DESTROYER_DIVISION;
-        }
-        if (tempDivisionName == "Carrier Division")
-        {
-            divisionType = DIVISION_TYPE.CARRIER_DIVISION;
-        }
-    }
+    
 }

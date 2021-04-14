@@ -97,20 +97,8 @@ public class MilitaryForces
         return tempWeaponList;
     }
 
-    public int PossibleDivisionNumber(DivisionTemplate divisionTemplate)
-    {
-        int requiredWeaponNumber = divisionTemplate.mainUnitMaximum;
-        int currentWeaponNumber = 0;
-
-        foreach (int weaponID in divisionTemplate.mainUnitIDList)
-            currentWeaponNumber = currentWeaponNumber + GetWeaponNumberInMilitaryForcesInventory(weaponID);
-
-        return currentWeaponNumber / requiredWeaponNumber;
-    }
-
     public void AddDivisionToMilitaryForces(WorldMapStrategyKit.GameObjectAnimator tempDivision)
     {
-        Debug.Log("Created New Division");
         allDivisionInMilitaryForces.Add(tempDivision);
     }
 

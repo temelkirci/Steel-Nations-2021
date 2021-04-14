@@ -16,7 +16,7 @@ namespace WorldMapStrategyKit
         WMSK map;
 
         public GameObject tankPrefab, destroyerPrefab, fighterPrefab, armoredVehiclePrefab, artilleryPrefab, carrierPrefab, submarinePrefab;
-        List<DivisionTemplate> divisionTemplateList;
+        List<DivisionTemplate> divisionTemplateList = new List<DivisionTemplate>();
         public GameObject shield;
         List<DIVISION_TYPE> divisionTypeList;
 
@@ -27,12 +27,6 @@ namespace WorldMapStrategyKit
             map = WMSK.instance;
 
             divisionTypeList = Enum.GetValues(typeof(DIVISION_TYPE)).Cast<DIVISION_TYPE>().ToList();
-            divisionTemplateList = new List<DivisionTemplate>();
-        }
-
-        public void Init()
-        {
-
         }
 
         public void AddDivisionTemplate(DivisionTemplate divisionTemplate)
@@ -86,23 +80,25 @@ namespace WorldMapStrategyKit
 
             if (country.GetArmy().GetLandForces() == null)
                 return false;
+            if (country.GetArmy().GetAirForces() == null)
+                return false;
+            if (country.GetArmy().GetNavalForces() == null)
+                return false;
 
             return true;
         }
 
         public void CreateDivisions(Country country)
         {
-            foreach (DIVISION_TYPE divisionType in divisionTypeList)
-            {
-                if (GetMilitaryForcesByDivisionType(divisionType) == MILITARY_FORCES_TYPE.LAND_FORCES)
-                    CreateLandDivision(country, -1, divisionType);
+            CreateLandDivision(country, DIVISION_TYPE.ARMORED_DIVISION);
+            CreateLandDivision(country, DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION);
+            CreateLandDivision(country, DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION);
 
-                if (GetMilitaryForcesByDivisionType(divisionType) == MILITARY_FORCES_TYPE.AIR_FORCES)
-                    CreateAirDivision(country, -1, divisionType);
+            CreateAirDivision(country, DIVISION_TYPE.AIR_DIVISION);
 
-                if (GetMilitaryForcesByDivisionType(divisionType) == MILITARY_FORCES_TYPE.NAVAL_FORCES)
-                    CreateNavalDivision(country, -1, divisionType);
-            }
+            CreateNavalDivision(country, DIVISION_TYPE.CARRIER_DIVISION);
+            CreateNavalDivision(country, DIVISION_TYPE.SUBMARINE_DIVISION);
+            CreateNavalDivision(country, DIVISION_TYPE.DESTROYER_DIVISION);
         }
 
         public void RandomPositionDivisionsInCountry(Country sourceCountry, Country targetCountry)
@@ -143,133 +139,183 @@ namespace WorldMapStrategyKit
             return divisionName;
         }
 
-        public void CreateLandDivision(Country tempCountry, int number, DIVISION_TYPE divisionType)
+        public DivisionTemplate GetDivisionTemplateByType(DIVISION_TYPE tempDivisionType)
         {
-            if (IsPossibleToCreateDivision(tempCountry) == false)
+            foreach (DivisionTemplate divisionTemplate in GetDivisionTemplate())
+            {
+                if (divisionTemplate.divisionType == tempDivisionType)
+                {
+                    return divisionTemplate;
+                }
+            }
+
+            return null;
+        }
+
+        public void CreateLandDivision(Country country, DIVISION_TYPE divisionType)
+        {
+            if (IsPossibleToCreateDivision(country) == false)
                 return;
 
             bool IsMyDivision = false;
-            if (tempCountry == GameEventHandler.Instance.GetPlayer().GetMyCountry())
+            if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 IsMyDivision = true;
 
-            int countryIndex = map.GetCountryIndex(tempCountry);
+            MilitaryForces militaryForces = country.GetArmy().GetLandForces();
 
-            List<City> normalCity = CountryManager.Instance.GetSortedCityListByPopulation(tempCountry);
-            DivisionTemplate tempDivisionTemplate = DivisionManagerPanel.GetDivisionTemplateByType(divisionType);
-            int landDivisionNumber = tempCountry.GetArmy().GetLandForces().PossibleDivisionNumber(tempDivisionTemplate);
+            if (militaryForces == null)
+                return;
 
-            if (number == -1)
+            DivisionTemplate divisionTemplate = GetDivisionTemplateByType(divisionType);
+
+            if (divisionTemplate == null)
+                return;
+
+            int countryIndex = map.GetCountryIndex(country);
+
+            int i = 0;
+
+            while(true)
             {
-                number = landDivisionNumber;
-            }
-            else
-            {
-                if (number > landDivisionNumber)
-                    number = landDivisionNumber;
-            }
+                if (CountryManager.Instance.GetEmptyGarrisonNumberInCountry(country) == 0)
+                    return;
 
-            if (number > normalCity.Count)
-                number = normalCity.Count;
+                Division division = CreateDivision(militaryForces, divisionTemplate);
 
-            for (int i = 0; i < number; i++)
-            {
-                Vector2 cityPosition = normalCity[i].unity2DLocation;
-                GameObjectAnimator tank = CreateMilitaryUnit(TERRAIN_CAPABILITY.OnlyGround, cityPosition, divisionType, IsMyDivision);
-                tank.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter
-                tank.autoRotation = true;
-                tank.player = countryIndex;
+                if (division != null)
+                {
+                    City city = CountryManager.Instance.GetRandomEmptyGarrisonInCountry(country);
 
-                tank.name = GetDivisionName(i, tempDivisionTemplate.divisionType);
+                    Vector2 cityPosition = city.unity2DLocation;
+                    GameObjectAnimator tank = CreateMilitaryUnit(TERRAIN_CAPABILITY.OnlyGround, cityPosition, divisionType, IsMyDivision);
 
-                CreateDivision(tempCountry.GetArmy().GetLandForces(), tank, tempDivisionTemplate);
-                //normalCity[i].AddDivisionToCity(tank);
+                    tank.SetDivision(division);
+                    militaryForces.AddDivisionToMilitaryForces(tank);
+
+                    tank.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter
+                    tank.autoRotation = true;
+                    tank.player = countryIndex;
+
+                    tank.name = GetDivisionName(i, divisionType);
+                    division.divisionName = tank.name;
+
+                    city.AddDivisionToGarrison(tank);
+                    i++;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
 
-        public void CreateAirDivision(Country tempCountry, int number, DIVISION_TYPE divisionType)
+        public void CreateAirDivision(Country country, DIVISION_TYPE divisionType)
         {
-            if (IsPossibleToCreateDivision(tempCountry) == false)
+            if (IsPossibleToCreateDivision(country) == false)
                 return;
 
             bool IsMyDivision = false;
-            if (tempCountry == GameEventHandler.Instance.GetPlayer().GetMyCountry())
+            if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 IsMyDivision = true;
 
-            int countryIndex = map.GetCountryIndex(tempCountry);
+            MilitaryForces militaryForces = country.GetArmy().GetAirForces();
 
-            List<City> normalCity = CountryManager.Instance.GetSortedCityListByPopulation(tempCountry);
-            DivisionTemplate airDivision = DivisionManagerPanel.GetDivisionTemplateByType(divisionType);
-            int airDivisionNumber = tempCountry.GetArmy().GetAirForces().PossibleDivisionNumber(airDivision);
+            if (militaryForces == null)
+                return;
 
-            if (number == -1)
+            DivisionTemplate divisionTemplate = GetDivisionTemplateByType(divisionType);
+
+            if(divisionTemplate == null)
+                return;
+
+            int countryIndex = map.GetCountryIndex(country);
+
+            int i = 0;
+
+            while(true)
             {
-                number = airDivisionNumber;
-            }
-            else
-            {
-                if (number > airDivisionNumber)
-                    number = airDivisionNumber;
-            }
+                if (CountryManager.Instance.GetEmptyGarrisonNumberInCountry(country) == 0)
+                    return;
 
-            if (number > normalCity.Count)
-                number = normalCity.Count;
+                Division division = CreateDivision(militaryForces, divisionTemplate);
 
-            for (int i = 0; i < number; i++)
-            {
-                Vector2 cityPosition = normalCity[i].unity2DLocation;
-                GameObjectAnimator airPlane = CreateMilitaryUnit(TERRAIN_CAPABILITY.Any, cityPosition, divisionType, IsMyDivision);
+                if (division != null)
+                {
+                    City city = CountryManager.Instance.GetRandomEmptyGarrisonInCountry(country);
 
-                airPlane.name = GetDivisionName(i, airDivision.divisionType);
+                    Vector2 cityPosition = city.unity2DLocation;
+                    GameObjectAnimator airPlane = CreateMilitaryUnit(TERRAIN_CAPABILITY.Any, cityPosition, divisionType, IsMyDivision);
+                    
+                    airPlane.SetDivision(division);
+                    militaryForces.AddDivisionToMilitaryForces(airPlane);
+                    airPlane.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter  
+                    airPlane.autoRotation = true;
+                    airPlane.player = countryIndex;
 
-                airPlane.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter  
-                airPlane.autoRotation = true;
-                airPlane.player = countryIndex;
+                    airPlane.name = GetDivisionName(i, divisionType);
+                    division.divisionName = airPlane.name;
 
-                CreateDivision(tempCountry.GetArmy().GetAirForces(), airPlane, airDivision);
-                //normalCity[i].AddDivisionToCity(airPlane);
+                    city.AddDivisionToGarrison(airPlane);
+                    i++;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
-        public void CreateNavalDivision(Country tempCountry, int number, DIVISION_TYPE divisionType)
+        public void CreateNavalDivision(Country country, DIVISION_TYPE divisionType)
         {
-            if (IsPossibleToCreateDivision(tempCountry) == false)
+            if (IsPossibleToCreateDivision(country) == false)
                 return;
 
             bool IsMyDivision = false;
-            if (tempCountry == GameEventHandler.Instance.GetPlayer().GetMyCountry())
+            if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 IsMyDivision = true;
 
-            int countryIndex = map.GetCountryIndex(tempCountry);
+            MilitaryForces militaryForces = country.GetArmy().GetNavalForces();
 
-            List<Vector2> normalCity = map.GetCountryCoastalPoints(map.GetCountryIndex(tempCountry));
-            DivisionTemplate navalDivision = DivisionManagerPanel.GetDivisionTemplateByType(divisionType);
-            int navalDivisionNumber = tempCountry.GetArmy().GetNavalForces().PossibleDivisionNumber(navalDivision);
+            if (militaryForces == null)
+                return;
 
-            if (number == -1)
+            DivisionTemplate navalDivision = GetDivisionTemplateByType(divisionType);
+
+            if (navalDivision == null)
+                return;
+
+            int countryIndex = map.GetCountryIndex(country);
+            List<Vector2> city = map.GetCountryCoastalPoints(countryIndex);
+
+            int i = 0;
+
+            while(true)
             {
-                number = navalDivisionNumber;
-            }
-            else
-            {
-                if (number > navalDivisionNumber)
-                    number = navalDivisionNumber;
-            }
+                Division division = CreateDivision(militaryForces, navalDivision);
 
-            if (number > normalCity.Count)
-                number = normalCity.Count;
+                if (division != null)
+                {
+                    int index = UnityEngine.Random.Range(0, city.Count);
+                    Vector2 cityPosition = city[index];
+                    GameObjectAnimator ship = CreateMilitaryUnit(TERRAIN_CAPABILITY.OnlyWater, cityPosition, divisionType, IsMyDivision);
 
-            for (int i = 0; i < number; i++)
-            {
-                Vector2 cityPosition = normalCity[i];
-                GameObjectAnimator ship = CreateMilitaryUnit(TERRAIN_CAPABILITY.OnlyWater, cityPosition, divisionType, IsMyDivision);
-                ship.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter  
-                ship.autoRotation = true;
-                ship.player = countryIndex;
+                    ship.SetDivision(division);
+                    militaryForces.AddDivisionToMilitaryForces(ship);
 
-                ship.name = GetDivisionName(i, navalDivision.divisionType);
+                    ship.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter  
+                    ship.autoRotation = true;
+                    ship.player = countryIndex;
 
-                CreateDivision(tempCountry.GetArmy().GetNavalForces(), ship, navalDivision);
+                    ship.name = GetDivisionName(i, divisionType);
+                    division.divisionName = ship.name;
+
+                    i++;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
@@ -295,8 +341,8 @@ namespace WorldMapStrategyKit
 
                 unitGO.transform.localScale = Misc.Vector3one * 0.025f;
 
-                mapPosition.x = mapPosition.x - 0.0005f;
-                mapPosition.y = mapPosition.y + 0.0005f;
+                mapPosition.x -= 0.0005f;
+                mapPosition.y += 0.0005f;
 
                 militaryGOA = unitGO.WMSK_MoveTo(mapPosition);
                 militaryGOA.autoRotation = true;
@@ -306,9 +352,6 @@ namespace WorldMapStrategyKit
             }
             else if (terrainCapability == TERRAIN_CAPABILITY.Any)
             {
-                mapPosition.x = mapPosition.x + 0.0005f;
-                mapPosition.y = mapPosition.y - 0.0005f;
-
                 // Create Airplane
                 unitGO = Instantiate(fighterPrefab);
                 unitGO.transform.localScale = Misc.Vector3one * 0.01f;
@@ -360,104 +403,160 @@ namespace WorldMapStrategyKit
 
 
 
-        public void CreateDivision(MilitaryForces militaryForces, GameObjectAnimator tempDivision, DivisionTemplate divisionTemplate)
+        public Division CreateDivision(MilitaryForces militaryForces, DivisionTemplate divisionTemplate)
         {
-            tempDivision.CreateDivisionGameObject();
-            tempDivision.GetDivision().divisionTemplate = divisionTemplate;
-            tempDivision.GetDivision().divisionName = tempDivision.name;
-
             List<Weapon> mainUnitList = new List<Weapon>();
-            foreach (int weaponID in divisionTemplate.mainUnitIDList)
-            {
-                List<Weapon> weaponList = militaryForces.GetWeaponListInMilitaryForcesInventory(weaponID);
-                if (weaponList.Count > 0)
-                {
-                    mainUnitList.AddRange(weaponList);
-                    tempDivision.GetDivision().MainWeapon = weaponID;
-                    tempDivision.GetDivision().MainWeaponNumber = weaponList.Count;
-
-                    break;
-                }
-            }
-
             List<Weapon> secondUnitList = new List<Weapon>();
-            foreach (int weaponID in divisionTemplate.secondUnitList)
-            {
-                List<Weapon> weaponList = militaryForces.GetWeaponListInMilitaryForcesInventory(weaponID);
-                if (weaponList.Count > 0)
-                {
-                    secondUnitList.AddRange(weaponList);
-                    tempDivision.GetDivision().SecondWeapon = weaponID;
-                    tempDivision.GetDivision().SecondWeaponNumber = weaponList.Count;
-
-                    break;
-                }
-            }
-
             List<Weapon> thirdUnitList = new List<Weapon>();
-            foreach (int weaponID in divisionTemplate.thirdUnitList)
+
+            foreach (Weapon weapon in militaryForces.GetAllWeaponsInMilitaryForces())
             {
-                List<Weapon> weaponList = militaryForces.GetWeaponListInMilitaryForcesInventory(weaponID);
-                if (weaponList.Count > 0)
+                WEAPON_TYPE weaponType = WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponType;
+
+                if (weaponType == divisionTemplate.mainWeaponType)
                 {
-                    thirdUnitList.AddRange(weaponList);
-                    tempDivision.GetDivision().ThirdWeapon = weaponID;
-                    tempDivision.GetDivision().ThirdWeaponNumber = weaponList.Count;
-                    break;
+                    mainUnitList.Add(weapon);
+                }
+                if (weaponType == divisionTemplate.secondWeaponType)
+                {
+                    secondUnitList.Add(weapon);
+                }
+                if (weaponType == divisionTemplate.thirdWeaponType)
+                {
+                    thirdUnitList.Add(weapon);
                 }
             }
 
-            if (tempDivision.GetDivision().MainWeaponNumber >= divisionTemplate.mainUnitMaximum)
-            {
-                for (int i = 0; i < tempDivision.GetDivision().MainWeaponNumber; i++)
+
+            if ( mainUnitList.Count >= divisionTemplate.mainUnitMinimum )
+            {              
+                Division division = new Division();
+                division.divisionTemplate = divisionTemplate;
+
+                division.MainWeapon = mainUnitList[0].weaponTemplateID;
+
+                if(secondUnitList.Count == 0)
+                    division.SecondWeapon = WeaponManager.Instance.GetLowestGenerationWeaponIDByWeaponType(divisionTemplate.secondWeaponType);
+                else
+                    division.SecondWeapon = secondUnitList[0].weaponTemplateID;
+
+                if (thirdUnitList.Count == 0)
+                    division.ThirdWeapon = WeaponManager.Instance.GetLowestGenerationWeaponIDByWeaponType(divisionTemplate.thirdWeaponType);
+                else
+                    division.ThirdWeapon = thirdUnitList[0].weaponTemplateID;
+
+
+
+
+
+                if (mainUnitList.Count > divisionTemplate.mainUnitMaximum)
+                    division.MainWeaponNumber = divisionTemplate.mainUnitMaximum;
+                else
+                    division.MainWeaponNumber = mainUnitList.Count;
+
+
+                if (secondUnitList.Count > divisionTemplate.secondUnitMaximum)
+                    division.SecondWeaponNumber = divisionTemplate.secondUnitMaximum;
+                else
+                    division.SecondWeaponNumber = secondUnitList.Count;
+
+
+                if (thirdUnitList.Count > divisionTemplate.thirdUnitMaximum)
+                    division.ThirdWeaponNumber = divisionTemplate.thirdUnitMaximum;
+                else
+                    division.ThirdWeaponNumber = thirdUnitList.Count;
+
+
+                for (int i = 0; i < division.MainWeaponNumber; i++)
                 {
-                    tempDivision.GetDivision().AddWeaponToDivision(mainUnitList[i]);
+                    division.AddWeaponToDivision(mainUnitList[i]);
                     militaryForces.RemoveWeaponFromMilitaryForces(mainUnitList[i]);
                 }
 
-                /*
-                if (secondUnitList.Count < divisionTemplate.secondUnitMaximum)
+                for (int i = 0; i < division.SecondWeaponNumber; i++)
                 {
-                    secondUnitNumber = secondUnitList.Count;
-                }
-                if (thirdUnitList.Count < divisionTemplate.thirdUnitMaximum)
-                {
-                    thirdUnitNumber = thirdUnitList.Count;
-                }
-                */
-
-                for (int i = 0; i < tempDivision.GetDivision().SecondWeaponNumber; i++)
-                {
-                    tempDivision.GetDivision().AddWeaponToDivision(secondUnitList[i]);
+                    division.AddWeaponToDivision(secondUnitList[i]);
                     militaryForces.RemoveWeaponFromMilitaryForces(secondUnitList[i]);
                 }
 
-                for (int i = 0; i < tempDivision.GetDivision().ThirdWeaponNumber; i++)
+                for (int i = 0; i < division.ThirdWeaponNumber; i++)
                 {
-                    tempDivision.GetDivision().AddWeaponToDivision(thirdUnitList[i]);
+                    division.AddWeaponToDivision(thirdUnitList[i]);
                     militaryForces.RemoveWeaponFromMilitaryForces(thirdUnitList[i]);
                 }
 
-                militaryForces.AddDivisionToMilitaryForces(tempDivision);
+                return division;
             }
             else
             {
-                //Debug.Log(divisionTemplate.mainUnit + " -> " + divisionTemplate.mainUnitMaximum);
+                return null;
             }
         }
 
-
-        public void AddDivisionToCity(City city, GameObjectAnimator division)
+        public void CreateDivisionTemplate(string mainUnit,
+            string secondUnit,
+            string thirdUnit,
+            int minMainUnit,
+            int maxMainUnit,
+            int minSecondUnit,
+            int maxSecondUnit,
+            int minThirdUnit,
+            int maxThirdUnit,
+            int soldierMinimum,
+            int soldierMaximum,
+            string divisionName)
         {
-            if (city.GetAllDivisionsInCity().Count < city.GetBuildingNumber(BUILDING_TYPE.GARRISON))
+            WEAPON_TYPE mainWeaponType = WeaponManager.Instance.GetWeaponType(mainUnit);
+            WEAPON_TYPE secondWeaponType = WeaponManager.Instance.GetWeaponType(secondUnit);
+            WEAPON_TYPE thirdWeaponType = WeaponManager.Instance.GetWeaponType(thirdUnit);
+
+            DivisionTemplate divisionTemplate = new DivisionTemplate();
+            divisionTemplate.divisionType = GetDivisionTypeByDivisionName(divisionName);
+
+            divisionTemplate.SetDivisionMainWeaponByWeaponName(mainWeaponType, minMainUnit, maxMainUnit);
+            divisionTemplate.SetDivisionSecondWeaponByWeaponName(secondWeaponType, minSecondUnit, maxSecondUnit);
+            divisionTemplate.SetDivisionThirdWeaponByWeaponName(thirdWeaponType, minThirdUnit, maxThirdUnit);
+
+            divisionTemplate.minimumSoldier = soldierMinimum;
+            divisionTemplate.maximumSoldier = soldierMaximum;
+
+            AddDivisionTemplate(divisionTemplate);
+        }
+
+        public DIVISION_TYPE GetDivisionTypeByDivisionName(string tempDivisionName)
+        {
+            if (tempDivisionName == "Armored Infantry Division")
             {
-                division.visible = false;
-                city.GetAllDivisionsInCity().Add(division);
+                return DIVISION_TYPE.ARMORED_DIVISION;
             }
-            else
+            if (tempDivisionName == "Mechanized Infantry Division")
             {
-                // you have reached maximum garrison in city
+                return DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION;
             }
+            if (tempDivisionName == "Motorized Infantry Division")
+            {
+                return DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION;
+            }
+
+            if (tempDivisionName == "Air Division")
+            {
+                return DIVISION_TYPE.AIR_DIVISION;
+            }
+
+            if (tempDivisionName == "Submarine Division")
+            {
+                return DIVISION_TYPE.SUBMARINE_DIVISION;
+            }
+            if (tempDivisionName == "Destroyer Division")
+            {
+                return DIVISION_TYPE.DESTROYER_DIVISION;
+            }
+            if (tempDivisionName == "Carrier Division")
+            {
+                return DIVISION_TYPE.CARRIER_DIVISION;
+            }
+
+            return DIVISION_TYPE.NONE;
         }
     }
 }

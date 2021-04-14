@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -91,7 +89,7 @@ namespace WorldMapStrategyKit
         public void UpdateDefenseBudget()
         {
             //myBudget.text = "$ " + string.Format("{0:#,0}", float.Parse(GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().Defense_Budget.ToString())) + " M";
-            myBudget.text = "$ " + string.Format("{0:#,0}", float.Parse(GameEventHandler.Instance.GetPlayer().GetMyCountry().Current_GDP.ToString())) + " M";
+            myBudget.text = "$ " + string.Format("{0:#,0}", float.Parse(GameEventHandler.Instance.GetPlayer().GetMyCountry().Budget.ToString())) + " M";
         }
         public void ShowMyCountryFlag()
         {

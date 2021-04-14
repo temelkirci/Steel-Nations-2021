@@ -81,6 +81,7 @@ public class GameSettings : MonoBehaviour
 
     int startingResourcesMultipler = 1;
     float gameSpeedValue;
+    int finishYear;
 
     void Awake()
     {
@@ -106,35 +107,35 @@ public class GameSettings : MonoBehaviour
         gameModeText.text = GetSelectedGameMode().ToString();
     }
 
-    public void Init()
-    {
-
-    }
-
     public void SetGameSpeed_X1()
     {
-        map.timeSpeed = 0.25f;
+        map.timeSpeed = 1.0f;
         gameSpeedValue = 5.0f;
     }
     public void SetGameSpeed_X2()
     {
-        map.timeSpeed = 0.5f;
+        map.timeSpeed = 1.25f;
         gameSpeedValue = 4.0f;
     }
     public void SetGameSpeed_X4()
     {
-        map.timeSpeed = 0.75f;
+        map.timeSpeed = 1.5f;
         gameSpeedValue = 2.0f;
     }
     public void SetGameSpeed_X8()
     {
-        map.timeSpeed = 1f;
+        map.timeSpeed = 1.75f;
         gameSpeedValue = 1.0f;
     }
 
     public float GetGameSpeed()
     {
         return gameSpeedValue;
+    }
+
+    public int GetFinishYear()
+    {
+        return finishYear;
     }
 
     public void Confirm()
@@ -145,11 +146,23 @@ public class GameSettings : MonoBehaviour
         }
         else
         {
-            CountryManager.Instance.SetStartingResources(startingResourcesMultipler);
+            SetStartingResources(startingResourcesMultipler);
             GameSettingsPanel.SetActive(false);
             map.OnCountryClick += SelectCountry.Instance.OnCountryClick;
         }
 
+    }
+
+    public void SetStartingResources(int multipler)
+    {
+        foreach (Country country in CountryManager.Instance.GetAllCountries())
+        {
+            country.AddMineral(MINERAL_TYPE.OIL, multipler * country.GetMineral(MINERAL_TYPE.OIL));
+            country.AddMineral(MINERAL_TYPE.IRON, multipler * country.GetMineral(MINERAL_TYPE.IRON));
+            country.AddMineral(MINERAL_TYPE.ALUMINIUM, multipler * country.GetMineral(MINERAL_TYPE.ALUMINIUM));
+            country.AddMineral(MINERAL_TYPE.URANIUM, multipler * country.GetMineral(MINERAL_TYPE.URANIUM));
+            country.AddMineral(MINERAL_TYPE.STEEL, multipler * country.GetMineral(MINERAL_TYPE.STEEL));
+        }
     }
 
     public void ShowGameOptionsPanel(bool show)
@@ -221,26 +234,31 @@ public class GameSettings : MonoBehaviour
     {
         dateLimit = DATE_LIMIT._2030;
         finishDateText.text = "2030";
+        finishYear = 2030;
     }
     public void SetDateLimit_2040()
     {
         dateLimit = DATE_LIMIT._2040;
         finishDateText.text = "2040";
+        finishYear = 2040;
     }
     public void SetDateLimit_2050()
     {
         dateLimit = DATE_LIMIT._2050;
         finishDateText.text = "2050";
+        finishYear = 2050;
     }
     public void SetDateLimit_2060()
     {
         dateLimit = DATE_LIMIT._2060;
         finishDateText.text = "2060";
+        finishYear = 2060;
     }
     public void SetDateLimit_UNLIMITED()
     {
         dateLimit = DATE_LIMIT.UNLIMITED;
         finishDateText.text = "UNLIMITED";
+        finishYear = -1;
     }
 
 

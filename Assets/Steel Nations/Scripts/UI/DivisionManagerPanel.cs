@@ -23,59 +23,14 @@ namespace WorldMapStrategyKit
         {
             instance = this;
         }
-
-        public void Init()
-        {
-
-        }
-
-        public static void CreateDivisionTemplate(string mainUnit, 
-            string secondUnit, 
-            string thirdUnit, 
-            int maxMainUnit, 
-            int maxSecondUnit, 
-            int maxThirdUnit, 
-            int soldierMinimum, 
-            int soldierMaximum, 
-            string divisionType)
-        {
-            string[] mainUnitIDList = mainUnit.Split('~');
-            string[] secondUnitIDList = secondUnit.Split('~');
-            string[] thirdUnitIDList = thirdUnit.Split('~');
-
-
-            DivisionTemplate divisionTemplate = new DivisionTemplate();
-            divisionTemplate.SetDivisionTypeByDivisionName(divisionType);
-            divisionTemplate.SetDivisionMainWeaponByWeaponName(mainUnitIDList, maxMainUnit);
-            divisionTemplate.SetDivisionSecondWeaponByWeaponName(secondUnitIDList, maxSecondUnit);
-            divisionTemplate.SetDivisionThirdWeaponByWeaponName(thirdUnitIDList, maxThirdUnit);
-
-            divisionTemplate.minimumSoldier = soldierMinimum;
-            divisionTemplate.maximumSoldier = soldierMaximum;
-
-            DivisionManager.Instance.AddDivisionTemplate(divisionTemplate);
-        }
-
-        public static DivisionTemplate GetDivisionTemplateByType(DIVISION_TYPE tempDivisionType)
-        {
-            foreach (DivisionTemplate divisionTemplate in DivisionManager.Instance.GetDivisionTemplate())
-            {
-                if (divisionTemplate.divisionType == tempDivisionType)
-                {                   
-                    return divisionTemplate;
-                }
-            }
-
-            return null;
-        }
         
         
-        public void ShowDivisionPanel(Division showDivision)
+        public void ShowDivisionPanel(Division division)
         {
-            if (showDivision == null)
+            if (division == null)
                 return;
 
-            divisionName.text = showDivision.divisionName;
+            divisionName.text = division.divisionName;
 
             foreach (Transform child in divisionRect.transform)
             {
@@ -85,32 +40,26 @@ namespace WorldMapStrategyKit
             //foreach (Weapon weapon in showDivision.GetDivision().GetWeaponsInDivision())
             {
                 GameObject temp = Instantiate(divisionPrefab, divisionRect.transform);
-                temp.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(showDivision.divisionTemplate.mainUnitIDList[0]).weaponName;
-                temp.gameObject.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(showDivision.divisionTemplate.mainUnitIDList[0]);
+                temp.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.MainWeapon).weaponName;
+                temp.gameObject.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.MainWeapon);
 
-                int mainUnitNumber = 0;
-                foreach(int i in showDivision.divisionTemplate.mainUnitIDList)
-                    mainUnitNumber += showDivision.GetWeaponListByWeaponIDInDivision(i).Count;
+                int mainUnitNumber = division.GetWeaponListByWeaponIDInDivision(division.MainWeapon).Count;
 
                 temp.gameObject.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = mainUnitNumber.ToString();
 
                 GameObject temp1 = Instantiate(divisionPrefab, divisionRect.transform);
-                temp1.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(showDivision.divisionTemplate.secondUnitList[0]).weaponName;
-                temp1.gameObject.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(showDivision.divisionTemplate.secondUnitList[0]);
+                temp1.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.SecondWeapon).weaponName;
+                temp1.gameObject.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.SecondWeapon);
 
-                int secondUnitNumber = 0;
-                foreach (int i in showDivision.divisionTemplate.secondUnitList)
-                    secondUnitNumber += showDivision.GetWeaponListByWeaponIDInDivision(i).Count;
+                int secondUnitNumber = division.GetWeaponListByWeaponIDInDivision(division.SecondWeapon).Count;
 
                 temp1.gameObject.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = secondUnitNumber.ToString();
 
                 GameObject temp2 = Instantiate(divisionPrefab, divisionRect.transform);
-                temp2.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(showDivision.divisionTemplate.thirdUnitList[0]).weaponName;
-                temp2.gameObject.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(showDivision.divisionTemplate.thirdUnitList[0]);
+                temp2.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = WeaponManager.Instance.GetWeaponTemplateByID(division.ThirdWeapon).weaponName;
+                temp2.gameObject.transform.GetChild(1).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(division.ThirdWeapon);
 
-                int thirdUnitNumber = 0;
-                foreach (int i in showDivision.divisionTemplate.thirdUnitList)
-                    thirdUnitNumber += showDivision.GetWeaponListByWeaponIDInDivision(i).Count;
+                int thirdUnitNumber = division.GetWeaponListByWeaponIDInDivision(division.ThirdWeapon).Count;
 
                 temp2.gameObject.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = thirdUnitNumber.ToString();
             }

@@ -22,14 +22,11 @@ namespace WorldMapStrategyKit
         public GameObject PolicyContent;
         public GameObject policyCategoryTitle;
 
+        List<Trait> traitList = new List<Trait>();
+
         public void Start()
         {
             instance = this;
-        }
-
-        public void Init()
-        {
-
         }
 
         public void AddPolicy(Policy policy)
@@ -105,21 +102,35 @@ namespace WorldMapStrategyKit
 
         void UpdateTooltip(GameObject temp, Policy policy)
         {
-            string policyToolTip = "\n" + " ";
+            string policyToolTip = policy.policyName + "\n" + "\n";
 
-            policyToolTip = policy.policyName + "\n" +
-                "Policy Bonus : " + policy.policyBonus + "\n" +
-                "Policy Bonus Value : %" + policy.policyBonusValue.ToString() + "\n" +
-            "Required Defense Budget : " + " $ " + string.Format("{0:#,0}", float.Parse(policy.requiredDefenseBudget.ToString())) + "M" + "\n" +
-            "Trade Bonus : " + " $ " + string.Format("{0:#,0}", float.Parse(policy.tradeBonus.ToString())) + "M" + "\n" +
-            "Permenant Cost : " + " $ " + string.Format("{0:#,0}", float.Parse(policy.costPermenant.ToString())) + "M" + "\n" + " ";
+            int requiredDefenseBudget = policy.requiredDefenseBudget;
+            int requiredGSYH = policy.requiredGSYH;
+            int costPermenant = policy.costPermenant;
+            
+
+            if (requiredDefenseBudget > 0)
+                policyToolTip += "Required Defense Budget : " + " $ " + string.Format("{0:#,0}", float.Parse(requiredDefenseBudget.ToString())) + "M" + "\n";
+
+            if(requiredGSYH > 0)
+                policyToolTip += "Required GDP : " + " $ " + string.Format("{0:#,0}", float.Parse(requiredGSYH.ToString())) + "M" + "\n";
+
+            if(costPermenant > 0)
+                policyToolTip += "Cost : " + " $ " + string.Format("{0:#,0}", float.Parse(costPermenant.ToString())) + "M" + "\n";
+
+            foreach(var traitEnum in policy.GetTraits())
+            {
+                Trait trait = GetTraitByTraitType(traitEnum.Key);
+
+                policyToolTip += trait.Trait_Name + " : " + traitEnum.Value + "%" + "\n";
+            }
 
             //temp.gameObject.transform.GetChild(3).GetComponent<RawImage>().texture = weapon.weaponIcon;
 
-            if (IsAcceptable(policy) == false)
+            if (CountryManager.Instance.IsPolicyAcceptable(GameEventHandler.Instance.GetPlayer().GetMyCountry(), policy) == false)
                 policyToolTip = policyToolTip + "\n" + ColorString("Not Enough Money", Color.red) + "\n";
 
-            temp.gameObject.GetComponent<SimpleTooltip>().infoLeft = policyToolTip;
+            temp.gameObject.GetComponent<SimpleTooltip>().infoLeft = policyToolTip + "\n";
         }
 
         public string ColorString(string text, Color color)
@@ -129,45 +140,18 @@ namespace WorldMapStrategyKit
 
         void ApplyLaw(GameObject GO, Policy policy)
         {
-            if (IsAcceptable(policy) == false)
+            Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
+
+            if (CountryManager.Instance.IsPolicyAcceptable(myCountry, policy) == false)
                 return;
 
-            int leftDefenseBudget = GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().Defense_Budget - policy.requiredDefenseBudget;
-            long leftBudget = GameEventHandler.Instance.GetPlayer().GetMyCountry().Budget - policy.costPermenant;
-
-            GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().Defense_Budget = leftDefenseBudget;
-            GameEventHandler.Instance.GetPlayer().GetMyCountry().Budget = leftBudget;
-
-            GameEventHandler.Instance.GetPlayer().GetMyCountry().AddPolicy(policy);
+            CountryManager.Instance.AcceptPolicy(myCountry, policy);
 
             GO.transform.GetChild(1).gameObject.SetActive(false);
             GO.transform.GetChild(2).gameObject.SetActive(true);
 
             GO.transform.GetChild(3).gameObject.SetActive(true);
             GO.transform.GetChild(4).gameObject.SetActive(false); // alpha value is 255
-        }
-
-        bool IsAcceptable(Policy policy)
-        {
-            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().Defense_Budget < policy.requiredDefenseBudget)
-            {
-                //Debug.Log("Defense Budget is not enough");
-                return false;
-            }
-
-            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().Budget < policy.costPermenant)
-            {
-                //Debug.Log("Budget is not enough");
-                return false;
-            }
-
-            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetAcceptedPolicyList().Contains(policy) == true)
-            {
-                //Debug.Log("You already have it");
-                return false;
-            }
-
-            return true;
         }
 
         public void ShowConstruction()
@@ -286,6 +270,91 @@ namespace WorldMapStrategyKit
             {
                 Destroy(child.gameObject);
             }
+        }
+
+        public TRAIT GetTraitTypeByName(string traitName)
+        {
+            if (traitName == "War Support")
+                return TRAIT.WAR_SUPPORT;
+
+            if (traitName == "Political Power Gain")
+                return TRAIT.POLITICAL_POWER_GAIN;
+
+            if (traitName == "Army Morale")
+                return TRAIT.ARMY_MORALE;
+
+            if (traitName == "Experience Gain Air Factor")
+                return TRAIT.EXPERIENCE_GAIN_AIR_FACTOR;
+
+            if (traitName == "Construction Speed")
+                return TRAIT.CONSTRUCTION_SPEED;
+
+            if (traitName == "Oil Production Speed")
+                return TRAIT.OIL_PRODUCTION_SPEED;
+
+            if (traitName == "Iron Production Speed")
+                return TRAIT.IRON_PRODUCTION_SPEED;
+
+            if (traitName == "Steel Production Speed")
+                return TRAIT.STEEL_PRODUCTION_SPEED;
+
+            if (traitName == "Uranium Production Speed")
+                return TRAIT.URANIUM_PRODUCTION_SPEED;
+
+            if (traitName == "Aluminium Production Speed")
+                return TRAIT.ALUMINIUM_PRODUCTION_SPEED;
+
+            if (traitName == "Air Vehicle Production Speed")
+                return TRAIT.AIR_PRODUCTION_SPEED;
+
+            if (traitName == "Land Vehicle Production Speed")
+                return TRAIT.LAND_PRODUCTION_SPEED;
+
+            if (traitName == "Naval Vehicle Production Speed")
+                return TRAIT.NAVAL_PRODUCTION_SPEED;
+
+            if (traitName == "Research Speed")
+                return TRAIT.RESEARCH_SPEED;
+
+            if (traitName == "Birth Rate")
+                return TRAIT.BIRTH_RATE;
+
+            if (traitName == "Pandemic Dead Rate")
+                return TRAIT.PANDEMIC_DEAD_RATE;
+
+            if (traitName == "Tension")
+                return TRAIT.TENSION;
+
+            if (traitName == "Unemployment Rate")
+                return TRAIT.UNEMPLOYMENT_RATE;
+
+            return TRAIT.NONE;
+        }
+
+        public void AddTrait(Trait trait)
+        {
+            traitList.Add(trait);
+        }
+
+        public Trait GetTraitByTraitType(TRAIT traitType)
+        {
+            foreach (Trait trait in traitList)
+                if (trait.Trait_Type == traitType)
+                    return trait;
+
+            return null;
+        }
+
+        public Trait GetTraitByTraitName(string traitName)
+        {
+            foreach (Trait trait in traitList)
+            {
+                if (trait.Trait_Name == traitName)
+                {
+                    return trait;
+                }
+            }
+            return null;
         }
     }
 }

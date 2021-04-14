@@ -183,7 +183,7 @@ namespace WorldMapStrategyKit
 			selectedCountryText.text = selectedCountry.name;
 
 			CreateOverviewButton("Manpower", string.Format("{0:#,0}", CountryManager.Instance.GetAvailableManpower(selectedCountry)));
-			CreateOverviewButton("Religion", selectedCountry.Religion);
+			CreateOverviewButton("Religion", CountryManager.Instance.GetReligionNameByReligionType(selectedCountry.Religion));
 			CreateOverviewButton("System Of Government", selectedCountry.System_Of_Government);
 			CreateOverviewButton("Unemployment Rate", selectedCountry.Unemployment_Rate.ToString());
 			CreateOverviewButton("Birth Rate", selectedCountry.Fertility_Rate_PerWeek.ToString());

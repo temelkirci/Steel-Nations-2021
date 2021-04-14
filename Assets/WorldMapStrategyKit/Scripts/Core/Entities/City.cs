@@ -11,12 +11,12 @@ namespace WorldMapStrategyKit {
 
 	public partial class City: IExtendableAttribute {
 
-        Dictionary<BUILDING_TYPE, int> buildingListInCity = null;
-        Dictionary<BUILDING_TYPE, int> buildingsInConstruction = null;
-        List<GameObjectAnimator> divisionsInCity = null;
+        Dictionary<BUILDING_TYPE, int> buildingListInCity = new Dictionary<BUILDING_TYPE, int>();
+        Dictionary<BUILDING_TYPE, int> buildingsInConstruction = new Dictionary<BUILDING_TYPE, int>();
+        List<GameObjectAnimator> divisionsInCity = new List<GameObjectAnimator>();
         GameObjectAnimator dockyard = null;
 
-        Dictionary<MINERAL_TYPE, int> mineralReserves = null;
+        Dictionary<MINERAL_TYPE, int> mineralReserves = new Dictionary<MINERAL_TYPE, int>();
 
         int cityIncome;
         float cityLevel;
@@ -59,9 +59,7 @@ namespace WorldMapStrategyKit {
         }
 
         public void SetMineralResources(MINERAL_TYPE mineralType, int number)
-        {
-            if (mineralReserves == null)
-                mineralReserves = new Dictionary<MINERAL_TYPE, int>();
+        {    
             mineralReserves.Add(mineralType, number);
         }
 
@@ -82,7 +80,7 @@ namespace WorldMapStrategyKit {
             int buildingTime = BuildingManager.Instance.GetBuildingByBuildingType(building).constructionTime;
             buildingsInConstruction.Add(building, buildingTime);
         }
-
+        
         public Dictionary<BUILDING_TYPE, int> GetAllBuildingsInConstruction()
         {
             return buildingsInConstruction;
@@ -91,11 +89,7 @@ namespace WorldMapStrategyKit {
         public int GetBuildingNumber(BUILDING_TYPE buildingType)
         {
             int number = 0;
-            if (buildingListInCity == null)
-                buildingListInCity = new Dictionary<BUILDING_TYPE, int>();
-
             buildingListInCity.TryGetValue(buildingType, out number);
-
             return number;
         }
         public Dictionary<BUILDING_TYPE, int> GetAllBuildings()
@@ -104,14 +98,26 @@ namespace WorldMapStrategyKit {
         }
         public void AddBuilding(BUILDING_TYPE building, int number)
         {
-            if (buildingListInCity == null)
-                buildingListInCity = new Dictionary<BUILDING_TYPE, int>();
             buildingListInCity.Add(building, number);
         }     
 
         public List<GameObjectAnimator> GetAllDivisionsInCity()
         {
             return divisionsInCity;
+        }
+
+        public void AddDivisionToGarrison(GameObjectAnimator division)
+        {
+            if(GetEmptyGarrison() > 0)
+            {
+                divisionsInCity.Add(division);
+            }
+        }
+
+        public int GetEmptyGarrison()
+        {
+            int empty = GetBuildingNumber(BUILDING_TYPE.GARRISON) - divisionsInCity.Count;
+            return empty;
         }
 
         public void VisibleDivision(GameObjectAnimator division)

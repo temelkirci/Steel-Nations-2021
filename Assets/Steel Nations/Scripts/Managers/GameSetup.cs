@@ -121,8 +121,6 @@ namespace WorldMapStrategyKit
 
         public void InitGame()
         {
-            //MapManager.Instance.ColorizeWorld();
-
             _connection.Open();
 
 
@@ -135,6 +133,7 @@ namespace WorldMapStrategyKit
 
         public void PreLoad()
         {
+            LoadTraits();
             LoadBuildings();
             LoadActions();
             LoadDivisions();
@@ -167,11 +166,12 @@ namespace WorldMapStrategyKit
             {
                 PreLoad();
 
+                LoadPresident();
                 LoadEconomy();
+                LoadMilitary();
                 LoadGovernments();
                 LoadOrganizations();
                 LoadReligion();
-                LoadMilitary();
             }
 
             GameSettings.Instance.ShowGameOptionsPanel(true);
@@ -187,6 +187,8 @@ namespace WorldMapStrategyKit
         {
             foreach(Country country in map.countries)
             {
+                MapManager.Instance.ColorizeCountry(country);
+
                 string countryName = country.name;
 
                 if (countryName == "China" || 
@@ -279,6 +281,8 @@ namespace WorldMapStrategyKit
                         city.population = city.population * 8;
                     }
                 }
+
+                CountryManager.Instance.AddCountry(country);
             }
         }
 
@@ -311,6 +315,33 @@ namespace WorldMapStrategyKit
             }
         }
 
+        public void LoadTraits()
+        {
+            // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
+            _command.CommandText = "SELECT * FROM Traits";
+            _reader = _command.ExecuteReader();
+
+            while (_reader.Read())
+            {
+                int traitID = _reader.GetInt32(0);
+                string traitName = _reader.GetString(1);
+                string traitDescription = _reader.GetString(2);
+                int traitMinValue = _reader.GetInt32(3);
+                int traitMaxValue = _reader.GetInt32(4);
+
+                Trait trait = new Trait();
+                trait.Trait_ID = traitID;
+                trait.Trait_Name = traitName;
+                trait.Trait_Description = traitDescription;
+                trait.Min_Value = traitMinValue;
+                trait.Max_Value = traitMaxValue;
+
+                trait.Trait_Type = PolicyPanel.Instance.GetTraitTypeByName(traitName);
+
+                PolicyPanel.Instance.AddTrait(trait);
+            }
+        }
+
         public void LoadEconomy()
         {
             // if you have a bunch of stuff, tempCountry is going to be inefficient and a pain.  it's just for testing/show
@@ -328,14 +359,16 @@ namespace WorldMapStrategyKit
 
                 country.Current_GDP = 0;
                 country.Previous_GDP = GDP;
-                country.Previous_GDP_Monthly = GDP / 20;
+                country.Previous_GDP_Monthly = GDP / 18;
 
                 country.Debt = debt;
+                country.Debt_Payment_Rate = 100;
+                country.Debt_Payment = debt / 100;
+
                 country.Budget = money;
 
                 country.Individual_Tax = 1;
-
-                CountryManager.Instance.AddCountry(country);
+                country.Tax_Rate = 1;
             }
         }
 
@@ -401,7 +434,7 @@ namespace WorldMapStrategyKit
 
                     foreach (Country temp in CountryManager.Instance.GetAllCountries())
                     {
-                        CountryManager.Instance.UpdateRelation(tempCountry, temp, 0);
+                        tempCountry.SetRelations(temp.name, 0);
                     }
 
                     string[] friend_countries = friend.Split('~');
@@ -412,8 +445,8 @@ namespace WorldMapStrategyKit
                         Country allyCountry = map.GetCountry(index);
                         if (allyCountry != null)
                         {
-                            CountryManager.Instance.UpdateRelation(tempCountry, allyCountry, 50);
-                            tempCountry.AddTradeTreaty(allyCountry);
+                            tempCountry.SetRelations(allyCountry.name, 50);
+                            tempCountry.AddTradeTreaty(allyCountry);                          
                         }
                     }
 
@@ -423,12 +456,10 @@ namespace WorldMapStrategyKit
                         if (enemyCountry != null)
                         {
                             tempCountry.PlaceTradeEmbargo(enemyCountry);
-                            CountryManager.Instance.UpdateRelation(tempCountry, enemyCountry, -50);
+                            tempCountry.PlaceArmsEmbargo(enemyCountry);
+                            tempCountry.SetRelations(enemyCountry.name, -50);
                         }
                     }
-
-
-                    tempCountry.attrib["My Country"] = 0;
 
                     tempCountry.AddMineral(MINERAL_TYPE.OIL, oil);
                     tempCountry.AddMineral(MINERAL_TYPE.IRON, iron);
@@ -440,8 +471,8 @@ namespace WorldMapStrategyKit
                     tempCountry.Tension = tansion;
                     tempCountry.Unemployment_Rate = unemploymentRate;
 
-                    tempCountry.Production_Speed = 10;
-                    tempCountry.Research_Speed = 10;
+                    tempCountry.Production_Speed = 0;
+                    tempCountry.Research_Speed = 0;
                     tempCountry.Fertility_Rate_PerWeek = country_natality;
                     tempCountry.Pandemic_Death_Rate_Monthly = corona;
                     tempCountry.System_Of_Government = system_government;
@@ -449,13 +480,15 @@ namespace WorldMapStrategyKit
                     List<City> cities = CountryManager.Instance.GetAllCitiesInCountry(tempCountry);
                     int manpower = CountryManager.Instance.GetAvailableManpower(tempCountry);
 
+                    List<City> coastCity = MapManager.Instance.GetCitiesNearOcean(tempCountry, false);
+
                     foreach (City city in cities)
                     {
                         int mineralMultipler = 1;
 
                         city.Constructible_Dockyard_Area = 0;
 
-                        if (MapManager.Instance.CityHasCoast(city))
+                        if (coastCity.Contains(city))
                             city.Constructible_Dockyard_Area = 1;
 
                         if (city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
@@ -543,19 +576,55 @@ namespace WorldMapStrategyKit
 
             while (_reader.Read())
             {
-                string country = _reader.GetString(0);
-                Country tempCountry = map.GetCountry(country);
+                string countryName = _reader.GetString(0);
+                Country country = map.GetCountry(countryName);
 
-                //int christian = _reader.GetInt32(1);
-                //int muslim = _reader.GetInt32(2);
-                //int irreligion = _reader.GetInt32(3);
-                //int hindu = _reader.GetInt32(4);
-                //int buddist = _reader.GetInt32(5);
-                //int folk = _reader.GetInt32(6);
-                //int jewish = _reader.GetInt32(7);
+                int christian = _reader.GetInt32(1);
+                int muslim = _reader.GetInt32(2);
+                int irreligion = _reader.GetInt32(3);
+                int hindu = _reader.GetInt32(4);
+                int buddist = _reader.GetInt32(5);
+                int folk = _reader.GetInt32(6);
+                int jewish = _reader.GetInt32(7);
                 string religion = _reader.GetString(8);
 
-                CountryManager.Instance.SetReligion(tempCountry, 0, 0, 0, 0, 0, 0, 0, religion);
+                country.SetReligion(RELIGION.CHRISTIAN, christian);
+                country.SetReligion(RELIGION.BUDDIST, buddist);
+                country.SetReligion(RELIGION.FOLK_RELIGION, folk);
+                country.SetReligion(RELIGION.HINDU, hindu);
+                country.SetReligion(RELIGION.IRRELIGION, irreligion);
+                country.SetReligion(RELIGION.JEWISH, jewish);
+                country.SetReligion(RELIGION.MUSLIM, muslim);
+
+                country.Religion = CountryManager.Instance.GetReligionByReligionName(religion);
+            }
+        }
+
+        public void LoadPresident()
+        {
+            _command.CommandText = "SELECT * FROM President";
+            _reader = _command.ExecuteReader();
+
+            while (_reader.Read())
+            {
+                string peopleName = _reader.GetString(0);
+
+                if(peopleName != string.Empty)
+                {
+                    string countryName = _reader.GetString(1);
+
+                    Country country = map.GetCountry(countryName);
+
+                    if(country != null)
+                    {
+                        string birthDate = _reader.GetString(2);
+
+                        string role = _reader.GetString(3);
+                        int startDate = _reader.GetInt32(4);
+
+                        country.President = PeopleManager.Instance.CreatePresident(peopleName, countryName, startDate, birthDate);
+                    }
+                }
             }
         }
 
@@ -570,17 +639,23 @@ namespace WorldMapStrategyKit
                 int soldierMinimum = _reader.GetInt32(1);
                 int soldierMaximum = _reader.GetInt32(2);
                 string mainUnit = _reader.GetString(3);
-                int maxMainUnit = _reader.GetInt32(4);
-                string secondUnit = _reader.GetString(5);
-                int maxSecondUnit = _reader.GetInt32(6);
-                string thirdUnit = _reader.GetString(7);
-                int maxThirdUnit = _reader.GetInt32(8);
+                int minMainUnit = _reader.GetInt32(4);
+                int maxMainUnit = _reader.GetInt32(5);
+                string secondUnit = _reader.GetString(6);
+                int minSecondUnit = _reader.GetInt32(7);
+                int maxSecondUnit = _reader.GetInt32(8);
+                string thirdUnit = _reader.GetString(9);
+                int minThirdUnit = _reader.GetInt32(10);
+                int maxThirdUnit = _reader.GetInt32(11);
 
-                DivisionManagerPanel.CreateDivisionTemplate(mainUnit,
+                DivisionManager.Instance.CreateDivisionTemplate(mainUnit,
                     secondUnit,
                     thirdUnit,
+                    minMainUnit,
                     maxMainUnit,
+                    minSecondUnit,
                     maxSecondUnit,
+                    minThirdUnit,
                     maxThirdUnit,
                     soldierMinimum,
                     soldierMaximum,
@@ -599,25 +674,62 @@ namespace WorldMapStrategyKit
                 int policyID = _reader.GetInt32(0);
                 string policyName = _reader.GetString(1);
                 string policyDescription = _reader.GetString(2);
-                string policyBonus = _reader.GetString(3);
-                int policyBonusValue = _reader.GetInt32(4);
-                int requiredDefenseBudget = _reader.GetInt32(5);
-                int requiredGSYH = _reader.GetInt32(6);
-                int tradeBonus = _reader.GetInt32(7);
-                int costPermenant = _reader.GetInt32(8);
-                string policyType = _reader.GetString(9);
+                string policyType = _reader.GetString(3);
+                int requiredDefenseBudget = _reader.GetInt32(4);
+                int requiredGSYH = _reader.GetInt32(5);
+                int costPermenant = _reader.GetInt32(6);
+
+                string trait_1 = _reader.GetString(7);
+                string trait_2 = _reader.GetString(8);
+                string trait_3 = _reader.GetString(9);
+                string trait_4 = _reader.GetString(10);
 
                 Policy policy = new Policy();
 
                 policy.policyID = policyID;
                 policy.policyName = policyName;
                 policy.policyDescription = policyDescription;
-                policy.policyBonusValue = policyBonusValue;
-                policy.policyBonus = policyBonus;
                 policy.requiredDefenseBudget = requiredDefenseBudget;
                 policy.requiredGSYH = requiredGSYH;
-                policy.tradeBonus = tradeBonus;
                 policy.costPermenant = costPermenant;
+
+
+                if (trait_1 != string.Empty)
+                {
+                    string traitName = trait_1.Split('~')[0];
+                    string traitValue = trait_1.Split('~')[1];
+
+                    Trait trait = PolicyPanel.Instance.GetTraitByTraitName(traitName);
+                    if (trait != null)
+                        policy.AddTrait(trait.Trait_Type, Int32.Parse(traitValue));
+                }
+                if (trait_2 != string.Empty)
+                {
+                    string traitName = trait_2.Split('~')[0];
+                    string traitValue = trait_2.Split('~')[1];
+
+                    Trait trait = PolicyPanel.Instance.GetTraitByTraitName(traitName);
+                    if (trait != null)
+                        policy.AddTrait(trait.Trait_Type, Int32.Parse(traitValue));
+                }
+                if (trait_3 != string.Empty)
+                {
+                    string traitName = trait_3.Split('~')[0];
+                    string traitValue = trait_3.Split('~')[1];
+
+                    Trait trait = PolicyPanel.Instance.GetTraitByTraitName(traitName);
+                    if (trait != null)
+                        policy.AddTrait(trait.Trait_Type, Int32.Parse(traitValue));
+                }
+                if (trait_4 != string.Empty)
+                {
+                    string traitName = trait_4.Split('~')[0];
+                    string traitValue = trait_4.Split('~')[1];
+
+                    Trait trait = PolicyPanel.Instance.GetTraitByTraitName(traitName);
+                    if (trait != null)
+                        policy.AddTrait(trait.Trait_Type, Int32.Parse(traitValue));
+                }
 
                 policy.SetPolicyTypeByName(policyType);
 
@@ -765,47 +877,54 @@ namespace WorldMapStrategyKit
 
         void InitWeaponInventory(Country country, WEAPON_TYPE weaponType, int unitNumber, int unitTech)
         {
-            bool addWeapon = true;
+            int lowest = WeaponManager.Instance.GetLowestGenerationByWeaponType(weaponType);
+            int highest = WeaponManager.Instance.GetHighestGenerationByWeaponType(weaponType);
 
-            country.SetWeaponTech(weaponType, unitTech);
-
-            WeaponTemplate tempWeapon = WeaponManager.Instance.GetWeaponByWeaponTypeAndTech(weaponType, unitTech);
-
-            if (tempWeapon == null)
-                return;
-
-            if (unitTech == 0)
+            if(unitTech == 0)
             {
-                addWeapon = false;
-                unitTech = WeaponManager.Instance.GetLowestGenerationByWeaponName(tempWeapon.weaponName);
+                unitTech = lowest;
+            }
+            else
+            {
+                for (int i = lowest; i < highest; i++)
+                {
+                    if (unitTech >= i)
+                    {
+                        WeaponTemplate tempWeapon = WeaponManager.Instance.GetWeaponByWeaponTypeAndTech(weaponType, i);
+                        country.AddProducibleWeaponToInventory(tempWeapon.weaponID);
+                    }
+                }
             }
 
-            if (tempWeapon.weaponLevel < unitTech)
+            if (unitNumber > 0)
             {
-                if (addWeapon)
-                    country.AddProducibleWeaponToInventory(tempWeapon.weaponID);
-            }
-            else if (tempWeapon.weaponLevel == unitTech)
-            {
-                if (addWeapon)
-                    country.AddProducibleWeaponToInventory(tempWeapon.weaponID);
+                MilitaryForces landForces = country.GetArmy().GetLandForces();
+                MilitaryForces airForces = country.GetArmy().GetAirForces();
+                MilitaryForces navalForces = country.GetArmy().GetNavalForces();
 
-                for (int i = 0; i < unitNumber; i++)
+                WeaponTemplate tempWeapon = WeaponManager.Instance.GetWeaponByWeaponTypeAndTech(weaponType, unitTech);
+
+                if (tempWeapon == null)
+                    return;
+
+                for (int index = 0; index < unitNumber; index++)
                 {
                     Weapon weapon = new Weapon();
                     weapon.weaponTemplateID = tempWeapon.weaponID;
                     weapon.weaponLeftHealth = tempWeapon.weaponDefense;
 
                     if (tempWeapon.weaponTerrainType == 1)
-                        country.GetArmy().GetLandForces().AddWeaponToMilitaryForces(weapon);
+                        landForces.AddWeaponToMilitaryForces(weapon);
+
                     if (tempWeapon.weaponTerrainType == 2)
-                        country.GetArmy().GetNavalForces().AddWeaponToMilitaryForces(weapon);
+                        navalForces.AddWeaponToMilitaryForces(weapon);
+
                     if (tempWeapon.weaponTerrainType == 3 || tempWeapon.weaponTerrainType == 4)
-                        country.GetArmy().GetAirForces().AddWeaponToMilitaryForces(weapon);
+                        airForces.AddWeaponToMilitaryForces(weapon);
                 }
             }
-
         }
+
 
         public void LoadBuildings()
         {

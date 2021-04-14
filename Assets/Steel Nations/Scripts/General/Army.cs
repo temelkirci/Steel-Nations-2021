@@ -11,8 +11,6 @@ namespace WorldMapStrategyKit
         int soldierNumber;
         int defenseBudget;
 
-        List<GameObjectAnimator> allDivisionsInArmy = new List<GameObjectAnimator>();
-
         Person chiefOfGeneralStaff;
         Country country;
 
@@ -43,6 +41,8 @@ namespace WorldMapStrategyKit
         #region Division
         public List<GameObjectAnimator> GetAllDivisionInArmy()
         {
+            List<GameObjectAnimator> allDivisionsInArmy = new List<GameObjectAnimator>();
+
             foreach (GameObjectAnimator tempDivision in GetLandForces().GetAllDivisionInMilitaryForces().ToArray())
                 allDivisionsInArmy.Add(tempDivision);
             foreach (GameObjectAnimator tempDivision in GetAirForces().GetAllDivisionInMilitaryForces().ToArray())
@@ -68,7 +68,7 @@ namespace WorldMapStrategyKit
 
         public GameObjectAnimator GetDivisionGOA(Division division)
         {
-            foreach (GameObjectAnimator GOA in allDivisionsInArmy)
+            foreach (GameObjectAnimator GOA in GetAllDivisionInArmy())
                 if (GOA.GetDivision() == division)
                     return GOA;
             return null;
@@ -93,7 +93,7 @@ namespace WorldMapStrategyKit
 
         public void CreateArmy()
         {
-            chiefOfGeneralStaff = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty, country);
+            chiefOfGeneralStaff = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty);
 
             CreateLandForces();
             CreateAirForces();
@@ -105,7 +105,7 @@ namespace WorldMapStrategyKit
             landForces = new MilitaryForces();
             landForces.SetMilitaryForcesType(MILITARY_FORCES_TYPE.LAND_FORCES);
 
-            landForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty, country);
+            landForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty);
         }
 
         public void CreateAirForces()
@@ -113,7 +113,7 @@ namespace WorldMapStrategyKit
             airForces = new MilitaryForces();
             airForces.SetMilitaryForcesType(MILITARY_FORCES_TYPE.AIR_FORCES);
 
-            airForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty, country);
+            airForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty);
         }
 
         public void CreateNavalForces()
@@ -121,7 +121,7 @@ namespace WorldMapStrategyKit
             navalForces = new MilitaryForces();
             navalForces.SetMilitaryForcesType(MILITARY_FORCES_TYPE.NAVAL_FORCES);
 
-            navalForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty, country);
+            navalForces.SupremeCommander = PeopleManager.Instance.CreatePerson(PERSON_TYPE.SUPREME_COMMANDER, string.Empty);
         }
 
         public void AddWeaponToMilitaryForces(WeaponTemplate template, int amount)

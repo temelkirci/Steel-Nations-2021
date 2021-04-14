@@ -1,28 +1,48 @@
-﻿public class Policy
+﻿using System.Collections.Generic;
+
+public class Policy
 {
     public int policyID;
     public string policyName;
     public string policyDescription;
-    public string policyBonus;
-    public int policyBonusValue;
     public int requiredDefenseBudget;
     public int requiredGSYH;
-    public int tradeBonus;
     public int costPermenant;
     public POLICY_TYPE policyType;
+
+    Dictionary<TRAIT, float> traits = new Dictionary<TRAIT, float>();
 
     public Policy()
     {
         policyID = -1;
         policyName = string.Empty;
         policyDescription = string.Empty;
-        policyBonus = string.Empty;
-        policyBonusValue = -1;
-        requiredDefenseBudget = -1;
-        requiredGSYH = -1;
-        tradeBonus = -1;
-        costPermenant = -1;
+        requiredDefenseBudget = 0;
+        requiredGSYH = 0;
+        costPermenant = 0;
+        
         policyType = POLICY_TYPE.NONE;
+    }
+
+    public float GetValue(TRAIT traitEnum)
+    {
+        foreach(var trait in traits)
+        {
+            if (trait.Key == traitEnum)
+                return trait.Value;
+        }
+
+        return 0;
+    }
+
+    public void AddTrait(TRAIT trait, float value)
+    {
+        traits.Add(trait, value);
+    }
+
+    public Dictionary<TRAIT, float> GetTraits()
+    {
+        return traits;
     }
 
     public void SetPolicyTypeByName(string policyTypeName)

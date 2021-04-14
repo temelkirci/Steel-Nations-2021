@@ -420,6 +420,7 @@
     <Compile Include="Assets\Steel Nations\Scripts\General\Research.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\General\SelectCountry.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\General\Sounds.cs" />
+    <Compile Include="Assets\Steel Nations\Scripts\General\Trait.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\General\War.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\General\Weapon.cs" />
     <Compile Include="Assets\Steel Nations\Scripts\General\WeaponProductionItem.cs" />
