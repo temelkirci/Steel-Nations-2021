@@ -46,11 +46,6 @@ namespace WorldMapStrategyKit
             instance = this;
         }
 
-        public void Init()
-        {
-
-        }
-
         public void HidePanel()
         {
             productionPanel.SetActive(false);
@@ -64,7 +59,9 @@ namespace WorldMapStrategyKit
 
             GameEventHandler.Instance.GetPlayer().SetSelectedBuilding(null);
 
-            foreach (int i in GameEventHandler.Instance.GetPlayer().GetMyCountry().GetProducibleWeapons())
+            Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
+
+            foreach (int i in myCountry.GetProducibleWeapons())
             {
                 WeaponTemplate weaponTemplate = WeaponManager.Instance.GetWeaponTemplateByID(i);
                 GameObject temp = null;
@@ -91,13 +88,7 @@ namespace WorldMapStrategyKit
 
                 if(temp != null)
                 {
-                    temp.GetComponent<WeaponProductionItem>().SetWeapon(weaponTemplate);
-
-                    int researchSpeedRotio = 10;// GameEventHandler.Instance.GetPlayer().GetMyCountry().GetProductionSpeed();
-
-                    int weaponProductionTime = (weaponTemplate.weaponProductionTime - ( (weaponTemplate.weaponProductionTime * researchSpeedRotio ) / 100 ) );
-                    if (weaponProductionTime <= 1)
-                        weaponProductionTime = 1;
+                    temp.GetComponent<WeaponProductionItem>().SetWeapon(weaponTemplate);                 
 
                     temp.transform.GetChild(1).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = weaponTemplate.weaponName;
 

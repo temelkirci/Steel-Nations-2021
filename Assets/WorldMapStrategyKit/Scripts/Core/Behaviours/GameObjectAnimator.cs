@@ -29,8 +29,6 @@ namespace WorldMapStrategyKit {
         Division division = null;
         public bool comeBack = false;
         GameObject shield;
-        public Country enterCountry = null;
-        public Province enterProvince = null;
 
         public bool isDivision()
         {

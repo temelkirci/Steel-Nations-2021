@@ -2,6 +2,8 @@
 using UnityEngine;
 using WorldMapStrategyKit;
 using UnityEngine.UI;
+using System;
+using Michsky.UI.Frost;
 
 public class WeaponProductionItem : MonoBehaviour
 {
@@ -12,8 +14,7 @@ public class WeaponProductionItem : MonoBehaviour
     public TextMeshProUGUI weaponName;
     public TextMeshProUGUI weaponCost;
     public TextMeshProUGUI productionTime;
-    public TextMeshProUGUI leftWeapon;
-    public TextMeshProUGUI totalWeapon;
+    public TMP_InputField weaponNumberText;
 
     public Button produceButton;
     public GameObject generation;
@@ -26,33 +27,44 @@ public class WeaponProductionItem : MonoBehaviour
         weaponIcon.texture = WeaponManager.Instance.GetWeaponTemplateIconByID(weapon.weaponID);
         weaponName.text = tempWeapon.weaponName;
         weaponCost.text = "$ " + string.Format("{0:#,0}", tempWeapon.weaponCost.ToString()) + " M";
-        productionTime.text = tempWeapon.weaponProductionTime.ToString() + " day";
 
         produceButton.GetComponent<Button>().onClick.AddListener(() => StartProduction());
 
         produceButton.interactable = true;
+
+        productionTime.text = CountryManager.Instance.GetWeaponProductionDay(GameEventHandler.Instance.GetPlayer().GetMyCountry(), weapon).ToString() + " day";
     }
 
     public void StartProduction()
     {
-        production = CountryManager.Instance.ProductWeapon(GameEventHandler.Instance.GetPlayer().GetMyCountry(), weapon);
-
-        if (production != null)
+        if(weaponNumberText.text != string.Empty)
         {
-            producing.SetActive(true);
+            int weaponNumber = 0;
+
+            weaponNumber = Int32.Parse(weaponNumberText.text);
+
+            if(weaponNumber > 0)
+            {
+                production = CountryManager.Instance.ProductWeapon(GameEventHandler.Instance.GetPlayer().GetMyCountry(), weapon, weaponNumber);
+
+                if (production != null)
+                {
+                    producing.SetActive(true);
+
+                    producing.GetComponent<TimedProgressBar>().currentPercent = 0;
+                }
+            }
         }
     }
+
     public void CompleteProduction()
     {
         produceButton.interactable = true;
         producing.SetActive(false);
 
-        Debug.Log("Completed");
-
         production = null;
     }
 
-    // Update is called once per frame
     public void UpdateProduction()
     {
         if (production != null)
@@ -63,7 +75,7 @@ public class WeaponProductionItem : MonoBehaviour
             }
             else
             {
-                producing.SetActive(true);
+                producing.GetComponent<TimedProgressBar>().currentPercent = production.GetPercent();
             }
         }
         else

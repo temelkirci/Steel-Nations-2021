@@ -24,7 +24,10 @@ public class WeaponManager : Singleton<WeaponManager>
         int weapon_required_uranium,
         int weapon_required_iron,
         int weapon_required_steel,
-        int weapon_required_aluminium)
+        int weapon_required_aluminium,
+        int landHitChance,
+        int airHitChance,
+        int navalHitChance)
     {
         WeaponTemplate tempWeapon = new WeaponTemplate();
 
@@ -51,9 +54,95 @@ public class WeaponManager : Singleton<WeaponManager>
         tempWeapon.requiredSteel = weapon_required_steel;
         tempWeapon.requiredAluminium = weapon_required_aluminium;
 
+        tempWeapon.landHitChance = landHitChance;
+        tempWeapon.airHitChance = airHitChance;
+        tempWeapon.navalHitChance = navalHitChance;
+
         tempWeapon.weaponType = GetWeaponType(weapon_name);
 
         AddWeaponTemplate(tempWeapon);
+    }
+
+    public string GetWeaponNameByWeaponType(WEAPON_TYPE weaponType)
+    {
+        if (weaponType == WEAPON_TYPE.RIFLE)
+        {
+            return "Rifle";
+        }
+        else if (weaponType == WEAPON_TYPE.TANK)
+        {
+            return "Tank";
+        }
+        else if (weaponType == WEAPON_TYPE.TOWED_ARTILLERY)
+        {
+            return "Towed Artillery";
+        }
+        else if (weaponType == WEAPON_TYPE.SELF_PROPELLED_ARTILLERY)
+        {
+            return "Self-Propelled Artillery";
+        }
+        else if (weaponType == WEAPON_TYPE.ARMORED_VEHICLE)
+        {
+            return "Armored Vehicle";
+        }
+        else if (weaponType == WEAPON_TYPE.ROCKET_PROJECTOR)
+        {
+            return "Rocket Projector";
+        }
+
+
+        else if (weaponType == WEAPON_TYPE.FIGHTER)
+        {
+            return "Fighter";
+        }
+        else if (weaponType == WEAPON_TYPE.HELICOPTER)
+        {
+            return "Helicopter";
+        }
+        else if (weaponType == WEAPON_TYPE.DRONE)
+        {
+            return "Drone";
+        }
+
+        else if (weaponType == WEAPON_TYPE.COASTAL_PATROL)
+        {
+            return "Coastal Patrol";
+        }
+        else if (weaponType == WEAPON_TYPE.CORVETTE)
+        {
+            return "Corvette";
+        }
+        else if (weaponType == WEAPON_TYPE.FRIGATE)
+        {
+            return "Frigate";
+        }
+        else if (weaponType == WEAPON_TYPE.DESTROYER)
+        {
+            return "Destroyer";
+        }
+        else if (weaponType == WEAPON_TYPE.SUBMARINE)
+        {
+            return "Submarine";
+        }
+        else if (weaponType == WEAPON_TYPE.AIRCRAFT_CARRIER)
+        {
+            return "Aircraft Carrier";
+        }
+
+        else if (weaponType == WEAPON_TYPE.ICBM)
+        {
+            return "ICBM";
+        }
+        else if (weaponType == WEAPON_TYPE.NEUTRON_BOMB)
+        {
+            return "Neutron Bomb";
+        }
+        else if (weaponType == WEAPON_TYPE.ANTI_MATTER_BOMB)
+        {
+            return "Anti Matter Bomb";
+        }
+
+        return string.Empty;
     }
 
     public WEAPON_TYPE GetWeaponType(string weaponName)
@@ -126,7 +215,7 @@ public class WeaponManager : Singleton<WeaponManager>
             return WEAPON_TYPE.AIRCRAFT_CARRIER;
         }
 
-        else if (weaponName == "Missile")
+        else if (weaponName == "ICBM")
         {
             return WEAPON_TYPE.ICBM;
         }

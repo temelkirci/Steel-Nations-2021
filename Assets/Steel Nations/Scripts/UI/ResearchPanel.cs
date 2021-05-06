@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 namespace WorldMapStrategyKit
 {
@@ -21,7 +22,10 @@ namespace WorldMapStrategyKit
         public GameObject yellowWeaponLine;
         public GameObject purpleWeaponLine;
 
-        public GameObject weaponContent;
+        public GameObject landContent;
+        public GameObject airContent;
+        public GameObject navalContent;
+        public GameObject missileContent;
 
         public GameObject weaponNameGO;
 
@@ -49,13 +53,37 @@ namespace WorldMapStrategyKit
 
         public Research selectedResearch;
 
+        List<GameObject> landWeaponResearchList = new List<GameObject>();
+        List<GameObject> airWeaponResearchList = new List<GameObject>();
+        List<GameObject> navalWeaponResearchList = new List<GameObject>();
+        List<GameObject> missileWeaponResearchList = new List<GameObject>();
+
         // Start is called before the first frame update
         void Start()
         {
             instance = this;
         }
 
-        public void AddWeapon(WeaponTemplate weapon, GameObject lineGOs)
+        public void Init()
+        {
+            foreach (WeaponTemplate weapon in WeaponManager.Instance.GetWeaponTemplateList())
+            {
+                GameObject weaponContent = null;
+
+                if (weapon.weaponTerrainType == 0 || weapon.weaponTerrainType == 1)
+                    weaponContent = landContent;
+                if (weapon.weaponTerrainType == 2)
+                    weaponContent = navalContent;
+                if (weapon.weaponTerrainType == 3)
+                    weaponContent = airContent;
+                if (weapon.weaponTerrainType == 4)
+                    weaponContent = missileContent;
+
+                AddWeapon(weapon, redWeaponLine, weaponContent);
+            }
+        }
+
+        public void AddWeapon(WeaponTemplate weapon, GameObject lineGOs, GameObject weaponContent)
         {
             GameObject temp = null;
             GameObject content = null;
@@ -101,93 +129,113 @@ namespace WorldMapStrategyKit
 
             if (temp != null && weapon != null)
             {
-                if (GameEventHandler.Instance.GetPlayer().GetMyCountry().IsWeaponProducible(weapon.weaponID) == false)
-                {
-                    temp.transform.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0.3f);
-                }
-
-                string tooltipText = string.Empty;
-
-                tooltipText = weapon.weaponName + "\n" +
-                    "Cost : $ " + string.Format("{0:#,0}", float.Parse(weapon.weaponCost.ToString())) + " M" + "\n" +
-                    "Attack Range : " + weapon.weaponAttackRange.ToString() + " km" + "\n" + 
-                    "Defense : " + weapon.weaponDefense.ToString() + "\n";
-
-                temp.gameObject.GetComponent<SimpleTooltip>().infoLeft = tooltipText;
+                UpdateResearch(weapon, temp);
 
                 temp.GetComponent<WeaponResearchItem>().SetWeapon(weapon);
+
+                if (weapon.weaponTerrainType == 0 || weapon.weaponTerrainType == 1)
+                    landWeaponResearchList.Add(temp);
+                if (weapon.weaponTerrainType == 2)
+                    navalWeaponResearchList.Add(temp);
+                if (weapon.weaponTerrainType == 3)
+                    airWeaponResearchList.Add(temp);
+                if (weapon.weaponTerrainType == 4)
+                    missileWeaponResearchList.Add(temp);
             }
+        }
+
+        public void UpdateResearch(WeaponTemplate weapon, GameObject weaponGO)
+        {
+            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().IsWeaponProducible(weapon.weaponID) == false)
+            {
+                weaponGO.transform.GetChild(0).GetComponent<Image>().color = new Color(1, 1, 1, 0.3f);
+            }
+
+            weaponGO.name = weapon.weaponID.ToString();
+
+            string tooltipText = string.Empty;
+
+            tooltipText = weapon.weaponName + "\n" +
+                "Cost : $ " + string.Format("{0:#,0}", float.Parse(weapon.weaponCost.ToString())) + " M" + "\n" +
+                "Attack Range : " + weapon.weaponAttackRange.ToString() + " km" + "\n" +
+                "Defense : " + weapon.weaponDefense.ToString() + "\n";
+
+            weaponGO.gameObject.GetComponent<SimpleTooltip>().infoLeft = tooltipText;
         }
 
         public void ShowLandUnits()
         {
-            ClearUnits();
-
             HideAllLines();
 
-            weaponContent.SetActive(true);
+            landContent.SetActive(true);
+            airContent.SetActive(false);
+            navalContent.SetActive(false);
+            missileContent.SetActive(false);
+
             landLine.SetActive(true);
 
-            foreach (WeaponTemplate weapon in WeaponManager.Instance.GetWeaponTemplateList())
+            foreach(GameObject GO in landWeaponResearchList)
             {
-                if (weapon.weaponTerrainType == 0 || weapon.weaponTerrainType == 1)
-                {
-                    AddWeapon(weapon, redWeaponLine);
-                }  
+                WeaponTemplate weapon = GO.GetComponent<WeaponResearchItem>().GetWeaponTemplate();
+
+                UpdateResearch(weapon, GO);
             }
         }
 
         public void ShowNavalUnits()
         {
-            ClearUnits();
-
             HideAllLines();
 
-            weaponContent.SetActive(true);
+            landContent.SetActive(false);
+            airContent.SetActive(false);
+            navalContent.SetActive(true);
+            missileContent.SetActive(false);
+            
             navalLine.SetActive(true);
 
-            foreach (WeaponTemplate weapon in WeaponManager.Instance.GetWeaponTemplateList())
+            foreach (GameObject GO in navalWeaponResearchList)
             {
-                if (weapon.weaponTerrainType == 2)
-                {
-                    AddWeapon(weapon, orangeWeaponLine);
-                }
+                WeaponTemplate weapon = GO.GetComponent<WeaponResearchItem>().GetWeaponTemplate();
+
+                UpdateResearch(weapon, GO);
             }
         }
 
         public void ShowAirUnits()
         {
-            ClearUnits();
-
             HideAllLines();
 
-            weaponContent.SetActive(true);
+            landContent.SetActive(false);
+            airContent.SetActive(true);
+            navalContent.SetActive(false);
+            missileContent.SetActive(false);
+            
             airLine.SetActive(true);
 
-            foreach (WeaponTemplate weapon in WeaponManager.Instance.GetWeaponTemplateList())
+            foreach (GameObject GO in airWeaponResearchList)
             {
-                if (weapon.weaponTerrainType == 3)
-                {
-                    AddWeapon(weapon, yellowWeaponLine);
-                }
+                WeaponTemplate weapon = GO.GetComponent<WeaponResearchItem>().GetWeaponTemplate();
+
+                UpdateResearch(weapon, GO);
             }
         }
 
         public void ShowMissileUnits()
         {
-            ClearUnits();
-
             HideAllLines();
 
-            weaponContent.SetActive(true);
+            landContent.SetActive(false);
+            airContent.SetActive(false);
+            navalContent.SetActive(false);
+            missileContent.SetActive(true);
+            
             missileLine.SetActive(true);
 
-            foreach (WeaponTemplate weapon in WeaponManager.Instance.GetWeaponTemplateList())
+            foreach (GameObject GO in missileWeaponResearchList)
             {
-                if (weapon.weaponTerrainType == 4)
-                {
-                    AddWeapon(weapon, purpleWeaponLine);
-                }
+                WeaponTemplate weapon = GO.GetComponent<WeaponResearchItem>().GetWeaponTemplate();
+
+                UpdateResearch(weapon, GO);
             }
         }
 
@@ -212,8 +260,6 @@ namespace WorldMapStrategyKit
         {
             researchPanel.SetActive(true);
 
-            ClearUnits();
-
             HideAllLines();
 
             selectedResearchPanel.SetActive(false);
@@ -224,21 +270,23 @@ namespace WorldMapStrategyKit
             if (weaponResearch == null)
                 return;
 
-            WeaponTemplate selectedWeapon = weaponResearch.weapon;
+            WeaponTemplate selectedWeapon = weaponResearch.GetWeaponTemplate();
 
             if (selectedWeapon == null)
                 return;
 
             selectedResearchPanel.SetActive(true);
 
-            int researchSpeedRotio = (CountryManager.Instance.GetTotalBuildings(GameEventHandler.Instance.GetPlayer().GetMyCountry(), BUILDING_TYPE.UNIVERSITY) / 10 ) + (GameEventHandler.Instance.GetPlayer().GetMyCountry().attrib["Research Speed"]);
+            Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
+
+            float researchSpeedRotio = myCountry.Research_Speed;
             weaponName.text = selectedWeapon.weaponName;
             researchCost.text = selectedWeapon.weaponResearchCost.ToString();
             researchDuring.text = selectedWeapon.weaponResearchTime.ToString();
-            universityNumber.text = CountryManager.Instance.GetTotalBuildings(GameEventHandler.Instance.GetPlayer().GetMyCountry(), BUILDING_TYPE.UNIVERSITY).ToString();
-            researchSpeed.text = GameEventHandler.Instance.GetPlayer().GetMyCountry().Research_Speed.ToString();
+            universityNumber.text = CountryManager.Instance.GetTotalBuildings(myCountry, BUILDING_TYPE.UNIVERSITY).ToString();
+            researchSpeed.text = myCountry.Research_Speed.ToString();
 
-            int weaponResearchTime = (selectedWeapon.weaponResearchTime - ( (selectedWeapon.weaponResearchTime * researchSpeedRotio) / 100 ) );
+            int weaponResearchTime = (int)(selectedWeapon.weaponResearchTime - ( (selectedWeapon.weaponResearchTime * researchSpeedRotio) / 100 ) );
             if (weaponResearchTime <= 1)
                 weaponResearchTime = 1;
 
@@ -247,33 +295,33 @@ namespace WorldMapStrategyKit
             selectedResearchPanel.transform.GetChild(0).transform.GetChild(0).GetComponent<RawImage>().texture = WeaponManager.Instance.GetWeaponTemplateIconByID(selectedWeapon.weaponID);
             selectedResearchPanel.transform.GetChild(0).transform.GetChild(0).GetComponent<RawImage>().gameObject.SetActive(true);
 
-            if (GameEventHandler.Instance.GetPlayer().GetMyCountry().IsWeaponProducible(selectedWeapon.weaponID) == false)
+            if (myCountry.IsWeaponProducible(selectedWeapon.weaponID) == false) // araştırabilirsin
             {
-                researchButton.GetComponent<Button>().onClick.AddListener(() => weaponResearch.StartReserach());
-                cancelResearchButton.GetComponent<Button>().onClick.AddListener(() => weaponResearch.CancelResearch());
-            }
-            else
-            {
-                researchSlider.GetComponent<Slider>().value = 0;
-            }
-
-            if(weaponResearch.GetResearch() == null)
-            {
-                cancelResearchButton.SetActive(false);
-                researchButton.SetActive(true);
-            }
-            else
-            {
-                if(weaponResearch.GetResearch().IsResearching())
-                {
-                    cancelResearchButton.SetActive(true);
-                    researchButton.SetActive(false);
-                }
-                else
+                if(weaponResearch.GetResearch() == null)
                 {
                     cancelResearchButton.SetActive(false);
                     researchButton.SetActive(true);
+                    researchSlider.SetActive(false);
+
+                    researchButton.GetComponent<Button>().onClick.AddListener(() => weaponResearch.StartReserach());
+                    cancelResearchButton.GetComponent<Button>().onClick.AddListener(() => weaponResearch.CancelResearch());
                 }
+                else
+                {
+                    if (weaponResearch.GetResearch().IsResearching())
+                    {
+                        cancelResearchButton.SetActive(true);
+                        researchButton.SetActive(false);
+                        researchSlider.SetActive(true);
+                    }
+                }
+
+            }
+            else
+            {
+                cancelResearchButton.SetActive(false);
+                researchButton.SetActive(true);
+                researchSlider.SetActive(false);
             }
         }
 
@@ -292,14 +340,26 @@ namespace WorldMapStrategyKit
                 }
                 else
                 {
-                    Debug.Log("completed");
+                    researchSlider.SetActive(false);
                 }
             }          
         }
         
         void ClearUnits()
         {
-            foreach (Transform child in weaponContent.transform)
+            foreach (Transform child in landContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in airContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in navalContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            foreach (Transform child in missileContent.transform)
             {
                 Destroy(child.gameObject);
             }

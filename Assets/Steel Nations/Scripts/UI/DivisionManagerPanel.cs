@@ -16,7 +16,6 @@ namespace WorldMapStrategyKit
         public GameObject divisionPrefab;
         public RectTransform divisionRect;
         public TextMeshProUGUI divisionName;
-        public TextMeshProUGUI divisionAction;
 
         // Start is called before the first frame update
         void Start()
@@ -24,7 +23,12 @@ namespace WorldMapStrategyKit
             instance = this;
         }
         
-        
+        public void Close()
+        {
+            divisionPanel.SetActive(false);
+            MapManager.Instance.ClearCurrentSelection();
+        }
+
         public void ShowDivisionPanel(Division division)
         {
             if (division == null)

@@ -61,10 +61,23 @@ namespace WorldMapStrategyKit
         public TextMeshProUGUI weaponProductionTime;
         public TextMeshProUGUI weaponTechYear;
 
+        public CustomDropdown divisionDropdown;
+        public TextMeshProUGUI divisionName;
+        public GameObject createDivisionButton;
+
+        public TextMeshProUGUI mainWeaponName;
+        public TextMeshProUGUI mainWeaponNumber;
+        public TextMeshProUGUI secondWeaponName;
+        public TextMeshProUGUI secondWeaponNumber;
+        public TextMeshProUGUI thirdWeaponName;
+        public TextMeshProUGUI thirdWeaponNumber;
 
         WeaponTemplate selectedWeaponTemplate = null;
         List<int> weaponList = new List<int>();
         List<Country> countryList;
+
+        DivisionTemplate selectedDivision;
+
 
         // Start is called before the first frame update
         void Start()
@@ -73,6 +86,7 @@ namespace WorldMapStrategyKit
             map = WMSK.instance;
 
             searchByWeaponTypeButton.GetComponent<Button>().onClick.AddListener(() => ShowWeaponsByWeaponType());
+            createDivisionButton.GetComponent<Button>().onClick.AddListener(() => CreateDivision());
 
             weaponDropdown.dropdownEvent.AddListener(SelectWeaponDropdown);
         }
@@ -80,6 +94,17 @@ namespace WorldMapStrategyKit
         public void Init()
         {
             InitWeaponDropdown();
+
+            divisionDropdown.dropdownItems.Clear();
+            divisionDropdown.enableIcon = false;
+
+            foreach (DivisionTemplate division in DivisionManager.Instance.GetDivisionTemplate())
+            {
+                divisionDropdown.SetItemTitle(DivisionManager.Instance.GetDivisionNameByDivisionType(division.divisionType));
+                divisionDropdown.CreateNewItem();
+            }
+
+            divisionDropdown.dropdownEvent.AddListener(SelectDivision);
         }
 
         void InitWeaponDropdown()
@@ -99,6 +124,59 @@ namespace WorldMapStrategyKit
                     weaponDropdown.CreateNewItem();
                 }
             }
+        }
+
+        void SelectDivision(int index)
+        {
+            Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
+
+            string division = divisionDropdown.dropdownItems[index].itemName;
+
+            DIVISION_TYPE divisionType = DivisionManager.Instance.GetDivisionTypeByDivisionName(division);
+            selectedDivision = DivisionManager.Instance.GetDivisionTemplateByType(divisionType);
+
+            divisionName.text = division;
+
+            mainWeaponName.text = WeaponManager.Instance.GetWeaponNameByWeaponType(selectedDivision.mainWeaponType);
+            secondWeaponName.text = WeaponManager.Instance.GetWeaponNameByWeaponType(selectedDivision.secondWeaponType);
+            thirdWeaponName.text = WeaponManager.Instance.GetWeaponNameByWeaponType(selectedDivision.thirdWeaponType);
+
+            mainWeaponNumber.text = selectedDivision.mainUnitMinimum.ToString();
+            secondWeaponNumber.text = selectedDivision.secondUnitMinimum.ToString();
+            thirdWeaponNumber.text = selectedDivision.thirdUnitMinimum.ToString();
+
+            if (DivisionManager.Instance.IsPossibleCreateDivision(myCountry, selectedDivision))
+            {
+                createDivisionButton.SetActive(true);
+            }
+            else
+            {
+                createDivisionButton.SetActive(false);
+            }
+        }
+
+        void CreateDivision()
+        {
+            if(selectedDivision.divisionType == DIVISION_TYPE.ARMORED_DIVISION || 
+                selectedDivision.divisionType == DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION || 
+                selectedDivision.divisionType == DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION)
+            {
+                DivisionManager.Instance.CreateLandDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), selectedDivision.divisionType);
+            }
+
+            if (selectedDivision.divisionType == DIVISION_TYPE.AIR_DIVISION)
+            {
+                DivisionManager.Instance.CreateAirDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), selectedDivision.divisionType);
+            }
+
+            if (selectedDivision.divisionType == DIVISION_TYPE.DESTROYER_DIVISION ||
+                selectedDivision.divisionType == DIVISION_TYPE.SUBMARINE_DIVISION ||
+                selectedDivision.divisionType == DIVISION_TYPE.CARRIER_DIVISION)
+            {
+                DivisionManager.Instance.CreateNavalDivision(GameEventHandler.Instance.GetPlayer().GetMyCountry(), selectedDivision.divisionType);
+            }
+
+            createDivisionButton.SetActive(false);
         }
 
         void ClearUnits()
@@ -177,20 +255,18 @@ namespace WorldMapStrategyKit
 
             Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
 
-            if (myCountry.GetArmy().Defense_Budget >= totalCost)
+            if (myCountry.Defense_Budget >= totalCost)
             {
                 HUDManager.Instance.PrivateNotification("You have ordered " + selectedWeaponTemplate.weaponName + " x" + weaponNumber);
 
                 int current = 0;
                 myCountry.GetArmy().GetAllWeaponsInArmyInventory().TryGetValue(selectedWeaponTemplate, out current);
 
-                Debug.Log(selectedWeaponTemplate.weaponName + " -> " + current);
+                int buyerBudget = myCountry.Defense_Budget - totalCost;
+                myCountry.Defense_Budget = buyerBudget;
 
-                int buyerBudget = myCountry.GetArmy().Defense_Budget - totalCost;
-                myCountry.GetArmy().Defense_Budget = buyerBudget;
-
-                int sellerBudget = country.GetArmy().Defense_Budget + totalCost;
-                country.GetArmy().Defense_Budget = sellerBudget;
+                int sellerBudget = country.Defense_Budget + totalCost;
+                country.Defense_Budget = sellerBudget;
 
                 ActionManager.Instance.CreateAction(
                     myCountry,
@@ -214,15 +290,16 @@ namespace WorldMapStrategyKit
 
             ClearWeaponTechContent();
             ClearDivisionListContent();
+            Statistics.Instance.UpdateMilitaryRank();
 
             Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
 
             militaryPersonnel.text = myCountry.GetArmy().GetSoldierNumber().ToString();
 
             if( myCountry.GetArmy() != null )
-                defenseBudget.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.GetArmy().Defense_Budget.ToString())) + " M";
+                defenseBudget.text = "$ " + string.Format("{0:#,0}", float.Parse(myCountry.Defense_Budget.ToString())) + " M";
 
-            militaryRank.text = myCountry.Military_Rank.ToString();
+            militaryRank.text = myCountry.militaryRank.ToString();
             militaryFactory.text = CountryManager.Instance.GetTotalBuildings(myCountry, BUILDING_TYPE.MILITARY_FACTORY).ToString();
             dockyard.text = CountryManager.Instance.GetTotalDockyard(myCountry).ToString();
 

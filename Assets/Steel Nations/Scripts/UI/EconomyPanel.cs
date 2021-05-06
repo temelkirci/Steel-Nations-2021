@@ -43,8 +43,6 @@ namespace WorldMapStrategyKit
             instance = this;
         }
 
-       
-
         public void ChangedTaxes()
         {
             int newValue = Convert.ToInt32(taxesSlider.value);

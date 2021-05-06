@@ -187,7 +187,7 @@ namespace WorldMapStrategyKit
 			CreateOverviewButton("System Of Government", selectedCountry.System_Of_Government);
 			CreateOverviewButton("Unemployment Rate", selectedCountry.Unemployment_Rate.ToString());
 			CreateOverviewButton("Birth Rate", selectedCountry.Fertility_Rate_PerWeek.ToString());
-			CreateOverviewButton("Rank", selectedCountry.Military_Rank.ToString());
+			//CreateOverviewButton("Rank", selectedCountry.Military_Rank.ToString());
 		}
 
 		GameObject CreateOverviewButton(string text, string value)

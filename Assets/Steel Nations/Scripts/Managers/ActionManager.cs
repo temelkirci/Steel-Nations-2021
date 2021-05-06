@@ -20,6 +20,12 @@ public class ActionManager : MonoBehaviour
 
     public GameObject actionContent;
 
+    public GameObject actionPanel;
+    public TextMeshProUGUI actionTitle;
+    public TextMeshProUGUI actionDescription;
+    public Button acceptButton;
+    public Button declineButton;
+
     // Declare War
     public GameObject declareWarPanel;
     public GameObject declareWarItem;
@@ -173,8 +179,6 @@ public class ActionManager : MonoBehaviour
 
         mineralInputField.onValueChanged.AddListener(delegate { CalculateMineralCost(); });
         moneyAmountInputField.onValueChanged.AddListener(delegate { GiveMoneySupport(); });
-        //giveMilitaryAccessAmountInputField.onValueChanged.AddListener(delegate { GiveMoneySupport(); });
-        //giveGunAmountInputField.onValueChanged.AddListener(delegate { GiveMoneySupport(); });
 
         giveGarrisonSupportButton.GetComponent<Button>().onClick.AddListener(() => CreateAction(
                 GameEventHandler.Instance.GetPlayer().GetMyCountry(),
@@ -464,6 +468,23 @@ public class ActionManager : MonoBehaviour
 
     }
 
+    public void ShowActionPanel(Country country, Action action)
+    {
+        actionPanel.SetActive(true);
+
+        actionTitle.text = action.ActionName;
+        actionDescription.text = GetActionDescription(country, action);
+
+        acceptButton.onClick.AddListener(() => ApplyMyAction(country, action, true));
+        declineButton.onClick.AddListener(() => ApplyMyAction(country, action, false));
+    }
+
+    void ApplyMyAction(Country country, Action action, bool accept)
+    {
+        actionPanel.SetActive(false);
+
+        ApplyAction(country, action, accept);
+    }
 
     public void HideAllActionPanels()
     {
@@ -544,7 +565,6 @@ public class ActionManager : MonoBehaviour
         {
             if (country2.GetMineral(mineralType) < amountOfMineral)
             {
-                HUDManager.Instance.PrivateNotification("Not enough resources");
                 action = null;
                 return;
             }
@@ -552,7 +572,6 @@ public class ActionManager : MonoBehaviour
             {
                 if (country1.Budget < totalMineralCost)
                 {
-                    HUDManager.Instance.PrivateNotification("Not enough budget");
                     action = null;
                     return;
                 }
@@ -577,12 +596,22 @@ public class ActionManager : MonoBehaviour
     }
 
 
-    public void ApplyAction(Country country, Action action)
+    public void ApplyAction(Country country, Action action, bool accept)
     {
         int success = 100;
 
-        if (action.SuccessRate < 100)
-            success = UnityEngine.Random.Range(0, 100);
+        if (action.Country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
+        {
+            if (accept)
+                action.SuccessRate = 100;
+            else
+                action.SuccessRate = 0;
+        }
+        else
+        {
+            if (action.SuccessRate < 100)
+                success = UnityEngine.Random.Range(0, 100);
+        }
 
 
         if (action.ActionType == ACTION_TYPE.Ask_For_Control_Of_Region)
@@ -596,7 +625,6 @@ public class ActionManager : MonoBehaviour
             }
             else
             {
-                CountryManager.Instance.WarDecision(country, action.Country);
                 if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                     HUDManager.Instance.PrivateNotification(action.Country.name + " has denied your request to take control of " + action.Province.name);
             }
@@ -638,13 +666,10 @@ public class ActionManager : MonoBehaviour
                 WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification("The president of " + action.Country.name + " was killed");
 
                 action.Country.Tension -= 25;
-
-                CountryManager.Instance.WarDecision(country, action.Country);
             }
             else
             {
                 WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification("The president of " + action.Country.name + " was saved");
-                CountryManager.Instance.WarDecision(country, action.Country);
 
                 if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 {
@@ -657,7 +682,7 @@ public class ActionManager : MonoBehaviour
         {
             if (action.SuccessRate >= success)
             {
-                WarManager.Instance.BeginNuclearWar(country, action.Country);
+                WarManager.Instance.BeginMissileWar(country, action.Country);
             }
         }
 
@@ -680,31 +705,14 @@ public class ActionManager : MonoBehaviour
             if (action.SuccessRate >= success)
             {
                 CountryManager.Instance.CancelMilitaryAccess(country, action.Country);
-                CountryManager.Instance.WarDecision(country, action.Country);
-            }
-        }
-
-        if (action.ActionType == ACTION_TYPE.Change_System_Of_Government)
-        {
-            if (action.SuccessRate >= success)
-            {
-
-            }
-            else
-            {
-
             }
         }
 
         if (action.ActionType == ACTION_TYPE.Declare_War)
         {
-            if (action.SuccessRate >= success)
-            {
-                WarManager.Instance.DeclareWar(country, action.Country);
+            WarManager.Instance.DeclareWar(country, action.Country);
 
-                WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification(country.name + " has declared war to " + action.Country.name);
-                WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification(action.Country.name + " has declared war to " + country.name);
-            }
+            //OrganizationManager.Instance.DeclareWarToDefense(country, action.Country);
         }
 
         if (action.ActionType == ACTION_TYPE.Give_Control_Of_Region)
@@ -787,15 +795,13 @@ public class ActionManager : MonoBehaviour
             {
                 WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification("Made a military coup in " + action.Country.name);
 
-                int currentTension = action.Country.Tension - 30;
+                float currentTension = action.Country.Tension - 30;
                 action.Country.Tension = currentTension;
-                CountryManager.Instance.WarDecision(country, action.Country);
             }
             else
             {
-                action.Country.SetRelations(country.name, -35);
-                country.SetRelations(action.Country.name, -35);
-                CountryManager.Instance.WarDecision(country, action.Country);
+                action.Country.SetRelations(country, -35);
+                country.SetRelations(action.Country, -35);
 
                 WorldMapStrategyKit.NotificationManager.Instance.CreatePublicNotification(action.Country.name + " has prevented a military coup");
 
@@ -811,7 +817,6 @@ public class ActionManager : MonoBehaviour
             if (action.SuccessRate >= success)
             {
                 country.PlaceArmsEmbargo(action.Country);
-                CountryManager.Instance.WarDecision(country, action.Country);
             }
         }
 
@@ -820,7 +825,6 @@ public class ActionManager : MonoBehaviour
             if (action.SuccessRate >= success)
             {
                 country.PlaceTradeEmbargo(action.Country);
-                CountryManager.Instance.WarDecision(country, action.Country);
             }
         }
 
@@ -888,7 +892,6 @@ public class ActionManager : MonoBehaviour
             if (action.SuccessRate >= success)
             {
                 country.AddProducibleWeaponToInventory(action.Weapon.weaponID);
-                CountryManager.Instance.WarDecision(country, action.Country);
 
                 if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 {
@@ -901,8 +904,6 @@ public class ActionManager : MonoBehaviour
             }
             else
             {
-                CountryManager.Instance.WarDecision(country, action.Country);
-
                 if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
                 {
                     HUDManager.Instance.PrivateNotification("Fail...You could not steal " + action.Weapon.weaponName);
@@ -912,12 +913,15 @@ public class ActionManager : MonoBehaviour
 
         if (action.SuccessRate >= success)
         {
-            country.SetRelations(action.Country.name, action.EffectInCountryRelationOnSuccess);
+            country.SetRelations(action.Country, action.EffectInCountryRelationOnSuccess);
         }
         else
         {
-            country.SetRelations(action.Country.name, action.EffectInCountryRelationOnFailure);
+            country.SetRelations(action.Country, action.EffectInCountryRelationOnFailure);
         }
+
+        CountryManager.Instance.WarDecision(country, action.Country);
+        country.GetActionList().Remove(action);
     }
 
 
@@ -969,6 +973,8 @@ public class ActionManager : MonoBehaviour
             return ACTION_TYPE.Give_Control_Of_Region;
         if (ActionName == "Buy Mineral")
             return ACTION_TYPE.Buy_Mineral;
+        if (ActionName == "Sign Trade Treaty")
+            return ACTION_TYPE.Sign_Trade_Treaty;
 
         return ACTION_TYPE.NONE;
     }
@@ -1005,14 +1011,23 @@ public class ActionManager : MonoBehaviour
 
     public void UpdateActionsInProgress(Country country)
     {
-        foreach (Action action in country.GetActionList().ToArray())
-        {
-            action.DecreaseLeftTime();
+        List<Action> actionList = country.GetActionList();
 
+        foreach (Action action in actionList.ToArray())
+        {
             if (action.EventFinishTime == 0)
             {
-                ApplyAction(country, action);
-                country.RemoveAction(action);
+                ApplyAction(country, action, false);
+            }
+
+            if (action.EventFinishTime > 0)
+            {
+                action.EventFinishTime--;
+
+                if (action.EventFinishTime == 0)
+                {
+                    ApplyAction(country, action, false);
+                }
             }
         }
     }
@@ -1343,6 +1358,11 @@ public class ActionManager : MonoBehaviour
         signPeaceTreatyPanel.SetActive(true);
     }
 
+    public void SignTradeTreatyPanel()
+    {
+        signPeaceTreatyPanel.SetActive(true);
+    }
+
     public void DeclareWarPanel()
     {
         Country selectedCountry = GameEventHandler.Instance.GetPlayer().GetSelectedCountry();
@@ -1363,23 +1383,109 @@ public class ActionManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (Country country in CountryManager.Instance.GetAllCountries())
+        
+        int attackLandPower = myCountry.GetArmy().GetLandForces().GetMilitaryPower();
+        int attackAirPower = myCountry.GetArmy().GetAirForces().GetMilitaryPower();
+        int attackNavalPower = myCountry.GetArmy().GetNavalForces().GetMilitaryPower();
+
+        int enemyLandPower = selectedCountry.GetArmy().GetLandForces().GetMilitaryPower();
+        int enemyAirPower = selectedCountry.GetArmy().GetAirForces().GetMilitaryPower();
+        int enemyNavalPower = selectedCountry.GetArmy().GetNavalForces().GetMilitaryPower();
+
+        float landVictoryChance =  (100 * attackLandPower) / (attackLandPower + enemyLandPower);
+        float airVictoryChance = (100 * attackAirPower) / (attackAirPower + enemyAirPower);
+        float navalVictoryChance = (100 * attackNavalPower) / (attackLandPower + enemyNavalPower);
+    
+        foreach (Country country in CountryManager.Instance.GetAllAllies(myCountry))
         {
-            if (country != myCountry && myCountry.attrib[country.name] >= 50)
-            {
-                GameObject temp = Instantiate(declareWarItem, declareWarLeftContent.transform);
+            GameObject temp = Instantiate(declareWarItem, declareWarLeftContent.transform);
 
-                temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
-                temp.GetComponent<SimpleTooltip>().infoLeft = country.name;
-            }
-
-            if (country != selectedCountry && selectedCountry.attrib[country.name] >= 50)
-            {
-                GameObject temp = Instantiate(declareWarItem, declareWarRightContent.transform);
-
-                temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
-                temp.GetComponent<SimpleTooltip>().infoLeft = country.name;
-            }
+            temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
+            temp.GetComponent<SimpleTooltip>().infoLeft = country.name;
         }
+
+        foreach (Country country in CountryManager.Instance.GetAllAllies(selectedCountry))
+        {
+            GameObject temp = Instantiate(declareWarItem, declareWarRightContent.transform);
+
+            temp.gameObject.transform.GetChild(0).GetComponent<RawImage>().texture = country.GetCountryFlag();
+            temp.GetComponent<SimpleTooltip>().infoLeft = country.name;
+        }
+    }
+
+    public bool ShouldOpenYesOrNoPanel(ACTION_TYPE actionType)
+    {
+        if (actionType == ACTION_TYPE.Ask_For_Control_Of_Region ||
+            actionType == ACTION_TYPE.Ask_For_Gun_Support ||
+            actionType == ACTION_TYPE.Ask_For_Military_Access ||
+            actionType == ACTION_TYPE.Ask_For_Money_Support ||
+            actionType == ACTION_TYPE.Buy_Mineral ||
+            actionType == ACTION_TYPE.Give_Control_Of_Region ||
+            actionType == ACTION_TYPE.Give_Garrison_Support ||
+            actionType == ACTION_TYPE.Give_Gun_Support ||
+            actionType == ACTION_TYPE.Give_Military_Access ||
+            actionType == ACTION_TYPE.Give_Money_Support)
+
+            return true;
+
+
+        return false;
+    }
+
+    public string GetActionDescription(Country country, Action action)
+    {
+        string description = string.Empty;
+
+        if(action.ActionType == ACTION_TYPE.Ask_For_Control_Of_Region)
+        {
+            description = country.name + " asks for control of " + action.Province.name;
+        }
+
+        if (action.ActionType == ACTION_TYPE.Ask_For_Gun_Support)
+        {
+            description = country.name + " asks for gun support : " + action.Weapon + "x" + action.WeaponAmount;
+        }
+
+        if (action.ActionType == ACTION_TYPE.Ask_For_Military_Access)
+        {
+            description = country.name + " asks for military access : " + action.MilitaryAccess + " days";
+        }
+
+        if (action.ActionType == ACTION_TYPE.Ask_For_Money_Support)
+        {
+            description = country.name + " asks for money support";
+        }
+
+        if (action.ActionType == ACTION_TYPE.Buy_Mineral)
+        {
+            description = country.name + " wants to buy " + action.MineralType.ToString() + "x" + action.MineralAmount;
+        }
+
+        if (action.ActionType == ACTION_TYPE.Give_Control_Of_Region)
+        {
+            description = country.name + " wants to give the control of " + action.Province.name;
+        }
+
+        if (action.ActionType == ACTION_TYPE.Give_Garrison_Support)
+        {
+            description = country.name + " wants to give garrison support";
+        }
+
+        if (action.ActionType == ACTION_TYPE.Give_Gun_Support)
+        {
+            description = country.name + " wants to give gun support";
+        }
+
+        if (action.ActionType == ACTION_TYPE.Give_Military_Access)
+        {
+            description = country.name + " give military access : " + action.MilitaryAccess + "days";
+        }
+
+        if (action.ActionType == ACTION_TYPE.Give_Money_Support)
+        {
+            description = country.name + " wants to give money support : " + action.PayMoney + "M";
+        }
+
+        return description;
     }
 }

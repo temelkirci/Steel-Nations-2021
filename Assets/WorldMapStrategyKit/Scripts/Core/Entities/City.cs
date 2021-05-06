@@ -15,6 +15,7 @@ namespace WorldMapStrategyKit {
         Dictionary<BUILDING_TYPE, int> buildingsInConstruction = new Dictionary<BUILDING_TYPE, int>();
         List<GameObjectAnimator> divisionsInCity = new List<GameObjectAnimator>();
         GameObjectAnimator dockyard = null;
+        GameObjectAnimator capitalBuilding = null;
 
         Dictionary<MINERAL_TYPE, int> mineralReserves = new Dictionary<MINERAL_TYPE, int>();
 
@@ -67,6 +68,12 @@ namespace WorldMapStrategyKit {
         {
             get { return dockyard; }
             set { dockyard = value; }
+        }
+
+        public GameObjectAnimator Capital_Building
+        {
+            get { return capitalBuilding; }
+            set { capitalBuilding = value; }
         }
 
         public int Constructible_Dockyard_Area

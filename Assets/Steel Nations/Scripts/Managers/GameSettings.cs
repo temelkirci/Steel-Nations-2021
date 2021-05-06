@@ -155,7 +155,7 @@ public class GameSettings : MonoBehaviour
 
     public void SetStartingResources(int multipler)
     {
-        foreach (Country country in CountryManager.Instance.GetAllCountries())
+        foreach (Country country in map.countries)
         {
             country.AddMineral(MINERAL_TYPE.OIL, multipler * country.GetMineral(MINERAL_TYPE.OIL));
             country.AddMineral(MINERAL_TYPE.IRON, multipler * country.GetMineral(MINERAL_TYPE.IRON));

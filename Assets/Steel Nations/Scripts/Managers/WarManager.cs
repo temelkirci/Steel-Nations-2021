@@ -16,7 +16,6 @@ public class WarManager : MonoBehaviour
 
     public GameObject NuclearWarSprite;
     public GameObject NukeExplosion;
-    public GameObject tankBullet;
 
     void Start()
     {
@@ -27,122 +26,164 @@ public class WarManager : MonoBehaviour
     public void DeclareWar(Country attack, Country guard)
     {
         if (attack == null)
-            Debug.Log("attack == null");
+            return;
 
-        if(guard == null)
-            Debug.Log("guard == null");
+        if (guard == null)
+            return;
 
-        if(attack == null || guard == null)
-        {
+        if (attack == guard)
+            return;
 
-        }
-        else
-        {
-            War war = new War();
+        War war = new War();
 
-            if (war == null)
-                Debug.Log("war == null");
-            else
-            {
-                war.CreateWar(attack, guard);
-                attack.AddWar(war);
-                guard.AddWar(war);
+        war.CreateWar(attack, guard);
+        attack.AddWar(war);
+        guard.AddWar(war);
 
-                UpdateDivisions(attack);
-                UpdateDivisions(guard);
-                GovernmentPanel.Instance.HidePanel();
-            }
-        }
+        NotificationManager.Instance.CreatePublicNotification(attack.name + " has declared war to " + guard.name);
+        NotificationManager.Instance.CreatePublicNotification(guard.name + " has declared war to " + attack.name);
     }
 
     public void AttackToEnemy(GameObjectAnimator attack, GameObjectAnimator guard )
     {
-        if (attack == null || guard == null)
-        {
-
-        }
-        else
+        if (attack != null && guard != null)
         {
             Division attackDivision = attack.GetDivision();
             List<Weapon> attackDivisionWeapon = attackDivision.GetWeaponsInDivision();
             int attackDivisionWeaponCount = attackDivisionWeapon.Count;
 
-            Division guardDivision = guard.GetDivision();
-            List<Weapon> guardDivisionWeapon = guardDivision.GetWeaponsInDivision();
-            int guardDivisionWeaponCount = guardDivisionWeapon.Count;
-
-            if (attackDivisionWeaponCount <= 0 || guardDivisionWeaponCount <= 0)
+            if (guard.isBuilding())
             {
-                /*
-                if (attackDivisionWeaponCount <= 0)
-                    DestroyUnit(attack);
-
-                if (guardDivisionWeaponCount <= 0)
-                    DestroyUnit(guard);
-                */
-                return;
+                DestroyUnit(guard);
             }
-            else
+
+            if (guard.isDivision())
             {
-                List<Weapon> willBeRemoved = new List<Weapon>();
-                willBeRemoved.Clear();
-                foreach (Weapon weapon in attackDivisionWeapon)
+                Division guardDivision = guard.GetDivision();
+                List<Weapon> guardDivisionWeapon = guardDivision.GetWeaponsInDivision();
+                int guardDivisionWeaponCount = guardDivisionWeapon.Count;
+
+                if (attackDivisionWeaponCount > 0 || guardDivisionWeaponCount > 0)
                 {
-                    if (weapon != null && attack != null && guard != null)                    
+                    List<Weapon> willBeRemoved = new List<Weapon>();
+                    willBeRemoved.Clear();
+
+                    if (attack.terrainCapability == TERRAIN_CAPABILITY.OnlyGround || guard.terrainCapability == TERRAIN_CAPABILITY.OnlyGround)
                     {
-                        attackDivision.onBattle = true;
-                        guardDivision.onBattle = true;
+                        Country battleFieldCountry = map.GetCountry(attack.currentMap2DLocation);
+                        Province battleFieldProvince = map.GetProvince(attack.currentMap2DLocation);
 
-                        if (guardDivisionWeaponCount > 0)
+                        if (battleFieldCountry == null)
+                            battleFieldCountry = map.GetCountry(guard.currentMap2DLocation);
+
+                        if (battleFieldProvince == null)
+                            battleFieldProvince = map.GetProvince(guard.currentMap2DLocation);
+
+                        if (battleFieldCountry != null && battleFieldProvince != null)
                         {
-                            Weapon enemyWeapon = guardDivision.GetRandomWeaponsInDivision();
-                            if (enemyWeapon == null || willBeRemoved.Contains(enemyWeapon))
+                            foreach (City city in map.GetCities(battleFieldCountry))
                             {
+                                if (city.province == battleFieldProvince.name)
+                                {
+                                    city.population = city.population - ((city.population) / 5);
+                                    CountryManager.Instance.RemoveBuildingsInCity(city, 10);
+                                }
+                            }
+                        }
+                    }
 
+                    foreach (Weapon weapon in attackDivisionWeapon)
+                    {
+                        if (weapon != null)
+                        {
+                            attackDivision.onBattle = true;
+                            guardDivision.onBattle = true;
+
+                            if (guardDivisionWeaponCount > 0)
+                            {
+                                Weapon enemyWeapon = guardDivision.GetRandomWeaponsInDivision();
+                                if (enemyWeapon == null || willBeRemoved.Contains(enemyWeapon))
+                                {
+
+                                }
+                                else
+                                {
+                                    int attackHitChance = 0;
+                                    int guardHitChance = 0;
+
+                                    WeaponTemplate attackWeapon = WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID);
+                                    WeaponTemplate guardWeapon = WeaponManager.Instance.GetWeaponTemplateByID(enemyWeapon.weaponTemplateID);
+
+
+                                    if (guardWeapon.weaponTerrainType == 1)
+                                    {
+                                        attackHitChance = attackWeapon.landHitChance;
+                                    }
+                                    if (guardWeapon.weaponTerrainType == 2)
+                                    {
+                                        attackHitChance = attackWeapon.navalHitChance;
+                                    }
+                                    if (guardWeapon.weaponTerrainType == 3)
+                                    {
+                                        attackHitChance = attackWeapon.airHitChance;
+                                    }
+
+
+                                    if (attackWeapon.weaponTerrainType == 1)
+                                    {
+                                        guardHitChance = guardWeapon.landHitChance;
+                                    }
+                                    if (attackWeapon.weaponTerrainType == 2)
+                                    {
+                                        guardHitChance = guardWeapon.navalHitChance;
+                                    }
+                                    if (attackWeapon.weaponTerrainType == 3)
+                                    {
+                                        guardHitChance = guardWeapon.airHitChance;
+                                    }
+
+                                    int attackWeaponDamage = WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponAttack;
+                                    int guardWeaponDamage = WeaponManager.Instance.GetWeaponTemplateByID(enemyWeapon.weaponTemplateID).weaponAttack;
+
+
+                                    weapon.weaponLeftHealth -= ( ( guardWeaponDamage * guardHitChance ) / 100 );
+                                    enemyWeapon.weaponLeftHealth -= ( ( attackWeaponDamage * attackHitChance ) / 100);
+
+                                    if (enemyWeapon.weaponLeftHealth <= 0)
+                                        willBeRemoved.Add(enemyWeapon);
+
+                                    if (weapon.weaponLeftHealth <= 0)
+                                        willBeRemoved.Add(weapon);
+                                }
                             }
                             else
                             {
-                                weapon.weaponLeftHealth -= WeaponManager.Instance.GetWeaponTemplateByID(enemyWeapon.weaponTemplateID).weaponAttack;
-                                enemyWeapon.weaponLeftHealth -= WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponAttack;                             
-
-                                if (enemyWeapon.weaponLeftHealth <= 0)
-                                    willBeRemoved.Add(enemyWeapon);
-
-                                if (weapon.weaponLeftHealth <= 0)
-                                    willBeRemoved.Add(weapon);
+                                break;
                             }
+                        }
+                    }
+
+                    foreach (Weapon removeWeapon in willBeRemoved)
+                    {
+                        if (attack == null || guard == null)
+                        {
+
                         }
                         else
                         {
-                            break;
+                            if (attackDivisionWeapon.Contains(removeWeapon))
+                                attackDivision.DeleteWeaponInDivision(removeWeapon);
+
+                            else if (guardDivisionWeapon.Contains(removeWeapon))
+                                guardDivision.DeleteWeaponInDivision(removeWeapon);
                         }
                     }
 
+                    attackDivision.onBattle = false;
+                    guardDivision.onBattle = false;
                 }
-                foreach (Weapon removeWeapon in willBeRemoved)
-                {
-                    if(attack == null || guard == null)
-                    {
-
-                    }
-                    else
-                    {
-                        if (attackDivisionWeapon.Contains(removeWeapon))
-                            attackDivision.DeleteWeaponInDivision(removeWeapon);
-
-                        else if (guardDivisionWeapon.Contains(removeWeapon))
-                            guardDivision.DeleteWeaponInDivision(removeWeapon);
-                    }
-                }
-                /*
-                if(attackDivision.GetWeaponsInDivision().Count == 0)
-                    DestroyUnit(attack);
-                if (guardDivision.GetWeaponsInDivision().Count == 0)
-                    DestroyUnit(guard);
-                */
-                attackDivision.onBattle = false;
-                guardDivision.onBattle = false;
             }
+            
         }            
     }
 
@@ -164,34 +205,43 @@ public class WarManager : MonoBehaviour
             return;
 
         Country country = map.GetCountry(GOA.player);
+
         if (country != null)
         {
-            foreach (GameObjectAnimator removeDivision in country.GetArmy().GetAllDivisionInArmy().ToArray())
+            if(GOA.isBuilding())
             {
-                if (removeDivision == this)
+                
+            }
+
+            if (GOA.isDivision())
+            {
+                foreach (GameObjectAnimator removeDivision in country.GetArmy().GetAllDivisionInArmy().ToArray())
                 {
-                    if (country.GetArmy().GetLandForces().GetAllDivisionInMilitaryForces().Contains(GOA))
+                    if (removeDivision == this)
                     {
-                        country.GetArmy().GetLandForces().RemoveDivisionInMilitaryForces(GOA);
-                        break;
-                    }
+                        if (country.GetArmy().GetLandForces().GetAllDivisionInMilitaryForces().Contains(GOA))
+                        {
+                            country.GetArmy().GetLandForces().RemoveDivisionInMilitaryForces(GOA);
+                            break;
+                        }
 
-                    else if (country.GetArmy().GetAirForces().GetAllDivisionInMilitaryForces().Contains(GOA))
-                    {
-                        country.GetArmy().GetAirForces().RemoveDivisionInMilitaryForces(GOA);
-                        break;
-                    }
+                        else if (country.GetArmy().GetAirForces().GetAllDivisionInMilitaryForces().Contains(GOA))
+                        {
+                            country.GetArmy().GetAirForces().RemoveDivisionInMilitaryForces(GOA);
+                            break;
+                        }
 
-                    else if (country.GetArmy().GetNavalForces().GetAllDivisionInMilitaryForces().Contains(GOA))
-                    {
-                        country.GetArmy().GetNavalForces().RemoveDivisionInMilitaryForces(GOA);
-                        break;
+                        else if (country.GetArmy().GetNavalForces().GetAllDivisionInMilitaryForces().Contains(GOA))
+                        {
+                            country.GetArmy().GetNavalForces().RemoveDivisionInMilitaryForces(GOA);
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        if (GameEventHandler.Instance.GetPlayer().GetMyCountry().GetArmy().GetAllDivisionInArmy().Contains(GOA) == true)
+        if (GameEventHandler.Instance.GetPlayer().GetMyCountry() == country)
             HUDManager.Instance.PrivateNotification("You lost " + GOA.name);
 
         GOA.enabled = false;
@@ -207,13 +257,24 @@ public class WarManager : MonoBehaviour
 
         if (GetDistance(division.currentMap2DLocation, targetDivision.currentMap2DLocation) < range)
         {
-            //AudioManager.Instance.PlayVoice(VOICE_TYPE.ATTACK);
-            if(division.GetDivision().onBattle == false && targetDivision.GetDivision().onBattle == false)
+            if(targetDivision.isBuilding())
             {
-                if(division.terrainCapability != TERRAIN_CAPABILITY.Any)
+                if (division.terrainCapability != TERRAIN_CAPABILITY.Any)
                     division.Stop();
 
                 AttackToEnemy(division, targetDivision);
+            }
+
+            if (targetDivision.isDivision())
+            {
+                //AudioManager.Instance.PlayVoice(VOICE_TYPE.ATTACK);
+                if (division.GetDivision().onBattle == false && targetDivision.GetDivision().onBattle == false)
+                {
+                    if (division.terrainCapability != TERRAIN_CAPABILITY.Any)
+                        division.Stop();
+
+                    AttackToEnemy(division, targetDivision);
+                }
             }
         }
     }
@@ -228,44 +289,65 @@ public class WarManager : MonoBehaviour
             if (enemy == null)
             {
                 if(GOA.isMoving == false)
-                    GOA.MoveTo(targetPos, GOA.GetDivision().GetDivisionSpeed());
-            }
-            else
-            {
-                if (GOA.isMoving == false)
-                    GOA.MoveTo(enemy.currentMap2DLocation, GOA.GetDivision().GetDivisionSpeed());
-            }
-        }
-        else
-        {
-            if (GetDistance(GOA.currentMap2DLocation, targetPos) > GOA.GetDivision().GetDivisionMaximumAttackRange())
-            {
-                //HUDManager.Instance.PrivateNotification("Out of range");
+                {
+                    float speed = GOA.GetDivision().GetDivisionSpeed();
+
+                    if (speed > 0)
+                        GOA.MoveTo(targetPos, speed);
+                    else
+                        DestroyUnit(GOA);
+                }
             }
             else
             {
                 if (GOA.isMoving == false)
                 {
-                    GOA.arcMultiplier = 1.5f;     // tempCountry is the arc for the plane trajectory
-                    GOA.easeType = EASE_TYPE.SmootherStep;    // make it an easy-in-out movement
+                    float speed = GOA.GetDivision().GetDivisionSpeed();
 
-                    GOA.comeBack = false;
-
-                    if (attack)
-                        GOA.comeBack = true;
-
-                    GOA.altitudeEnd = 1.5f;
-                    GOA.altitudeStart = 0.1f;
-
-                    if (enemy == null)
-                    {
-                        if (GOA.isMoving == false)
-                            GOA.MoveTo(targetPos, GOA.GetDivision().GetDivisionSpeed());
-                    }
+                    if(speed > 0)
+                        GOA.MoveTo(enemy.currentMap2DLocation, speed);
                     else
+                        DestroyUnit(GOA);
+                }
+            }
+        }
+        else
+        {
+            if (GOA.isMoving == false)
+            {
+                GOA.arcMultiplier = 1.5f;     // tempCountry is the arc for the plane trajectory
+                GOA.easeType = EASE_TYPE.SmootherStep;    // make it an easy-in-out movement
+
+                GOA.comeBack = false;
+
+                if (attack)
+                    GOA.comeBack = true;
+
+                GOA.altitudeEnd = 1.5f;
+                GOA.altitudeStart = 0.1f;
+
+                if (enemy == null)
+                {
+                    if (GOA.isMoving == false)
                     {
-                        if (GOA.isMoving == false)
-                            GOA.MoveTo(enemy.currentMap2DLocation, GOA.GetDivision().GetDivisionSpeed());
+                        float speed = GOA.GetDivision().GetDivisionSpeed();
+
+                        if (speed > 0)
+                            GOA.MoveTo(targetPos, speed);
+                        else
+                            DestroyUnit(GOA);
+                    }
+                }
+                else
+                {
+                    if (GOA.isMoving == false)
+                    {
+                        float speed = GOA.GetDivision().GetDivisionSpeed();
+
+                        if (speed > 0)
+                            GOA.MoveTo(enemy.currentMap2DLocation, speed);
+                        else
+                            DestroyUnit(GOA);
                     }
                 }
             }
@@ -273,27 +355,72 @@ public class WarManager : MonoBehaviour
 
         GOA.OnMove += (GameObjectAnimator anim) =>
         {
-            if (anim.GetShield() != null)
-                anim.GetShield().transform.localPosition = new Vector3(anim.currentMap2DLocation.x, anim.currentMap2DLocation.y, 0);
-
             CheckDistanceAndAttack(GOA, enemy);
         };
-        GOA.OnCountryEnter += (GameObjectAnimator anim) =>
-        {
-            GOA.enterCountry = map.GetCountry(GOA.currentMap2DLocation);
-        };
+
         GOA.OnProvinceEnter += (GameObjectAnimator anim) =>
         {
-            GOA.enterProvince = map.GetProvince(GOA.currentMap2DLocation);
-        };
-        GOA.OnKilled += (GameObjectAnimator anim) =>
-        {
-            if (anim == null)
+            if (GOA.terrainCapability != TERRAIN_CAPABILITY.OnlyGround)
                 return;
 
-            if (anim.GetShield() != null)
-                Destroy(anim.GetShield());
+            Country enterCountry = map.GetCountry(GOA.currentMap2DLocation);
+            Country unitCountry = map.GetCountry(GOA.player);
+
+            if (unitCountry == null || enterCountry == null)
+                return;
+
+            if (unitCountry != enterCountry)
+            {
+                if (CountryManager.Instance.GetAtWarCountryList(unitCountry).Contains(enterCountry)) // at war
+                {
+                    Province enterProvince = map.GetProvince(GOA.currentMap2DLocation);
+
+                    if ( GetDivisionsOnProvince(enterCountry, enterProvince).Count == 0 )
+                    {
+                        foreach (City city in map.GetCities(enterCountry))
+                        {
+                            if(city != null && enterProvince != null)
+                            {
+                                if (city.province == enterProvince.name)
+                                {
+                                    if (city.cityClass == WorldMapStrategyKit.CITY_CLASS.COUNTRY_CAPITAL)
+                                    {
+                                        FinishWar(enterCountry, CountryManager.Instance.GetWarCountry(unitCountry, enterCountry));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        // conquer province
+                        int targetCountryIndex = map.GetCountryIndex(unitCountry);
+
+                        map.CountryTransferProvinceRegion(targetCountryIndex, enterProvince.mainRegion, false);
+
+                        map.ToggleProvinceSurface(enterProvince.mainRegionIndex, true, unitCountry.SurfaceColor);
+                    }
+                }
+                else
+                {
+                    int leftMilitaryAccess = 0;
+                    unitCountry.GetMilitaryAccess().TryGetValue(enterCountry, out leftMilitaryAccess);
+
+                    if (leftMilitaryAccess > 0)
+                    {
+
+                    }
+                    else
+                    {
+                        // no military access
+                    }
+                }
+            }
         };
+
+        GOA.OnKilled += (GameObjectAnimator anim) =>
+        {
+
+        };
+
         GOA.OnMoveStart += (GameObjectAnimator anim) =>
         {
             if(GOA.terrainCapability == TERRAIN_CAPABILITY.Any)
@@ -301,7 +428,7 @@ public class WarManager : MonoBehaviour
                 if (GOA.comeBack == false && GOA.startingMap2DLocation != GOA.destination)
                 {
                     GOA.altitudeEnd = 0.1f;
-                    GOA.altitudeStart = 1.5f;
+                    GOA.altitudeStart = 0.1f;
                 }
             }
         };
@@ -335,7 +462,7 @@ public class WarManager : MonoBehaviour
     }
    
     
-    public IEnumerator War(Country attackCountry, Country defenseCountry, int wave)
+    public IEnumerator War(Weapon weapon, Country attackCountry, Country defenseCountry, int wave)
     {
         float start = Time.time;
         while (Time.time - start < wave)
@@ -343,12 +470,12 @@ public class WarManager : MonoBehaviour
             yield return null;
         }
 
-        StartCoroutine(LaunchMissile(2f, attackCountry.name, defenseCountry.name, Color.yellow));
+        StartCoroutine(LaunchMissile(weapon, 2f, attackCountry.name, defenseCountry.name, Color.yellow));
         //StartCoroutine (LaunchMissile (3f, defenseCountry.name, attackCountry.name, Color.black));
     }
 
 
-    IEnumerator LaunchMissile(float delay, string countryOrigin, string countryDest, Color color)
+    IEnumerator LaunchMissile(Weapon weapon, float delay, string countryOrigin, string countryDest, Color color)
     {
         float start = Time.time;
         while (Time.time - start < delay)
@@ -362,10 +489,12 @@ public class WarManager : MonoBehaviour
         if (cityOrigin < 0 || cityDest < 0)
             yield break;
 
+        City targetCity = map.GetCity(cityDest);
+
         Vector2 origin = map.cities[cityOrigin].unity2DLocation;
         Vector2 dest = map.cities[cityDest].unity2DLocation;
-        float elevation = 20f;
-        float width = 0.2f;
+        float elevation = 5f;
+        float width = 0.1f;
         LineMarkerAnimator lma = map.AddLine(origin, dest, color, elevation, width);
         lma.dashInterval = 0.003f;
         lma.dashAnimationDuration = 0.5f;
@@ -378,14 +507,37 @@ public class WarManager : MonoBehaviour
         map.AddMarker2DSprite(sprite, dest, 0.003f);
         MarkerBlinker.AddTo(sprite, 4, 0.1f, 0.5f, true);
 
+        WeaponTemplate weaponTemplate = WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID);
+        int damage = weaponTemplate.weaponAttack / 100;
+
+        if (weaponTemplate.weaponType == WEAPON_TYPE.ICBM)
+        {
+            targetCity.population = targetCity.population - (targetCity.population * damage)/100;
+            CountryManager.Instance.RemoveBuildingsInCity(targetCity, damage);
+        }
+        if (weaponTemplate.weaponType == WEAPON_TYPE.NEUTRON_BOMB)
+        {
+            targetCity.population = targetCity.population - (targetCity.population * damage) / 100;
+        }
+        if (weaponTemplate.weaponType == WEAPON_TYPE.ANTI_MATTER_BOMB)
+        {
+            targetCity.population = 0;
+            CountryManager.Instance.RemoveBuildingsInCity(targetCity, damage);
+        }
+
+        weapon = null;
+
         // Triggers explosion
         StartCoroutine(AddCircleExplosion(4f, dest, Color.yellow));
     }
 
 
-    public void BeginNuclearWar(Country attackCountry, Country defenseCountry)
+    public void BeginMissileWar(Country attackCountry, Country defenseCountry)
     {
-        StartCoroutine(War(attackCountry, defenseCountry, 1));
+        Weapon[] missile = attackCountry.GetArmy().GetMissile().ToArray();
+
+        if(missile.Length > 0)
+            StartCoroutine(War(missile[0], attackCountry, defenseCountry, 1));
     }
 
     IEnumerator AddCircleExplosion(float delay, Vector2 mapPos, Color color)
@@ -412,81 +564,81 @@ public class WarManager : MonoBehaviour
         Destroy(anim.gameObject, 3f);
     }
 
+    public void FinishWar(Country country, War war)
+    {
+        Country winnerCountry = war.GetEnemyCountry(country);
+
+        if (country.Budget > 0)
+            winnerCountry.Budget += country.Budget;
+
+        if (country.Defense_Budget > 0)
+            winnerCountry.Budget += country.Defense_Budget;
+
+
+        foreach (Weapon weapon in country.GetArmy().GetLandForces().GetAllWeaponsInMilitaryForces())
+        {
+            winnerCountry.GetArmy().GetLandForces().AddWeaponToMilitaryForces(weapon);
+        }
+        foreach (Weapon weapon in country.GetArmy().GetAirForces().GetAllWeaponsInMilitaryForces())
+        {
+            winnerCountry.GetArmy().GetAirForces().AddWeaponToMilitaryForces(weapon);
+        }
+        foreach (Weapon weapon in country.GetArmy().GetNavalForces().GetAllWeaponsInMilitaryForces())
+        {
+            winnerCountry.GetArmy().GetNavalForces().AddWeaponToMilitaryForces(weapon);
+        }
+
+        foreach(GameObjectAnimator GOA in country.GetArmy().GetAllDivisionInArmy().ToArray())
+        {
+            DestroyUnit(GOA);
+        }
+
+        map.CountryTransferCountry(map.GetCountryIndex(winnerCountry), map.GetCountryIndex(country), true);
+
+        DestroyUnit(map.GetCity(country.capitalCityIndex).Capital_Building);
+
+        MapManager.Instance.ReColorizeAllCountries();
+
+        winnerCountry.GetWarList().Remove(war);
+        country.GetWarList().Remove(war);
+    }
+
     public void WarStrategy(Country country)
     {
-        if (country.GetArmy() == null)
-            return;
-        else
-        { 
+        List<War> warList = country.GetWarList();
+
+        if (warList.Count > 0)
+        {
             UpdateDivisions(country);
 
             if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
             {
-                if (GameEventHandler.Instance.GetPlayer().IsLeadWar() == true)
+                if (GameEventHandler.Instance.GetPlayer().LeadWar == true)
                     return;                 
             }
 
-
-            foreach (War war in country.GetWarList().ToArray())
+            foreach (War war in warList.ToArray())
             {
-                if (country.IsAllDivisionsCreated() == false)
-                    country.CreateAllDivisions();
-                else
+                Country enemy = war.GetEnemyCountry(country);
+
+                BeginMissileWar(country, enemy);
+
+                if (country.GetArmy().GetAllDivisionInArmy().Count <= 0)
                 {
-                    Country enemy = war.GetEnemyCountry(country);
-
-                    //if (country.GetNuclearWarHead() > 0)
-                        //BeginNuclearWar(country, enemy);
-
-                    List<Province> myProvinces = MapManager.Instance.FindBorderProvinces(country, enemy);
-
-                    if (country.GetArmy().GetAllDivisionInArmy().Count <= 0 || enemy.GetArmy().GetAllDivisionInArmy().Count <= 0)
-                    {
-                        /*
-                        // sign peace treaty
-                        if (enemy.GetArmy().GetAllDivisionInArmy().Count <= 0)
-                            Debug.Log(enemy.name + " wants to sign peace treaty");
-                        if (country.GetArmy().GetAllDivisionInArmy().Count <= 0)
-                            Debug.Log(country.name + " wants to sign peace treaty");
-                        */
-                    }
-                    else
-                    {
-                        /*
-                        int attackLandPower = country.GetArmy().GetLandForces().GetMilitaryPower();
-                        int attackAirPower = country.GetArmy().GetAirForces().GetMilitaryPower();
-                        int attackNavalPower = country.GetArmy().GetNavalForces().GetMilitaryPower();
-
-                        int enemyLandPower = enemy.GetArmy().GetLandForces().GetMilitaryPower();
-                        int enemyAirPower = enemy.GetArmy().GetAirForces().GetMilitaryPower();
-                        int enemyNavalPower = enemy.GetArmy().GetNavalForces().GetMilitaryPower();
-
-                        Debug.Log(country.name + " Victory Chance on ground : " + (100 * attackLandPower)/ (attackLandPower + enemyLandPower));
-                        Debug.Log(country.name + " Victory Chance on air : " + (100 * attackAirPower) / (attackAirPower + enemyAirPower));
-                        Debug.Log(country.name + " Victory Chance on naval : " + (100 * attackNavalPower) / (attackLandPower + enemyNavalPower));
-                        */
-                        //FollowAndAttack(country);
-
-                        if (myProvinces.Count > 0)
-                        {
-                            //TotalWar(country, enemy, TERRAIN_CAPABILITY.OnlyGround);
-                            AttackUnitsOnProvinces(country, enemy, myProvinces);
-                        }
-                        else // no land border
-                        {
-
-                        }
-
-                        TotalWar(country, enemy, TERRAIN_CAPABILITY.Any);
-                        TotalWar(country, enemy, TERRAIN_CAPABILITY.OnlyWater);
-                    }
+                    FinishWar(country, war);
+                    return;
                 }
+                if (enemy.GetArmy().GetAllDivisionInArmy().Count <= 0)
+                {
+                    FinishWar(enemy, war);
+                    return;
+                }
+
+                TotalWar(country, enemy, TERRAIN_CAPABILITY.OnlyGround);
+                TotalWar(country, enemy, TERRAIN_CAPABILITY.Any);
+                TotalWar(country, enemy, TERRAIN_CAPABILITY.OnlyWater);
             }
-
-
-
         } 
-
     }
 
     public void TotalWar(Country attack, Country guard, TERRAIN_CAPABILITY unitType)
@@ -510,24 +662,18 @@ public class WarManager : MonoBehaviour
                 {
                     MoveAndAttack(GOA, enemyDivision, true, Vector3.zero);
                 }
-            }
-        }
-    }
-
-    public void FollowAndAttack(Country country)
-    {
-        GameObjectAnimator[] allDivisions = country.GetArmy().GetAllDivisionInArmy().ToArray();
-
-        foreach (GameObjectAnimator GOA in allDivisions)
-        {
-            if (GOA != null)
-            {
-                if (GOA.enterCountry != country && GOA.enterCountry != null)
+                else
                 {
-                    GameObjectAnimator enemyDivision = FindNearestDivision(GOA, GOA.enterCountry, false);
+                    if(GOA.terrainCapability == TERRAIN_CAPABILITY.OnlyWater)
+                    {
+                        GameObjectAnimator dockyard = FindNearestDockyard(GOA, guard);
 
-                    if (enemyDivision != null)
-                        MoveAndAttack(GOA, enemyDivision, true, Vector3.zero);
+                        if(dockyard != null)
+                        {
+                            MoveAndAttack(GOA, dockyard, true, Vector3.zero);
+                        }
+                    }
+                    GOA.Stop();
                 }
             }
         }
@@ -567,11 +713,11 @@ public class WarManager : MonoBehaviour
 
     public GameObjectAnimator FindNearestDivision(GameObjectAnimator unit, Country targetCountry, bool sameTerrain)
     {
-        int distance = 100000000;
-        GameObjectAnimator GOA = null;
-
         if (unit == null)
             return null;
+
+        int distance = 100000000;
+        GameObjectAnimator GOA = null;
 
         GameObjectAnimator[] allDivisions = null;
 
@@ -613,9 +759,11 @@ public class WarManager : MonoBehaviour
     }
 
     
-    public GameObjectAnimator GetDivisionOnProvince(Country country, Province province)
+    public List<GameObjectAnimator> GetDivisionsOnProvince(Country country, Province province)
     {
         GameObjectAnimator[] allDivisions = country.GetArmy().GetAllDivisionInArmy().ToArray();
+
+        List<GameObjectAnimator> allDivisionsOnProvince = new List<GameObjectAnimator>();
 
         foreach (GameObjectAnimator GOA in allDivisions)
         {
@@ -626,13 +774,13 @@ public class WarManager : MonoBehaviour
                 {
                     if (tempProvince == province)
                     {
-                        return GOA;
+                        allDivisionsOnProvince.Add(GOA);
                     }
                 }
             }
         }
 
-        return null;
+        return allDivisionsOnProvince;
     }
 
     
@@ -640,18 +788,19 @@ public class WarManager : MonoBehaviour
     {
         foreach (Province province in myProvinces)
         {
-            GameObjectAnimator myDivision = GetDivisionOnProvince(country, province);
+            List<GameObjectAnimator> divisionList = GetDivisionsOnProvince(country, province);
 
-            GameObjectAnimator enemyDivision = FindNearestDivision(myDivision, enemy, true);
-
-            if (myDivision != null && enemyDivision != null)
+            foreach(GameObjectAnimator GOA in divisionList)
             {
-                MoveAndAttack(myDivision, enemyDivision, true, Vector3.zero);
+                GameObjectAnimator enemyDivision = FindNearestDivision(GOA, enemy, true);
+
+                if (GOA != null && enemyDivision != null)
+                {
+                    MoveAndAttack(GOA, enemyDivision, true, Vector3.zero);
+                }
             }
         }
     }
     
-
-
 
 }

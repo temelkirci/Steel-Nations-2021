@@ -186,11 +186,6 @@ public class Action
         set { leftEvaluationTime = value; }
     }
 
-    public void DecreaseLeftTime()
-    {
-        leftEvaluationTime = leftEvaluationTime - 1;
-    }
-
     public void SetAction(ACTION_TYPE actionType,
         string actionName,
         WorldMapStrategyKit.Country country, 

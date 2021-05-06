@@ -7,6 +7,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using Action = System.Action;
 
+namespace SQLiter
+{
     /// <summary>
     /// The LoomManager will moves things to another thread to process, then bring them back to main thread.
     /// Very useful for SQLite so you can send a save/whatever to another thread without blocking the main
@@ -84,3 +86,5 @@ using Action = System.Action;
             }
         }
     }
+
+}

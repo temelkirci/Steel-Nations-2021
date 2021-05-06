@@ -13,17 +13,16 @@ namespace WorldMapStrategyKit
 
         public GameObject intelligenceAgencyPanel;
         public TextMeshProUGUI intelligenceAgencyName;
-        public TextMeshProUGUI intelligenceAgencyLevel;
         public TextMeshProUGUI intelligenceAgencyBudget;
+
+        public TextMeshProUGUI assassination;
+        public TextMeshProUGUI reverseEngineering;
+        public TextMeshProUGUI militaryCoup;
 
         // Start is called before the first frame update
         void Start()
         {
             instance = this;
-        }
-        public void Init()
-        {
-
         }
 
         public void ShowIntelligenceAgency()
@@ -33,8 +32,12 @@ namespace WorldMapStrategyKit
             Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
 
             intelligenceAgencyName.text = myCountry.Intelligence_Agency.IntelligenceAgencyName;
-            intelligenceAgencyLevel.text = myCountry.Intelligence_Agency.IntelligenceAgencyLevel.ToString();
             intelligenceAgencyBudget.text = myCountry.Intelligence_Agency.IntelligenceAgencyBudget.ToString();
+
+            assassination.text = "% " + myCountry.Intelligence_Agency.Assassination.ToString();
+            reverseEngineering.text = "% " + myCountry.Intelligence_Agency.ReverseEnginering.ToString();
+            militaryCoup.text = "% " + myCountry.Intelligence_Agency.MilitaryCoup.ToString();
+
         }
 
         public void HideIntelligenceAgency()

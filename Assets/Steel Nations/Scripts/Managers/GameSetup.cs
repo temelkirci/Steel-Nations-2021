@@ -3,6 +3,7 @@ using System.Data;
 using Mono.Data.SqliteClient;
 using System;
 using System.Collections.Generic;
+using SQLiter;
 
 namespace WorldMapStrategyKit
 {
@@ -18,20 +19,20 @@ namespace WorldMapStrategyKit
 
         // Location of database - tempCountry will be set during Awake as to stop Unity 5.4 error regarding initialization before scene is set
         // file should show up in the Unity inspector after a few seconds of running it the first time
-        private string _sqlDBLocation = "";
+        string _sqlDBLocation = "";
         
 
         /// <summary>
         /// Table name and DB actual file name -- tempCountry is the name of the actual file on the filesystem
         /// </summary>
-        private const string SQL_DB_NAME = "Database";
+        const string SQL_DB_NAME = "Database";
 
         /// <summary>
         /// DB objects
         /// </summary>
-        private IDbConnection _connection = null;
-        private IDbCommand _command = null;
-        private IDataReader _reader = null;
+        IDbConnection _connection = null;
+        IDbCommand _command = null;
+        IDataReader _reader = null;
     
         /// <summary>
         /// Awake will initialize the connection.  
@@ -123,7 +124,6 @@ namespace WorldMapStrategyKit
         {
             _connection.Open();
 
-
             //if (GameManager.Instance.GameType == GAME_TYPE.NEW_GAME)
                 Invoke("NewGame", 1f);
 
@@ -144,6 +144,8 @@ namespace WorldMapStrategyKit
         public void LoadGame()
         {
             PreLoad();
+
+            map.dontLoadGeodataAtStart = true;
 
             SaveLoadManager.Instance.LoadGame();
         }
@@ -174,6 +176,7 @@ namespace WorldMapStrategyKit
                 LoadReligion();
             }
 
+            SaveLoadManager.Instance.Init();
             GameSettings.Instance.ShowGameOptionsPanel(true);
 
 
@@ -230,7 +233,7 @@ namespace WorldMapStrategyKit
                 {
                     foreach(City city in map.GetCities(country))
                     {
-                        city.population = city.population * 2;
+                        city.population *= 2;
                     }
                 }
 
@@ -246,7 +249,7 @@ namespace WorldMapStrategyKit
                 {
                     foreach (City city in map.GetCities(country))
                     {
-                        city.population = city.population * 3;
+                        city.population *= 3;
                     }
                 }
 
@@ -262,7 +265,7 @@ namespace WorldMapStrategyKit
                 {
                     foreach (City city in map.GetCities(country))
                     {
-                        city.population = city.population * 4;
+                        city.population *= 4;
                     }
                 }
 
@@ -270,7 +273,7 @@ namespace WorldMapStrategyKit
                 {
                     foreach (City city in map.GetCities(country))
                     {
-                        city.population = city.population * 5;
+                        city.population *= 5;
                     }
                 }
 
@@ -278,11 +281,9 @@ namespace WorldMapStrategyKit
                 {
                     foreach (City city in map.GetCities(country))
                     {
-                        city.population = city.population * 8;
+                        city.population *= 8;
                     }
                 }
-
-                CountryManager.Instance.AddCountry(country);
             }
         }
 
@@ -390,34 +391,29 @@ namespace WorldMapStrategyKit
                 }
                 else
                 {
-                    int rank = _reader.GetInt32(1);
-                    string friend = _reader.GetString(2);
-                    string enemy = _reader.GetString(3);
+                    string friend = _reader.GetString(1);
+                    string enemy = _reader.GetString(2);
 
-                    int oil = _reader.GetInt32(4);
-                    int uranium = _reader.GetInt32(5);
-                    int iron = _reader.GetInt32(6);
-                    int aluminium = _reader.GetInt32(7);
-                    int steel = _reader.GetInt32(8);
-                    int tansion = _reader.GetInt32(9);
+                    int oil = _reader.GetInt32(3);
+                    int uranium = _reader.GetInt32(4);
+                    int iron = _reader.GetInt32(5);
+                    int aluminium = _reader.GetInt32(6);
+                    int steel = _reader.GetInt32(7);
+                    int tansion = _reader.GetInt32(8);
 
-                    int nuclearWarHead = _reader.GetInt32(10);
-
-                    float country_natality = _reader.GetFloat(11);
-                    float corona = _reader.GetFloat(12);
-                    string system_government = _reader.GetString(13);
-                    string pandemicBeginDate = _reader.GetString(14);
+                    float country_natality = _reader.GetFloat(9);
+                    string system_government = _reader.GetString(10);
 
                     if (system_government == string.Empty)
                         system_government = "Republic";
 
-                    int unemploymentRate = _reader.GetInt32(15);
-                    string intelligenceAgency = _reader.GetString(16);
+                    int unemploymentRate = _reader.GetInt32(11);
+                    string intelligenceAgency = _reader.GetString(12);
 
                     if (intelligenceAgency != string.Empty)
                     {
-                        int intelligenceAgencyLevel = _reader.GetInt32(17);
-                        int intelligenceAgencyBudget = _reader.GetInt32(18);
+                        int intelligenceAgencyLevel = _reader.GetInt32(13);
+                        int intelligenceAgencyBudget = _reader.GetInt32(14);
 
                         CountryManager.Instance.CreateIntelligenceAgency(tempCountry, intelligenceAgency, intelligenceAgencyLevel, intelligenceAgencyBudget, null);
                         tempCountry.Intelligence_Agency.Init();
@@ -427,14 +423,9 @@ namespace WorldMapStrategyKit
 
                     tempCountry.SetCountryFlag();
 
-                    if (nuclearWarHead > 0)
-                        tempCountry.Nuclear_Power = true;
-                    else
-                        tempCountry.Nuclear_Power = false;
-
-                    foreach (Country temp in CountryManager.Instance.GetAllCountries())
+                    foreach (Country temp in map.countries)
                     {
-                        tempCountry.SetRelations(temp.name, 0);
+                        tempCountry.SetRelations(temp, 0);
                     }
 
                     string[] friend_countries = friend.Split('~');
@@ -445,7 +436,7 @@ namespace WorldMapStrategyKit
                         Country allyCountry = map.GetCountry(index);
                         if (allyCountry != null)
                         {
-                            tempCountry.SetRelations(allyCountry.name, 50);
+                            tempCountry.SetRelations(allyCountry, 50);
                             tempCountry.AddTradeTreaty(allyCountry);                          
                         }
                     }
@@ -457,7 +448,7 @@ namespace WorldMapStrategyKit
                         {
                             tempCountry.PlaceTradeEmbargo(enemyCountry);
                             tempCountry.PlaceArmsEmbargo(enemyCountry);
-                            tempCountry.SetRelations(enemyCountry.name, -50);
+                            tempCountry.SetRelations(enemyCountry, -50);
                         }
                     }
 
@@ -467,14 +458,11 @@ namespace WorldMapStrategyKit
                     tempCountry.AddMineral(MINERAL_TYPE.URANIUM, uranium);
                     tempCountry.AddMineral(MINERAL_TYPE.STEEL, steel);
 
-                    tempCountry.Military_Rank = rank;
                     tempCountry.Tension = tansion;
                     tempCountry.Unemployment_Rate = unemploymentRate;
 
-                    tempCountry.Production_Speed = 0;
-                    tempCountry.Research_Speed = 0;
                     tempCountry.Fertility_Rate_PerWeek = country_natality;
-                    tempCountry.Pandemic_Death_Rate_Monthly = corona;
+                    tempCountry.Pandemic_Death_Rate_Monthly = 1;
                     tempCountry.System_Of_Government = system_government;
 
                     List<City> cities = CountryManager.Instance.GetAllCitiesInCountry(tempCountry);
@@ -768,6 +756,10 @@ namespace WorldMapStrategyKit
                 int weapon_required_steel = _reader.GetInt32(18);
                 int weapon_required_aluminium = _reader.GetInt32(19);
 
+                int land_hit_chance = _reader.GetInt32(20);
+                int air_hit_chance = _reader.GetInt32(21);
+                int naval_hit_chance = _reader.GetInt32(22);
+
                 WeaponManager.Instance.CreateWeaponTemplate(weapon_id,
                     weapon_name,
                     weapon_speed,
@@ -787,7 +779,10 @@ namespace WorldMapStrategyKit
                     weapon_required_uranium,
                     weapon_required_iron,
                     weapon_required_steel,
-                    weapon_required_aluminium);
+                    weapon_required_aluminium,
+                    land_hit_chance,
+                    air_hit_chance,
+                    naval_hit_chance);
             }
         }
 
@@ -822,7 +817,7 @@ namespace WorldMapStrategyKit
                 int destroyer = _reader.GetInt32(15);
                 int patrol = _reader.GetInt32(16);
 
-                int missile = _reader.GetInt32(17);
+                int icbm = _reader.GetInt32(17);
 
 
                 int soldier_equipment_tech = _reader.GetInt32(18);
@@ -846,10 +841,16 @@ namespace WorldMapStrategyKit
                 int missile_tech = _reader.GetInt32(33);
 
                 country.CreateArmy();
-                country.GetArmy().Defense_Budget = defense_budget;
+
+                country.Defense_Budget = defense_budget;
                 country.GetArmy().SetSoldierNumber(soldier);
 
                 country.Defense_Budget_By_GDP = (defense_budget * 100.0f) / (float)country.Previous_GDP;
+
+                if (icbm > 0)
+                    country.Nuclear_Power = true;
+                else
+                    country.Nuclear_Power = false;
 
                 InitWeaponInventory(country, WEAPON_TYPE.TANK, tank, tank_tech);
                 InitWeaponInventory(country, WEAPON_TYPE.TOWED_ARTILLERY, towed_artillery, towed_artillery_tech);
@@ -868,7 +869,7 @@ namespace WorldMapStrategyKit
                 InitWeaponInventory(country, WEAPON_TYPE.SUBMARINE, submarine, submarine_tech);
                 InitWeaponInventory(country, WEAPON_TYPE.COASTAL_PATROL, patrol, patrol_tech);
 
-                InitWeaponInventory(country, WEAPON_TYPE.ICBM, missile, missile_tech);
+                InitWeaponInventory(country, WEAPON_TYPE.ICBM, icbm, missile_tech);
                 InitWeaponInventory(country, WEAPON_TYPE.ANTI_MATTER_BOMB, 0, 0);
                 InitWeaponInventory(country, WEAPON_TYPE.NEUTRON_BOMB, 0, 0);
 
@@ -919,8 +920,11 @@ namespace WorldMapStrategyKit
                     if (tempWeapon.weaponTerrainType == 2)
                         navalForces.AddWeaponToMilitaryForces(weapon);
 
-                    if (tempWeapon.weaponTerrainType == 3 || tempWeapon.weaponTerrainType == 4)
+                    if (tempWeapon.weaponTerrainType == 3)
                         airForces.AddWeaponToMilitaryForces(weapon);
+
+                    if (tempWeapon.weaponTerrainType == 4)
+                        country.GetArmy().AddMissile(weapon);
                 }
             }
         }

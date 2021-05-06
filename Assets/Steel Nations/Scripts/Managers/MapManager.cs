@@ -57,26 +57,23 @@ namespace WorldMapStrategyKit
                     //Debug.Log(map.GetZoomLevel());
                     if (map.GetZoomLevel() < 0.1)
                     {
-                        foreach (Country country in map.GetVisibleCountries())
+                        foreach (Country country in map.countries)
                         {
-                            //if (CountryManager.Instance.GetAtWarCountryList(GameEventHandler.Instance.GetPlayer().GetMyCountry()).Contains(country) || country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
+                            if (map.GetVisibleCountriesInWindowRect().Contains(country))
                             {
-                                if (country.IsVisibleAllBuildings() == false)
-                                    CountryManager.Instance.HideShowAllBuildings(country, true);
-                                if (country.IsVisibleAllDivisions() == false)
-                                    CountryManager.Instance.VisibleAllDivisions(country, true);
+                                ShowHideUnits(country, true);
+                            }
+                            else
+                            {
+                                ShowHideUnits(country, false);
                             }
                         }
                     }
                     else
                     {
-                        foreach (Country country in CountryManager.Instance.GetAllCountries())
+                        foreach (Country country in map.countries)
                         {
-                            if (country.IsVisibleAllBuildings() == true)
-                                CountryManager.Instance.HideShowAllBuildings(country, false);
-                            if (country.IsVisibleAllDivisions() == true)
-                                CountryManager.Instance.VisibleAllDivisions(country, false);
-
+                            ShowHideUnits(country, false);
                         }
                     }
 
@@ -100,6 +97,15 @@ namespace WorldMapStrategyKit
             }           
         }
 
+        void ShowHideUnits(Country country, bool show)
+        {
+            if (country.IsVisibleAllBuildings() != show)
+                CountryManager.Instance.HideShowAllBuildings(country, show);
+
+            if (country.IsVisibleAllDivisions() != show)
+                CountryManager.Instance.VisibleAllDivisions(country, show);
+        }
+
         void AddMouseCursor()
         {
             marker.SetActive(false);
@@ -109,7 +115,6 @@ namespace WorldMapStrategyKit
         void UpdateMouseCursor(Vector3 location)
         {
             marker.SetActive(true);
-
             map.UpdateMarker3DObjectPosition(marker, location);
         }
 
@@ -164,7 +169,7 @@ namespace WorldMapStrategyKit
             }
         }
 
-        void ClearCurrentSelection()
+        public void ClearCurrentSelection()
         {
             Player player = GameEventHandler.Instance.GetPlayer();
 
@@ -183,85 +188,84 @@ namespace WorldMapStrategyKit
             /* Register events: this is optionally but allows your scripts to be informed instantly as the mouse enters or exits a country, province or city */
             //map.OnCityEnter += OnCityEnter;
             //map.OnCityExit += OnCityExit;
-            map.OnCityClick += OnCityClick;
+            //map.OnCityClick += OnCityClick;
             //map.OnCountryEnter += (int countryIndex, int regionIndex) => ShowBorderTexture(countryIndex, true);
             //map.OnCountryExit += (int countryIndex, int regionIndex) => ShowBorderTexture(countryIndex, false);
-            map.OnCountryClick += OnCountryClick;
+            //map.OnCountryClick += OnCountryClick;
             //map.OnProvinceEnter += OnProvinceEnter;
             //map.OnProvinceExit += OnProvinceExit;
-            //map.OnProvinceClick += OnProvinceClick;
+            map.OnProvinceClick += OnProvinceClick;
         }
 
-
-        void OnCityClick(int cityIndex, int buttonIndex)
+        void OnProvinceClick(int provinceIndex, int regionIndex, int buttonIndex)
         {
+            Province province = map.GetProvince(provinceIndex);
+            Country country = map.GetCountry(province.countryIndex);
+
+            City city = map.GetCity(province.name);
+
+            if(city == null)
+            {
+                foreach (City temp in map.GetCities(country))
+                {
+                    if (temp.province == province.name)
+                    {
+                        city = temp;
+                        break;
+                    }
+                }
+            }
+
             ClearCurrentSelection();
 
             if (buttonIndex == 0)
             {
-                City city = map.GetCity(cityIndex);
-                GameEventHandler.Instance.GetPlayer().SetSelectedCity(city);
-
-                if (CountryManager.Instance.GetAllCitiesInCountry(GameEventHandler.Instance.GetPlayer().GetMyCountry()).Contains(city) == true)
+                if(city != null)
                 {
-                    CityInfoPanel.Instance.ShowCityMenu();
-                }     
+                    GameEventHandler.Instance.GetPlayer().SetSelectedCity(city);
+                    
+                    if (country == GameEventHandler.Instance.GetPlayer().GetMyCountry())
+                    {
+                        CityInfoPanel.Instance.ShowCityMenu();
+                    }
+                    else
+                    {
+                        //CityInfoPanel.Instance.ShowCityInfo();
+                        CityInfoPanel.Instance.HideCityPanel();
+                    }
+                }
                 else
                 {
-                    CityInfoPanel.Instance.ShowCityInfo();
+                    CityInfoPanel.Instance.HideCityPanel();
                 }
             }
+            
         }
+        
 
-        /*
-        void OnProvinceClick(int provinceIndex, int regionIndex, int buttonIndex)
-        {
-            //ClearCurrentSelection();
-        }
-
-        void OnProvinceEnter(int provinceIndex, int regionIndex)
-        {
-            //Province province = map.GetProvince(provinceIndex);
-
-            //HUDManager.Instance.ShowInfoText(province.name);
-        }
-
-        void OnProvinceExit(int provinceIndex, int regionIndex)
-        {
-            //Province province = map.GetProvince(provinceIndex);
-
-            //HUDManager.Instance.ShowInfoText("");
-        }
-        */
-
-        void OnCountryClick(int countryIndex, int regionIndex, int buttonIndex)
-        {
-            //ClearCurrentSelection();
-
-            if (buttonIndex == 0)
-            {
-                Country tempCountry = map.GetCountry(countryIndex);
-                if (tempCountry != null)
-                {
-                    GameEventHandler.Instance.GetPlayer().SetSelectedCountry(tempCountry);
-
-                    GovernmentPanel.Instance.ShowGovernmentPanel();
-                }
-            }
-        }
-
-        void BuildingSelection(GameObjectAnimator anim)
+        public void BuildingSelection(Country country, GameObjectAnimator anim)
         {
             Player player = GameEventHandler.Instance.GetPlayer();
 
-            if (anim.isBuilding())
-            {
-                player.SetSelectedBuilding(anim);
-                player.ClearSelectedDivisions();
+            player.SetSelectedBuilding(anim);
+            player.ClearSelectedDivisions();
 
-                DockyardPanel.Instance.ShowDockyardPanel();
+            if (player.GetMyCountry() == country)
+            {
+                if (anim.type == (int)MY_UNIT_TYPE.DOCKYARD)
+                {
+                    DockyardPanel.Instance.ShowDockyardPanel();
+                }
+            }
+
+            if (anim.type == (int)MY_UNIT_TYPE.COUNTRY_CAPITAL_BUILDING)
+            {
+                player.SetSelectedCountry(country);
+
+                GovernmentPanel.Instance.ShowGovernmentPanel();
             }
         }
+
         void MultipleDivisionSelection(List<GameObjectAnimator> anim)
         {
             Player player = GameEventHandler.Instance.GetPlayer();
@@ -279,15 +283,13 @@ namespace WorldMapStrategyKit
                 HUDManager.Instance.ShowSelectedDivisions();
         }
 
-        void SingleDivisionSelection(GameObjectAnimator GOA)
+        public void SingleDivisionSelection(GameObjectAnimator GOA)
         {
             Player player = GameEventHandler.Instance.GetPlayer();
             ClearCurrentSelection();
 
             if (GOA.isDivision())
                 player.AddSelectedDivisions(GOA);
-
-            GOA.CreateShield(DivisionManager.Instance.shield);
 
             DivisionManagerPanel.Instance.ShowDivisionPanel(GOA.GetDivision());
         }
@@ -333,11 +335,13 @@ namespace WorldMapStrategyKit
 
                 if (buttonIndex == 0) // left click
                 {
-                    
+                    //Debug.Log("left click");
                 }
 
                 else if (buttonIndex == 1) // right click
                 {
+                    //Debug.Log("right click");
+
                     if (isContainWater)
                     {
                         foreach (GameObjectAnimator division in player.GetSelectedDivisions())
@@ -396,34 +400,6 @@ namespace WorldMapStrategyKit
             map.CenterMap();
         }
 
-        public void ListenVehicleEvents()
-        {
-            Player player = GameEventHandler.Instance.GetPlayer();
-
-            if(player.GetMyCountry().GetArmy() != null)
-            {
-                foreach (GameObjectAnimator division in player.GetMyCountry().GetArmy().GetAllDivisionInArmy())
-                {
-                    // Listen to unit-level events (if you need unit-level events...)
-                    division.OnPointerEnter += (GameObjectAnimator anim) => player.SetMouseOverUnit(anim);
-                    division.OnPointerExit += (GameObjectAnimator anim) => player.SetMouseOverUnit(null);
-                    division.OnPointerUp += (GameObjectAnimator anim) => SingleDivisionSelection(anim);
-                    division.OnPointerDown += (GameObjectAnimator anim) => SingleDivisionSelection(anim);
-                }
-            }
-
-            foreach (City city in CountryManager.Instance.GetAllCitiesInCountry(player.GetMyCountry()))
-            {
-                if (city.Dockyard != null)
-                {
-                    // Listen to unit-level events (if you need unit-level events...)
-                    city.Dockyard.OnPointerEnter += (GameObjectAnimator anim) => player.SetMouseOverUnit(anim);
-                    city.Dockyard.OnPointerExit += (GameObjectAnimator anim) => player.SetMouseOverUnit(null);
-                    city.Dockyard.OnPointerDown += (GameObjectAnimator anim) => BuildingSelection(anim);
-                }
-            }
-        }
-
         public void ShowTooltip()
         {
             Player player = GameEventHandler.Instance.GetPlayer();
@@ -468,7 +444,7 @@ namespace WorldMapStrategyKit
             int countryUniqueId = map.countries[principalCountryIndex].uniqueId;
             //string countryName = region.entity.name;
 
-            if (map.CountryTransferCountryRegion(principalCountryIndex, region, true))
+            if (map.CountryTransferCountryRegion(principalCountryIndex, region, false))
             {
                 // Restore principal id before countries array changed
                 SelectPrincipalCountry(map.GetCountryIndex(countryUniqueId));
@@ -495,41 +471,7 @@ namespace WorldMapStrategyKit
         {
             principalCountryIndex = newCountryIndex;
         }
-        /*
-        /// <summary>
-        /// Used when show Linear Path toggle is checked
-        /// </summary>
-        public void UpdateLinearPathLine(GameObjectAnimator division, float x, float y)
-        {
-            if (division != null)
-            {
-                if (pathLine != null)
-                {   // remove existing line
-                    DestroyImmediate(pathLine.gameObject);
-                }
 
-                // destination of linear path
-                Vector2 destination = new Vector2(x, y);
-
-                // optionally choose a material for the line (you may simply pass a color instead)
-                Material lineMat = pathArcElevation > 0 ? lineMaterialAerial : lineMaterialGround;
-
-                // draw the line
-                pathLine = map.AddLine(division.currentMap2DLocation, destination, lineMat, pathArcElevation, pathLineWidth);
-                pathLine.drawingDuration = pathDrawingDuration;
-                pathLine.dashInterval = pathDashInterval;
-                pathLine.dashAnimationDuration = pathDashAnimationDuration;
-
-                pathLine.endCap = endCapSprite;
-                pathLine.endCapMaterial = endCapMaterial;
-                pathLine.endCapScale = new Vector3(1f, 1f, 2.5f);
-                pathLine.endCapOffset = 4f;
-                pathLine.endCapFlipDirection = true;
-
-                UpdateCircle(destination);
-            }           
-        }
-        */
         /// <summary>
         /// Used when show Route Path toggle is checked
         /// </summary>
@@ -675,15 +617,6 @@ namespace WorldMapStrategyKit
             */
         }
 
-        public void ColorizeWorld()
-        {   
-            foreach(Country country in CountryManager.Instance.GetAllCountries())
-            {
-                if (country != null)
-                    ColorizeCountry(country);
-            }
-        }
-
         public void ColorizeCountry(Country country)
         {
             Color color = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
@@ -692,6 +625,14 @@ namespace WorldMapStrategyKit
             country.SurfaceColor = color;
 
             map.ToggleCountrySurface(country.name, true, color);
+        }
+
+        public void ReColorizeAllCountries()
+        {
+            foreach (Country country in map.countries)
+            {
+                map.ToggleCountrySurface(country.name, true, country.SurfaceColor);
+            }
         }
 
         /// <summary>

@@ -29,6 +29,11 @@ namespace WorldMapStrategyKit
             instance = this;
         }
 
+        public void Init()
+        {
+
+        }
+
         public void AddPolicy(Policy policy)
         {
             policyList.Add(policy);

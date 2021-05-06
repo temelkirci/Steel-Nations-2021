@@ -17,8 +17,6 @@ namespace WorldMapStrategyKit {
 
         public bool allBuildingsVisible = false;
 
-        int previousGDPPerCapita = 0;
-
         IntelligenceAgency intelligenceAgency;
 
         List<Action> actionList = new List<Action>();
@@ -56,15 +54,12 @@ namespace WorldMapStrategyKit {
         int debtPaymentMonthly;
         int debtPaymentRate;
 
-        int tension;
+        float tension;
         float unemploymentRate;
-        int productionSpeed;
-        int researchSpeed;
         float fertilityRate;
         float pandemicDeadRateMonthly;
         string systemOfGovernment;
         int debt;
-        int militaryRank;
         int tax;
         int currentGDP;
         int previousGDP;
@@ -75,6 +70,20 @@ namespace WorldMapStrategyKit {
         int oilIncome;
         int gunIncome;
         int mineralIncome;
+        int defenseBudget;
+
+        public int militaryRank;
+        public int landPowerRank;
+        public int airPowerRank;
+        public int navalPowerRank;
+        public int GDPRank;
+        public int budgetRank;
+        public int manpowerRank;
+        public int defenseBudgetRank;
+        public int debtRank;
+        public int taxRank;
+
+        float monthlyTension;
 
         public Person President
         {
@@ -98,6 +107,12 @@ namespace WorldMapStrategyKit {
         {
             get { return religion; }
             set { religion = value; }
+        }
+
+        public float Tension_Monthly
+        {
+            get { return monthlyTension; }
+            set { monthlyTension = value; }
         }
 
         public float GetTraitInCountry(TRAIT traitEnum)
@@ -132,15 +147,15 @@ namespace WorldMapStrategyKit {
             }
         }
 
-        public void SetRelations(string countryName, int relation)
+        public void SetRelations(Country country, int relation)
         {
-            if (diplomaticRelations.ContainsKey(countryName))
+            if (diplomaticRelations.ContainsKey(country.name))
             {
-                diplomaticRelations[countryName] = relation;
+                diplomaticRelations[country.name] = relation;
             }
             else
             {
-                diplomaticRelations.Add(countryName, relation);
+                diplomaticRelations.Add(country.name, relation);
             }
         }
 
@@ -178,12 +193,6 @@ namespace WorldMapStrategyKit {
             set { defenseBudgetByGDP = value; }
         }
 
-        public int Previous_GDP_per_Capita
-        {
-            get { return previousGDPPerCapita; }
-            set { previousGDPPerCapita = value; }
-        }
-
         public int Tax_Rate // between 1% and 5%
         {
             get { return taxRate; }
@@ -214,6 +223,14 @@ namespace WorldMapStrategyKit {
         public void PlaceTradeEmbargo(Country tempCountry)
         {
             tradeEmbargo.Add(tempCountry);
+        }
+        #endregion
+
+        #region Defense Budget
+        public int Defense_Budget
+        {
+            get { return defenseBudget; }
+            set { defenseBudget = value; }
         }
         #endregion
 
@@ -292,14 +309,6 @@ namespace WorldMapStrategyKit {
         }
 
         #region IntelligenceAgency
-        public void CreateIntelligenceAgency(string name, int level, int budget, Texture2D flag)
-        {
-            intelligenceAgency = new IntelligenceAgency();
-            intelligenceAgency.IntelligenceAgencyName = name;
-            intelligenceAgency.IntelligenceAgencyLevel = level;
-            intelligenceAgency.IntelligenceAgencyBudget = budget;
-        }
-
         public IntelligenceAgency Intelligence_Agency
         {
             get { return intelligenceAgency; }
@@ -314,9 +323,14 @@ namespace WorldMapStrategyKit {
 
             army.CreateArmy();
             army.Country = this;
+
+            Defense_Budget = 0;
         }
         public Army GetArmy()
         {
+            if (army == null)
+                CreateArmy();
+
             return army;
         }
         #endregion
@@ -336,7 +350,7 @@ namespace WorldMapStrategyKit {
         #endregion
 
         #region Tension
-        public int Tension
+        public float Tension
         {
             get { return tension; }
             set { tension = value; }
@@ -352,10 +366,70 @@ namespace WorldMapStrategyKit {
         #endregion
 
         #region Production Speed
-        public int Production_Speed
+        public float Land_Production_Speed
         {
-            get { return productionSpeed; }
-            set { productionSpeed = value; }
+            get 
+            {
+                float productionSpeed = 0;
+
+                productionSpeed += CountryManager.Instance.GetTotalBuildings(this, BUILDING_TYPE.MILITARY_FACTORY);
+
+                foreach (Policy policy in acceptedPolicyList)
+                {
+                    float policyValue = policy.GetValue(TRAIT.LAND_PRODUCTION_SPEED);
+
+                    productionSpeed += policyValue;
+                }
+
+                if (productionSpeed > 100)
+                    productionSpeed = 100;
+
+                return productionSpeed; 
+            }
+        }
+
+        public float Air_Production_Speed
+        {
+            get
+            {
+                float productionSpeed = 0;
+
+                productionSpeed += CountryManager.Instance.GetTotalBuildings(this, BUILDING_TYPE.MILITARY_FACTORY);
+
+                foreach (Policy policy in acceptedPolicyList)
+                {
+                    float policyValue = policy.GetValue(TRAIT.AIR_PRODUCTION_SPEED);
+
+                    productionSpeed += policyValue;
+                }
+
+                if (productionSpeed > 100)
+                    productionSpeed = 100;
+
+                return productionSpeed;
+            }
+        }
+
+        public float Naval_Production_Speed
+        {
+            get
+            {
+                float productionSpeed = 0;
+
+                productionSpeed += CountryManager.Instance.GetTotalBuildings(this, BUILDING_TYPE.DOCKYARD);
+
+                foreach (Policy policy in acceptedPolicyList)
+                {
+                    float policyValue = policy.GetValue(TRAIT.NAVAL_PRODUCTION_SPEED);
+
+                    productionSpeed += policyValue;
+                }
+
+                if (productionSpeed > 100)
+                    productionSpeed = 100;
+
+                return productionSpeed;
+            }
         }
         #endregion
 
@@ -389,15 +463,6 @@ namespace WorldMapStrategyKit {
         {
             get { return debt; }
             set { debt = value; }
-        }
-        #endregion
-
-        #region Military Rank
-
-        public int Military_Rank
-        {
-            get { return militaryRank; }
-            set { militaryRank = value; }
         }
         #endregion
 
@@ -465,10 +530,26 @@ namespace WorldMapStrategyKit {
         {
             researchProgress.Add(research);
         }
-        public int Research_Speed
+        public float Research_Speed
         {
-            get { return researchSpeed; }
-            set { researchSpeed = value; }
+            get 
+            {
+                float researchSpeed = 0;
+
+                researchSpeed += (CountryManager.Instance.GetTotalBuildings(this, BUILDING_TYPE.UNIVERSITY) / 100);
+
+                foreach(Policy policy in acceptedPolicyList)
+                {
+                    float policyValue = policy.GetValue(TRAIT.RESEARCH_SPEED);
+
+                    researchSpeed += policyValue;
+                }
+
+                if (researchSpeed > 100)
+                    researchSpeed = 100;
+
+                return researchSpeed; 
+            }
         }
         #endregion
 

@@ -81,7 +81,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleTooltipStyle: {fileID: 11400000, guid: dea555cc7b5bdbb4e8dae068d456f3de, type: 2}
-  infoLeft: Hello
+  infoLeft: 
   infoRight: 
 --- !u!114 &2025891322851775019
 MonoBehaviour:

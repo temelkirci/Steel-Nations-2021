@@ -70,7 +70,7 @@ namespace WorldMapStrategyKit
                             }
                             else
                             {
-                                foreach (Country country in CountryManager.Instance.GetAllCountries())
+                                foreach (Country country in map.countries)
                                     CountryManager.Instance.InitBudget(country);
                             }
                         }
@@ -83,8 +83,10 @@ namespace WorldMapStrategyKit
                     {
                         if (GetDayOfMonth() == 7)
                         {
-                            //CountryManager.Instance.MonthlyUpdateForAllCountries();
                             CountryManager.Instance.UpdateBirthRate();
+
+                            foreach (Country country in CountryManager.Instance.GetAllEnemies(GetPlayer().GetMyCountry()))
+                                CountryManager.Instance.WarDecision(GetPlayer().GetMyCountry(), country);
                         }
 
                         if (GetDayOfMonth() == 14)
@@ -125,7 +127,7 @@ namespace WorldMapStrategyKit
             this.player = player;
         }
         public Player GetPlayer()
-        {
+        {                
             return player;
         }
 
@@ -140,8 +142,6 @@ namespace WorldMapStrategyKit
 
             if (GameSettings.Instance.GetSelectedGameMode() == GameSettings.GAME_MODE.QUIZ)
             {
-                //MapManager.Instance.TextureCountry(GetPlayer().GetMyCountry());
-
                 QuizManager.Instance.Init();
                 HUDManager.Instance.bottomButtons.SetActive(false);
 
@@ -149,22 +149,16 @@ namespace WorldMapStrategyKit
             }
             else
             {
-                /*
-                foreach(Country country in CountryManager.Instance.GetAllCountries())
-                {
-                    MapManager.Instance.ColorizeCountry(country);
-                }
-                */
                 GameSettings.Instance.SetGameSpeed_X1();
-                ArmyPanel.Instance.Init();
 
+                ArmyPanel.Instance.Init();
                 ActionManager.Instance.Init();
+                ResearchPanel.Instance.Init();
 
                 if (GetPlayer().GetMyCountry().IsAllDivisionsCreated() == false)
                     GetPlayer().GetMyCountry().CreateAllDivisions();
 
                 MapManager.Instance.StartEventListener();
-                MapManager.Instance.ListenVehicleEvents();
 
                 MapManager.Instance.StartListeningCountries();
                 UIManager.Instance.StartButtonListeners();                         

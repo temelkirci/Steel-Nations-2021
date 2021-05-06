@@ -2,6 +2,9 @@
 using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Data;
+using Mono.Data.SqliteClient;
+using SQLiter;
 
 namespace WorldMapStrategyKit
 {
@@ -14,10 +17,187 @@ namespace WorldMapStrategyKit
 
         string countryGeoData, countryAttributes, provinceGeoData, provinceAttributes, cityGeoData, cityAttributes, mountPointGeoData, mountPointAttributes;
 
+        static string _sqlDBLocation = "";
+
+        /// <summary>
+		/// Table name and DB actual file location
+		/// </summary>
+		const string SQL_DB_NAME = "Save";
+
+        // table name
+        const string SQL_TABLE_NAME = "Save_Game";
+
+        /// <summary>
+        /// predefine columns here to there are no typos
+        /// </summary>
+        const string COL_WORD = "Game_Name";  // Primary key is unique, and since this is for spelling words... they will work
+        const string COL_DEFINITION = "Country";
+
+        /// <summary>
+        /// DB objects
+        /// </summary>
+        IDbConnection _connection = null;
+        IDbCommand _command = null;
+        IDataReader _reader = null;
+        string _sqlString;
+
+        bool _createNewTable = false;
+
+        public void Init()
+        {
+            // here is where we set the file location
+            // ------------ IMPORTANT ---------
+            // - during builds, this is located in the project root - same level as Assets/Library/obj/ProjectSettings
+            // - during runtime (Windows at least), this is located in the SAME directory as the executable
+            // you can play around with the path if you like, but build-vs-run locations need to be taken into account
+            _sqlDBLocation = "URI=file:" + SQL_DB_NAME + ".db";
+
+            SQLiteInit();
+        }
+
+        /// <summary>
+		/// Clean up SQLite Connections, anything else
+		/// </summary>
+		void OnDestroy()
+        {
+            SQLiteClose();
+        }
+
+        private void SQLiteClose()
+        {
+            if (_reader != null && !_reader.IsClosed)
+                _reader.Close();
+            _reader = null;
+
+            if (_command != null)
+                _command.Dispose();
+            _command = null;
+
+            if (_connection != null && _connection.State != ConnectionState.Closed)
+                _connection.Close();
+            _connection = null;
+        }
+
+        /// <summary>
+        /// Example using the Loom to run an asynchronous method on another thread so SQLite lookups
+        /// do not block the main Unity thread
+        /// </summary>
+        void RunAsyncInit()
+        {
+            LoomManager.Loom.QueueOnMainThread(() =>
+            {
+                SQLiteInit();
+            });
+        }
+
+        /// <summary>
+        /// Basic initialization of SQLite
+        /// </summary>
+        private void SQLiteInit()
+        {
+            Debug.Log("SQLiter - Opening SQLite Connection at " + _sqlDBLocation);
+            _connection = new SqliteConnection(_sqlDBLocation);
+            _command = _connection.CreateCommand();
+            _connection.Open();
+
+            // WAL = write ahead logging, very huge speed increase
+            _command.CommandText = "PRAGMA journal_mode = WAL;";
+            _command.ExecuteNonQuery();
+
+            // journal mode = look it up on google, I don't remember
+            _command.CommandText = "PRAGMA journal_mode";
+            _reader = _command.ExecuteReader();
+            
+            _reader.Close();
+
+            // more speed increases
+            _command.CommandText = "PRAGMA synchronous = OFF";
+            _command.ExecuteNonQuery();
+
+            // and some more
+            _command.CommandText = "PRAGMA synchronous";
+            _reader = _command.ExecuteReader();
+
+            _reader.Close();
+
+            // here we check if the table you want to use exists or not.  If it doesn't exist we create it.
+            _command.CommandText = "SELECT name FROM sqlite_master WHERE name='" + SQL_TABLE_NAME + "'";
+            _reader = _command.ExecuteReader();
+            if (!_reader.Read())
+            {
+                Debug.Log("SQLiter - Could not find SQLite table " + SQL_TABLE_NAME);
+                _createNewTable = true;
+            }
+            _reader.Close();
+
+            // create new table if it wasn't found
+            if (_createNewTable)
+            {
+                Debug.Log("SQLiter - Dropping old SQLite table if Exists: " + SQL_TABLE_NAME);
+
+                // insurance policy, drop table
+                _command.CommandText = "DROP TABLE IF EXISTS " + SQL_TABLE_NAME;
+                _command.ExecuteNonQuery();
+
+                Debug.Log("SQLiter - Creating new SQLite table: " + SQL_TABLE_NAME);
+
+                // create new - SQLite recommendation is to drop table, not clear it
+                _sqlString = "CREATE TABLE IF NOT EXISTS " + SQL_TABLE_NAME + " (" +
+                    COL_WORD + " TEXT UNIQUE, " +
+                    COL_DEFINITION + " TEXT)";
+                _command.CommandText = _sqlString;
+                _command.ExecuteNonQuery();
+            }
+            else
+            {
+                Debug.Log("SQLiter - SQLite table " + SQL_TABLE_NAME + " was found");
+            }
+
+            // close connection
+            _connection.Close();
+        }
+
+        public void LoadDatabase(string name, string definition)
+        {
+            // note - this will replace any item that already exists, overwriting them.  
+            // normal INSERT without the REPLACE will throw an error if an item already exists
+            _sqlString = "INSERT INTO " + SQL_TABLE_NAME
+                + " ("
+                + COL_WORD + ","
+                + COL_DEFINITION
+                + ") VALUES ("
+                + "'" + name + "',"  // note that string values need quote or double-quote delimiters
+                + "'" + definition + "');";
+
+            ExecuteNonQuery(_sqlString);
+        }
+
+        public void SaveDatabase(string name, string definition)
+        {
+            // note - this will replace any item that already exists, overwriting them.  
+            // normal INSERT without the REPLACE will throw an error if an item already exists
+            _sqlString = "INSERT INTO " + SQL_TABLE_NAME
+                + " ("
+                + COL_WORD + ","
+                + COL_DEFINITION
+                + ") VALUES ("
+                + "'" + name + "',"  // note that string values need quote or double-quote delimiters
+                + "'" + definition + "');";
+
+            ExecuteNonQuery(_sqlString);
+        }
+
+        public void ExecuteNonQuery(string commandText)
+        {
+            _connection.Open();
+            _command.CommandText = commandText;
+            _command.ExecuteNonQuery();
+            _connection.Close();
+        }
 
         void SaveCountry()
         {
-            foreach(Country country in CountryManager.Instance.GetAllCountries())
+            foreach (Country country in map.countries)
             {
                 if (GameSettings.Instance.GetSelectedGameMode() == GameSettings.GAME_MODE.QUIZ)
                 {
@@ -44,7 +224,7 @@ namespace WorldMapStrategyKit
 
         void LoadCountry()
         {
-            foreach (Country country in CountryManager.Instance.GetAllCountries())
+            foreach (Country country in map.countries)
             {
                 LoadCities(country);
                 LoadDivisions(country);
@@ -283,7 +463,6 @@ namespace WorldMapStrategyKit
             if(intelligenceAgency != null)
             {
                 country.attrib["Intelligence Agency Name"] = intelligenceAgency.IntelligenceAgencyName;
-                country.attrib["Intelligence Agency Level"] = intelligenceAgency.IntelligenceAgencyLevel;
                 country.attrib["Intelligence Agency Budget"] = intelligenceAgency.IntelligenceAgencyBudget;
 
                 country.attrib["Intelligence Agency Military Coup"] = intelligenceAgency.MilitaryCoup;
@@ -298,7 +477,9 @@ namespace WorldMapStrategyKit
 
             Debug.Log("Game Saving...");
 
-            SaveCountry();
+            SaveDatabase(GameEventHandler.Instance.GetPlayer().GetMyCountry().name, GameEventHandler.Instance.GetToday().ToString());
+
+            //SaveCountry();
 
             string countryAttributes = map.GetCountriesAttributes(true);
             string cityAttributes = map.GetCitiesAttributes(true);
@@ -306,7 +487,7 @@ namespace WorldMapStrategyKit
             File.WriteAllText(CONTRY_ATTRIBUTES_FILENAME, countryAttributes, Encoding.UTF8);
             File.WriteAllText(CITY_ATTRIBUTES_FILENAME, cityAttributes, Encoding.UTF8);
 
-            SaveAllData();
+            //SaveAllData();
 
             Debug.Log("Game Saved");
         }

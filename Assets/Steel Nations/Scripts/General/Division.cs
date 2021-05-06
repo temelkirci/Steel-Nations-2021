@@ -175,18 +175,29 @@ public class Division
 
     public float GetDivisionSpeed()
     {
-        float speed = 0;
-        int weaponNumber = 0;
-        foreach(Weapon weapon in weaponsInDivision)
-        {
-            weaponNumber++;
-            speed += WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponSpeed;
-        }
+        int weaponNumber = weaponsInDivision.Count;
 
         if (weaponNumber == 0)
             return 0;
 
-        speed = (speed / weaponNumber);
+        float speed = 0;
+
+        foreach (Weapon weapon in weaponsInDivision)
+        {
+            speed += WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponSpeed;
+        }
+
+        speed /= weaponNumber;
+
+        if(divisionTemplate.divisionType == DIVISION_TYPE.AIR_DIVISION)
+        {
+            speed = 1000.0f / speed;
+        }
+        else
+        {
+            speed = 100.0f / speed;
+        }
+
         return speed;
     }
 }

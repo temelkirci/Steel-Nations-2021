@@ -17,16 +17,12 @@ namespace WorldMapStrategyKit
 
         public GameObject tankPrefab, destroyerPrefab, fighterPrefab, armoredVehiclePrefab, artilleryPrefab, carrierPrefab, submarinePrefab;
         List<DivisionTemplate> divisionTemplateList = new List<DivisionTemplate>();
-        public GameObject shield;
-        List<DIVISION_TYPE> divisionTypeList;
 
         // Start is called before the first frame update
         void Start()
         {
             instance = this;
             map = WMSK.instance;
-
-            divisionTypeList = Enum.GetValues(typeof(DIVISION_TYPE)).Cast<DIVISION_TYPE>().ToList();
         }
 
         public void AddDivisionTemplate(DivisionTemplate divisionTemplate)
@@ -90,25 +86,24 @@ namespace WorldMapStrategyKit
 
         public void CreateDivisions(Country country)
         {
-            CreateLandDivision(country, DIVISION_TYPE.ARMORED_DIVISION);
+            CreateLandDivision(country, DIVISION_TYPE.ARMORED_DIVISION);   
             CreateLandDivision(country, DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION);
             CreateLandDivision(country, DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION);
-
+            
             CreateAirDivision(country, DIVISION_TYPE.AIR_DIVISION);
 
             CreateNavalDivision(country, DIVISION_TYPE.CARRIER_DIVISION);
             CreateNavalDivision(country, DIVISION_TYPE.SUBMARINE_DIVISION);
-            CreateNavalDivision(country, DIVISION_TYPE.DESTROYER_DIVISION);
+            CreateNavalDivision(country, DIVISION_TYPE.DESTROYER_DIVISION);          
         }
 
         public void RandomPositionDivisionsInCountry(Country sourceCountry, Country targetCountry)
         {
             foreach(GameObjectAnimator division in sourceCountry.GetArmy().GetAllDivisionInArmy())
             {
-                if(division.enterCountry == targetCountry)
+                if(map.GetCountry(division.currentMap2DLocation) == targetCountry)
                 {
                     division.MoveTo(map.GetCityRandom(sourceCountry).unity2DLocation, 0.1f);
-                    division.enterCountry = sourceCountry;
                 }
             }
         }
@@ -352,15 +347,18 @@ namespace WorldMapStrategyKit
             }
             else if (terrainCapability == TERRAIN_CAPABILITY.Any)
             {
+                mapPosition.x += 0.0005f;
+                mapPosition.y -= 0.0005f;
+
                 // Create Airplane
                 unitGO = Instantiate(fighterPrefab);
-                unitGO.transform.localScale = Misc.Vector3one * 0.01f;
+                unitGO.transform.localScale = Misc.Vector3one * 0.02f;
                 militaryGOA = unitGO.WMSK_MoveTo(mapPosition);
                 //militaryGOA.type = (int)MY_UNIT_TYPE.AIRPLANE;              // this is completely optional, just used in the demo scene to differentiate this unit from other tanks and ships
                 militaryGOA.terrainCapability = terrainCapability;  // ignores path-finding and can use a straight-line from start to destination
                 militaryGOA.pivotY = 0.5f; // model is not ground based (which has a pivoty = 0, the default value, so setting the pivot to 0.5 will center vertically the model)
                 militaryGOA.autoRotation = true;  // auto-head to destination when moving
-                militaryGOA.rotationSpeed = 0.1f;  // speed of the rotation of auto-head to destination
+                militaryGOA.rotationSpeed = 0.5f;  // speed of the rotation of auto-head to destination
                 militaryGOA.enableBuoyancyEffect = false;
             }
             else if (terrainCapability == TERRAIN_CAPABILITY.OnlyWater)
@@ -372,9 +370,7 @@ namespace WorldMapStrategyKit
                 if (divisionType == DIVISION_TYPE.SUBMARINE_DIVISION)
                     unitGO = Instantiate(submarinePrefab);
 
-                // Create ship
-                if(divisionType != DIVISION_TYPE.CARRIER_DIVISION)
-                    unitGO.transform.localScale = Misc.Vector3one * 0.005f;
+                unitGO.transform.localScale = Misc.Vector3one * 0.025f;
 
                 militaryGOA = unitGO.WMSK_MoveTo(mapPosition);
                 militaryGOA.pivotY = 0.5f; // model is not ground based (which has a pivoty = 0, the default value, so setting the pivot to 0.5 will center vertically the model)
@@ -383,10 +379,14 @@ namespace WorldMapStrategyKit
                 militaryGOA.enableBuoyancyEffect = true;
             }
 
-
+            
             if (addAOE)
             {
-                GameObject circle = map.AddCircle(militaryGOA.currentMap2DLocation, 50, 0.8f, 0.9f, new Color(255, 255, 0, 0.33f));
+                militaryGOA.OnPointerEnter += (GameObjectAnimator anim) => GameEventHandler.Instance.GetPlayer().SetMouseOverUnit(anim);
+                militaryGOA.OnPointerExit += (GameObjectAnimator anim) => GameEventHandler.Instance.GetPlayer().SetMouseOverUnit(null);
+                militaryGOA.OnPointerDown += (GameObjectAnimator anim) => MapManager.Instance.SingleDivisionSelection(anim);
+
+                GameObject circle = map.AddCircle(militaryGOA.currentMap2DLocation, 75, 0.5f, 0.6f, new Color(255, 255, 0, 0.33f));
 
                 // Hook event OnMove to sync circle position and destroy it when ship no longer exists
                 militaryGOA.OnMove += (tank) => circle.transform.localPosition = new Vector3(tank.currentMap2DLocation.x, tank.currentMap2DLocation.y, 0);
@@ -397,11 +397,49 @@ namespace WorldMapStrategyKit
                 // Optionally hook OnKilled - so we don't have to remember to remove the circle when ship is destroyed
                 militaryGOA.OnKilled += (tank) => Destroy(circle);
             }
+            
 
             return militaryGOA;
         }
 
+        public bool IsPossibleCreateDivision(Country country, DivisionTemplate divisionTemplate)
+        {
+            if (IsPossibleToCreateDivision(country) == false)
+                return false;
 
+            if (CountryManager.Instance.GetEmptyGarrisonNumberInCountry(country) == 0)
+                return false;
+
+            List<Weapon> mainUnitList = new List<Weapon>();
+
+            MILITARY_FORCES_TYPE militaryForcesType = GetMilitaryForcesByDivisionType(divisionTemplate.divisionType);
+
+            MilitaryForces militaryForces = null;
+
+            if (militaryForcesType == MILITARY_FORCES_TYPE.LAND_FORCES)
+                militaryForces = country.GetArmy().GetLandForces();
+
+            if (militaryForcesType == MILITARY_FORCES_TYPE.AIR_FORCES)
+                militaryForces = country.GetArmy().GetAirForces();
+
+            if (militaryForcesType == MILITARY_FORCES_TYPE.NAVAL_FORCES)
+                militaryForces = country.GetArmy().GetNavalForces();
+
+
+            foreach (Weapon weapon in militaryForces.GetAllWeaponsInMilitaryForces())
+            {
+                WEAPON_TYPE weaponType = WeaponManager.Instance.GetWeaponTemplateByID(weapon.weaponTemplateID).weaponType;
+
+                if (weaponType == divisionTemplate.mainWeaponType)
+                {
+                    mainUnitList.Add(weapon);
+                }
+            }
+
+            if (mainUnitList.Count >= divisionTemplate.mainUnitMinimum)           
+                return true;
+            return false;
+        }
 
         public Division CreateDivision(MilitaryForces militaryForces, DivisionTemplate divisionTemplate)
         {
@@ -444,8 +482,6 @@ namespace WorldMapStrategyKit
                     division.ThirdWeapon = WeaponManager.Instance.GetLowestGenerationWeaponIDByWeaponType(divisionTemplate.thirdWeaponType);
                 else
                     division.ThirdWeapon = thirdUnitList[0].weaponTemplateID;
-
-
 
 
 
@@ -557,6 +593,42 @@ namespace WorldMapStrategyKit
             }
 
             return DIVISION_TYPE.NONE;
+        }
+
+        public string GetDivisionNameByDivisionType(DIVISION_TYPE divisionType)
+        {
+            if (divisionType == DIVISION_TYPE.ARMORED_DIVISION)
+            {
+                return "Armored Infantry Division";
+            }
+            if (divisionType == DIVISION_TYPE.MECHANIZED_INFANTRY_DIVISION)
+            {
+                return "Mechanized Infantry Division";
+            }
+            if (divisionType == DIVISION_TYPE.MOTORIZED_INFANTRY_DIVISION)
+            {
+                return "Motorized Infantry Division";
+            }
+
+            if (divisionType == DIVISION_TYPE.AIR_DIVISION)
+            {
+                return "Air Division";
+            }
+
+            if (divisionType == DIVISION_TYPE.SUBMARINE_DIVISION)
+            {
+                return "Submarine Division";
+            }
+            if (divisionType == DIVISION_TYPE.DESTROYER_DIVISION)
+            {
+                return "Destroyer Division";
+            }
+            if (divisionType == DIVISION_TYPE.CARRIER_DIVISION)
+            {
+                return "Carrier Division";
+            }
+
+            return string.Empty;
         }
     }
 }

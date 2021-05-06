@@ -380,10 +380,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20c6dbf0102c7bc468113ccdd97dad83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadingBar: {fileID: 0}
+  loadingBar: {fileID: 224410548732403116}
   textPercent: {fileID: 224026182900902168}
   isOn: 1
-  currentPercent: 25
+  currentPercent: 37
   speed: 5
   totalValue: 0
 --- !u!114 &114827051713809814

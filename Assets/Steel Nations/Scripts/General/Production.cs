@@ -7,6 +7,8 @@ namespace WorldMapStrategyKit
         public WeaponTemplate techWeapon;
 
         public int leftDays;
+        public int totalDays;
+
         bool completed;
 
         public int number;
@@ -28,6 +30,12 @@ namespace WorldMapStrategyKit
                 completed = true;
 
         }
+
+        public float GetPercent()
+        {
+            return 100.0f - ( ( leftDays * 100 ) / totalDays );
+        }
+
         public Production()
         {
             productionCountries.Clear();

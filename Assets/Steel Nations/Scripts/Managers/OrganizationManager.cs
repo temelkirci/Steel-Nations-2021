@@ -150,13 +150,38 @@ namespace WorldMapStrategyKit
             return power;
         }
 
-        public bool AreTheseCountriesInSameOrganization(Country country, Country target)
+        public void DeclareWarToDefense(Country country, Country target)
         {
-            foreach (Organization organization in GetAllOrganizations())
-                if (organization.isFullMemberCountry(country) && organization.isFullMemberCountry(target))
-                    return true;
+            if (country == target)
+                return;
 
-            return false;
+            foreach (Organization organization in GetAllOrganizations())
+            {
+                if (organization.isFullMemberCountry(target) && organization.isAttackForMember)
+                {
+                    foreach(Country member in organization.GetFullMemberList())
+                    {
+                        if(country != target && member != country && member != target && CountryManager.Instance.GetAtWarCountryList(member).Contains(country) == false)
+                        {
+                            ActionManager.Instance.CreateAction(
+                            member,
+                            country,
+                            ACTION_TYPE.Declare_War,
+                            MINERAL_TYPE.NONE,
+                            0,
+                            null,
+                            0,
+                            null,
+                            null,
+                            0,
+                            0,
+                            0);
+
+                            return;
+                        }
+                    }
+                }
+            }
         }
 
         public Texture2D GetOrganizationLogoByName(string organizationName)

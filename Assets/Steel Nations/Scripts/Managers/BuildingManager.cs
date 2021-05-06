@@ -45,6 +45,12 @@ namespace WorldMapStrategyKit
 
         public void SetBuildingsInCity(City city)
         {
+            if (city.population < 10000)
+                return;
+
+            string countryName = map.GetCityCountryName(city);
+            Country country = CountryManager.Instance.GetCountryByName(countryName);
+
             foreach (Building building in GetAllBuildings())
             {
                 if (building.buildingType == BUILDING_TYPE.FACTORY)
@@ -75,17 +81,14 @@ namespace WorldMapStrategyKit
 
                 if (building.buildingType == BUILDING_TYPE.DOCKYARD)
                 {
-                    string countryName = map.GetCityCountryName(city);
-                    Country country = CountryManager.Instance.GetCountryByName(countryName);
-
                     if (country.GetArmy() != null)
                     {
-                        if (country.GetArmy().Defense_Budget > 5000 && city.Constructible_Dockyard_Area == 1)
+                        if (country.Defense_Budget > 5000 && city.Constructible_Dockyard_Area == 1 && city.cityClass != CITY_CLASS.COUNTRY_CAPITAL)
                         {
                             if (IsPossibleConstructionInCity(city, building.buildingType))
                             {
                                 city.AddBuilding(building.buildingType, 1);
-                                Add3DBuilding(city, MY_UNIT_TYPE.DOCKYARD);
+                                Add3DBuilding(country, city, MY_UNIT_TYPE.DOCKYARD);
                             }
                         }
                     }
@@ -93,8 +96,6 @@ namespace WorldMapStrategyKit
 
                 if (building.buildingType == BUILDING_TYPE.GARRISON)
                 {
-                    string countryName = map.GetCityCountryName(city);
-
                     if(CountryManager.Instance.GetCountryByName(countryName).GetArmy() != null)
                     {
                         if (IsPossibleConstructionInCity(city, building.buildingType))
@@ -146,12 +147,9 @@ namespace WorldMapStrategyKit
 
                 if (building.buildingType == BUILDING_TYPE.MILITARY_FACTORY)
                 {
-                    string countryName = map.GetCityCountryName(city);
-                    Country country = CountryManager.Instance.GetCountryByName(countryName);
-
                     if (country.GetArmy() != null)
                     {
-                        if(country.GetArmy().Defense_Budget > 5000)
+                        if(country.Defense_Budget > 5000)
                         {
                             int desiredBuildingNumber = city.population / building.requiredEmployee;
                             if (IsPossibleConstructionInCity(city, building.buildingType))
@@ -170,8 +168,6 @@ namespace WorldMapStrategyKit
 
                 if (building.buildingType == BUILDING_TYPE.NUCLEAR_FACILITY)
                 {
-                    string countryName = map.GetCityCountryName(city);
-
                     if(CountryManager.Instance.GetCountryByName(countryName).Nuclear_Power == true)
                     {
                         int desiredBuildingNumber = 1;
@@ -221,6 +217,9 @@ namespace WorldMapStrategyKit
                 }
             }
             
+            if(city.cityClass == CITY_CLASS.COUNTRY_CAPITAL)
+                Add3DBuilding(country, city, MY_UNIT_TYPE.COUNTRY_CAPITAL_BUILDING);
+
             city.CityIncome = 0;
             city.CityIncome = city.CityIncome + city.GetBuildingNumber(BUILDING_TYPE.FACTORY) * GetBuildingIncomeMonthly(BUILDING_TYPE.FACTORY);
             city.CityIncome = city.CityIncome + city.GetBuildingNumber(BUILDING_TYPE.TRADE_PORT) * GetBuildingIncomeMonthly(BUILDING_TYPE.TRADE_PORT);
@@ -272,30 +271,54 @@ namespace WorldMapStrategyKit
         buttonIndex + "!"));
         */
 
-        public void Add3DBuilding(City city, MY_UNIT_TYPE unitType)
+        public void Add3DBuilding(Country country, City city, MY_UNIT_TYPE unitType)
         {
             GameObject go = null;
+            GameObjectAnimator building = null;
 
             if (MY_UNIT_TYPE.DOCKYARD == unitType)
             {
                 go = Instantiate(HarborBuilding);
 
-                go.isStatic = true;
-                go.transform.localScale = Misc.Vector3one * 0.0005f;                
-              
-                GameObjectAnimator anim = go.WMSK_MoveTo(city.unity2DLocation);
-                anim.name = city.name + " Dockyard";
-                anim.type = (int)unitType;
-                anim.pivotY = 0.5f;
-                anim.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter 
-                anim.updateWhenOffScreen = false;
-                anim.enabled = false;
+                go.transform.localScale = Misc.Vector3one * 0.0005f;
+
+                building = go.WMSK_MoveTo(city.unity2DLocation);
+                building.name = city.name + " Dockyard";
                 
-                city.Dockyard = anim;
+                city.Dockyard = building;
+
+                city.Dockyard.OnPointerEnter += (GameObjectAnimator anim) => GameEventHandler.Instance.GetPlayer().SetMouseOverUnit(anim);
+                city.Dockyard.OnPointerExit += (GameObjectAnimator anim) => GameEventHandler.Instance.GetPlayer().SetMouseOverUnit(null);
+                city.Dockyard.OnPointerDown += (GameObjectAnimator anim) => MapManager.Instance.BuildingSelection(country, anim);
+
             }
             else if (unitType == MY_UNIT_TYPE.COUNTRY_CAPITAL_BUILDING)
             {
-                
+                go = Instantiate(CapitalBuilding);
+
+                go.transform.localScale = Misc.Vector3one * 0.01f;
+
+                building = go.WMSK_MoveTo(city.unity2DLocation);
+                building.name = country.name + " Capital";
+
+                city.Capital_Building = building;
+
+                city.Capital_Building.OnPointerEnter += (GameObjectAnimator anim) => GameEventHandler.Instance.GetPlayer().SetMouseOverUnit(anim);
+                city.Capital_Building.OnPointerExit += (GameObjectAnimator anim) => GameEventHandler.Instance.GetPlayer().SetMouseOverUnit(null);
+                city.Capital_Building.OnPointerDown += (GameObjectAnimator anim) => MapManager.Instance.BuildingSelection(country, anim);
+            }
+
+            if(go != null && building != null)
+            {
+                go.isStatic = true;
+
+                building.visible = false;
+
+                building.type = (int)unitType;
+                building.pivotY = 0.5f;
+                building.gameObject.hideFlags = HideFlags.HideInHierarchy; // don't show in hierarchy to avoid clutter 
+                building.updateWhenOffScreen = false;
+                building.enabled = false;
             }
         }
 

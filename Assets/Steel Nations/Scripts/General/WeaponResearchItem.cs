@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class WeaponResearchItem : MonoBehaviour
 {
-    public WeaponTemplate weapon = null;
+    WeaponTemplate weapon = null;
     Research research = null;
 
     public RawImage weaponIcon;
@@ -15,9 +15,14 @@ public class WeaponResearchItem : MonoBehaviour
     {
         weapon = tempWeapon;
         weaponIcon.texture = WeaponManager.Instance.GetWeaponTemplateIconByID(weapon.weaponID);
-        researchButton.GetComponent<Button>().onClick.AddListener(() => ShowReserach());
+        researchButton.GetComponent<Button>().onClick.AddListener(() => ShowReserach());        
     }
     
+    public WeaponTemplate GetWeaponTemplate()
+    {
+        return weapon;
+    }
+
     public void ShowReserach()
     {
         if (weapon != null)
@@ -37,6 +42,8 @@ public class WeaponResearchItem : MonoBehaviour
         if (research != null)
         {
             researchButton.interactable = true;
+            ResearchPanel.Instance.researchSlider.SetActive(true);
+
             ResearchPanel.Instance.selectedResearch = research;
             Debug.Log(weapon.weaponName + " starting");
         }
@@ -65,30 +72,5 @@ public class WeaponResearchItem : MonoBehaviour
     {
         return research;
     }
-    public void CompleteProduction()
-    {
-        Debug.Log("Completed");
 
-        research = null;
-    }
-
-    // Update is called once per frame
-    public void UpdateProduction()
-    {
-        if (research != null)
-        {
-            if (research.IsCompleted() == true)
-            {
-                CompleteProduction();
-            }
-            else
-            {
-
-            }
-        }
-        else
-        {
-
-        }
-    }
 }

@@ -2,7 +2,6 @@
 public class IntelligenceAgency
 {
     string intelligenceAgencyName;
-    int intelligenceAgencyLevel;
     int intelligenceAgencyBudget;
 
     int militaryCoup;
@@ -11,21 +10,13 @@ public class IntelligenceAgency
 
     public void Init()
     {
-        reverseEnginering = intelligenceAgencyLevel * intelligenceAgencyLevel;
-        assassination = intelligenceAgencyLevel * intelligenceAgencyLevel;
-        militaryCoup = (intelligenceAgencyLevel * intelligenceAgencyLevel) / 2;
+        
     }
 
     public string IntelligenceAgencyName
     {
         get { return intelligenceAgencyName; }
         set { intelligenceAgencyName = value; }
-    }
-
-    public int IntelligenceAgencyLevel
-    {
-        get { return intelligenceAgencyLevel; }
-        set { intelligenceAgencyLevel = value; }
     }
 
     public int IntelligenceAgencyBudget

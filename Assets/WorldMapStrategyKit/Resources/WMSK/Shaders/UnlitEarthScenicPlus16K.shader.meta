@@ -1,9 +1,17 @@
 fileFormatVersion: 2
 guid: 108777ff712d146e4acc25585e2bc388
-timeCreated: 1496054628
-licenseType: Free
 ShaderImporter:
-  defaultTextures: []
+  externalObjects: {}
+  defaultTextures:
+  - _TexTL: {instanceID: 0}
+  - _TexTR: {instanceID: 0}
+  - _TexBL: {instanceID: 0}
+  - _TexBR: {instanceID: 0}
+  - _TerrestrialMap: {instanceID: 0}
+  - _Water: {fileID: 2800000, guid: aa701e5be2dbcd24aad4fb9c3ca284da, type: 3}
+  - _Noise: {instanceID: 0}
+  - _CloudMap: {instanceID: 0}
+  nonModifiableTextures: []
   userData: 
   assetBundleName: 
   assetBundleVariant: 

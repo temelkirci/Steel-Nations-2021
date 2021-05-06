@@ -8,6 +8,8 @@ using System.Data;
 using Mono.Data.SqliteClient;
 using System.IO;
 
+namespace SQLiter
+{
 	/// <summary>
 	/// The idea is that here is a bunch of the basics on using SQLite
 	/// Nothing is some advanced course on doing joins and unions and trying to make your infinitely normalized schema work
@@ -432,3 +434,4 @@ using System.IO;
 			_connection = null;
 		}
 	}
+}

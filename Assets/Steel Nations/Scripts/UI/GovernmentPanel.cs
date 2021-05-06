@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 using AwesomeCharts;
 using System;
+using System.Collections.Generic;
+using DuloGames.UI;
 
 namespace WorldMapStrategyKit
 {
@@ -14,6 +16,45 @@ namespace WorldMapStrategyKit
             get { return instance; }
         }
 
+        public GameObject mineralTab;
+        public GameObject diplomacyTab;
+        public GameObject armyTab;
+
+        public TextMeshProUGUI manpowerValue;
+        public TextMeshProUGUI tensionValue;
+        public TextMeshProUGUI budgetValue;
+        public TextMeshProUGUI religionValue;
+        public TextMeshProUGUI systemOfGovernmentValue;
+        public TextMeshProUGUI unemploymentRateValue;
+        public TextMeshProUGUI birthRateValue;
+        public TextMeshProUGUI militaryRankValue;
+
+        public TextMeshProUGUI oilValue;
+        public TextMeshProUGUI steelValue;
+        public TextMeshProUGUI ironValue;
+        public TextMeshProUGUI uraniumValue;
+        public TextMeshProUGUI aluminiumValue;
+
+        public TextMeshProUGUI oilRafineryValue;
+        public TextMeshProUGUI dockyardValue;
+        public TextMeshProUGUI militaryFactoryValue;
+        public TextMeshProUGUI factoryValue;
+        public TextMeshProUGUI tradePortValue;
+        public TextMeshProUGUI hospitalValue;
+        public TextMeshProUGUI nuclearFacilityValue;
+        public TextMeshProUGUI mineralFactoryValue;
+        public TextMeshProUGUI universityValue;
+        public TextMeshProUGUI GarrisonValue;
+
+        public TextMeshProUGUI myLandAttackPowerValue;
+        public TextMeshProUGUI myAirAttackPowerValue;
+        public TextMeshProUGUI myNavalAttackPowerValue;
+
+        public TextMeshProUGUI selectedCountryLandAttackPowerValue;
+        public TextMeshProUGUI selectedCountryAirAttackPowerValue;
+        public TextMeshProUGUI selectedCountryNavalAttackPowerValue;
+
+
         public GameObject politiksCategoryContent;
         public GameObject intelligenceAgencyCategoryContent;
         public GameObject tradeCategoryContent;
@@ -21,11 +62,7 @@ namespace WorldMapStrategyKit
         public GameObject supportCategoryContent;
         public GameObject regionCategoryContent;
 
-        public GameObject buildingItem;
-
-
         public GameObject relationItem;
-        public GameObject weaponItem;
         public GameObject organizationItem;
         public GameObject organizationFlag;
 
@@ -33,17 +70,7 @@ namespace WorldMapStrategyKit
         public GameObject enemyContent;
         public GameObject atWarContent;
 
-        public GameObject overviewContent;
-        public GameObject mineralContent;
-        public GameObject selectedMilitaryContent;
-        public GameObject myMilitaryContent;
-
-        public GameObject buildingContent;
-
         public GameObject governmentPanel;
-        public GameObject governmentItem;
-        public GameObject mineralItem;
-
         public GameObject flag_country;
 
         public GameObject president;
@@ -53,7 +80,6 @@ namespace WorldMapStrategyKit
         public TextMeshProUGUI birthDate;
 
         public GameObject diplomacyButton;
-
         public TextMeshProUGUI countryName;
 
         public GameObject founderContent;
@@ -66,9 +92,53 @@ namespace WorldMapStrategyKit
 
         public BarChart armyChart;
 
+        public GameObject AskForControlOfProvinceButton;
+        public GameObject AskForGunSupportButton;
+        public GameObject AskForMoneySupportButton;
+        public GameObject AssassinationOfPresidentButton;
+        public GameObject NuclearWarButton;
+        public GameObject CancelMilitaryAccessButton;
+        public GameObject DeclareWarButton;
+        public GameObject GiveControlOfStateButton;
+        public GameObject GiveGarrisonSupportButton;
+        public GameObject GiveGunSupportButton;
+        public GameObject GiveMilitaryAccessButton;
+        public GameObject GiveMoneySupportButton;
+        public GameObject MakeMilitaryCoupButton;
+        public GameObject PlaceArmsEmbargoButton;
+        public GameObject PlaceTradeEmbargoButton;
+        public GameObject RequestGarrisonSupportButton;
+        public GameObject RequestLicenseProductionButton;
+        public GameObject SignPeaceTreatyButton;
+        public GameObject StealTechnologyButton;
+        public GameObject SignTradeTreatyButton;
+        public GameObject AskForMilitaryAccessButton;
+
         private void Start()
         {
             instance = this;
+
+            AskForControlOfProvinceButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AskForControlOfProvincePanel());
+            AskForGunSupportButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AskForGunSupportPanel());
+            AssassinationOfPresidentButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AskForMoneySupportPanel());
+            AssassinationOfPresidentButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AssassinationOfPresidentPanel());
+            NuclearWarButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.NuclearWarPanel());
+            CancelMilitaryAccessButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.CancelMilitaryAccessPanel());
+            DeclareWarButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.DeclareWarPanel());
+            GiveControlOfStateButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveControlOfStatePanel());
+            GiveGarrisonSupportButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveGarrisonSupportPanel());
+            GiveGunSupportButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveGunSupportPanel());
+            GiveMilitaryAccessButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveMilitaryAccessPanel());
+            GiveMoneySupportButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveMoneySupportPanel());
+            MakeMilitaryCoupButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.MakeMilitaryCoupPanel());
+            PlaceArmsEmbargoButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.PlaceArmsEmbargoPanel());
+            PlaceTradeEmbargoButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.PlaceTradeEmbargoPanel());
+            RequestGarrisonSupportButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.RequestGarrisonSupportPanel());
+            RequestLicenseProductionButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.RequestLicenseProductionPanel());
+            SignPeaceTreatyButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.SignPeaceTreatyPanel());
+            StealTechnologyButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.StealTechnologyPanel());
+            SignTradeTreatyButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.SignTradeTreatyPanel());
+            AskForMilitaryAccessButton.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AskForMilitaryAccessPanel());
         }
 
         public void HidePanel()
@@ -119,22 +189,20 @@ namespace WorldMapStrategyKit
                 president.SetActive(false);
             }
 
-            CreateOverviewButton("Manpower", string.Format("{0:#,0}", CountryManager.Instance.GetAvailableManpower(country)));
-            CreateOverviewButton("Tension", country.Tension.ToString());
+            manpowerValue.text = string.Format("{0:#,0}", CountryManager.Instance.GetAvailableManpower(country));
+            tensionValue.text = country.Tension.ToString();
+            budgetValue.text = string.Format("{0:#,0}", float.Parse(country.Budget.ToString())) + " M";
+            religionValue.text = CountryManager.Instance.GetReligionNameByReligionType(country.Religion);
+            systemOfGovernmentValue.text = country.System_Of_Government;
+            unemploymentRateValue.text = country.Unemployment_Rate.ToString();
+            birthRateValue.text = country.Fertility_Rate_PerWeek.ToString();
+            militaryRankValue.text = string.Format("{0:#,0}", float.Parse(country.Defense_Budget.ToString())) + " M";
 
-            CreateOverviewButton("Budget", "$ " + string.Format("{0:#,0}", float.Parse(country.Budget.ToString())) + " M");
-
-            CreateOverviewButton("Religion", CountryManager.Instance.GetReligionNameByReligionType(country.Religion));
-            CreateOverviewButton("System Of Government", country.System_Of_Government);
-            CreateOverviewButton("Unemployment Rate", country.Unemployment_Rate.ToString());
-            CreateOverviewButton("Birth Rate", country.Fertility_Rate_PerWeek.ToString());
-            CreateOverviewButton("Military Rank", country.Military_Rank.ToString());
-
-            CreateMineralButton("Oil", country.GetMineral(MINERAL_TYPE.OIL).ToString()).GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.OIL));
-            CreateMineralButton("Uranium", country.GetMineral(MINERAL_TYPE.URANIUM).ToString()).GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.URANIUM));
-            CreateMineralButton("Iron", country.GetMineral(MINERAL_TYPE.IRON).ToString()).GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.IRON));
-            CreateMineralButton("Steel", country.GetMineral(MINERAL_TYPE.STEEL).ToString()).GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.STEEL));
-            CreateMineralButton("Aluminium", country.GetMineral(MINERAL_TYPE.ALUMINIUM).ToString()).GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.ALUMINIUM));
+            oilValue.text = country.GetMineral(MINERAL_TYPE.OIL).ToString(); //GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.OIL));
+            uraniumValue.text = country.GetMineral(MINERAL_TYPE.URANIUM).ToString(); //GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.URANIUM));
+            ironValue.text = country.GetMineral(MINERAL_TYPE.IRON).ToString(); //GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.IRON));
+            steelValue.text = country.GetMineral(MINERAL_TYPE.STEEL).ToString(); // GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.STEEL));
+            aluminiumValue.text = country.GetMineral(MINERAL_TYPE.ALUMINIUM).ToString(); //GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.ShowMineralBuy(MINERAL_TYPE.ALUMINIUM));
             
             foreach (Country allyCountry in CountryManager.Instance.GetAllAllies(country))
             {
@@ -149,29 +217,20 @@ namespace WorldMapStrategyKit
                 CreateRelation(allyCountry, atWarContent.transform);
             }
 
-            if(country.GetArmy() != null)
-            {
-                CreateMilitaryButton("Land Attack Power", string.Format("{0:#,0}", country.GetArmy().GetLandForces().GetMilitaryPower()), selectedMilitaryContent.transform);
-                CreateMilitaryButton("Air Attack Power", string.Format("{0:#,0}", country.GetArmy().GetAirForces().GetMilitaryPower()), selectedMilitaryContent.transform);
-                CreateMilitaryButton("Naval Attack Power", string.Format("{0:#,0}", country.GetArmy().GetNavalForces().GetMilitaryPower()), selectedMilitaryContent.transform);
-            }
-            else
-            {
-                CreateMilitaryButton("Land Attack Power", "0", selectedMilitaryContent.transform);
-                CreateMilitaryButton("Air Attack Power", "0", selectedMilitaryContent.transform);
-                CreateMilitaryButton("Naval Attack Power", "0", selectedMilitaryContent.transform);
-            }
+            oilRafineryValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.OIL_RAFINERY).ToString();
+            universityValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.UNIVERSITY).ToString();
+            nuclearFacilityValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.NUCLEAR_FACILITY).ToString();
+            tradePortValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.TRADE_PORT).ToString();
+            dockyardValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.DOCKYARD).ToString();
+            hospitalValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.HOSPITAL).ToString();
+            factoryValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.FACTORY).ToString();
+            militaryFactoryValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.MILITARY_FACTORY).ToString();
+            mineralFactoryValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.MINERAL_FACTORY).ToString();
+            GarrisonValue.text = CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.GARRISON).ToString();
 
-            CreateBuildingButton("Oil Rafinery", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.OIL_RAFINERY).ToString());
-            CreateBuildingButton("University", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.UNIVERSITY).ToString());
-            CreateBuildingButton("Nuclear Facility", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.NUCLEAR_FACILITY).ToString());
-            CreateBuildingButton("Trade Port", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.TRADE_PORT).ToString());
-            CreateBuildingButton("Dockyard", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.DOCKYARD).ToString());
-            CreateBuildingButton("Hospital", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.HOSPITAL).ToString());
-            CreateBuildingButton("Factory", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.FACTORY).ToString());
-            CreateBuildingButton("Military Factory", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.MILITARY_FACTORY).ToString());
-            CreateBuildingButton("Mineral Factory", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.MINERAL_FACTORY).ToString());
-            CreateBuildingButton("Garrison", CountryManager.Instance.GetTotalBuildings(country, BUILDING_TYPE.GARRISON).ToString());
+            selectedCountryLandAttackPowerValue.text = string.Format("{0:#,0}", country.GetArmy().GetLandForces().GetMilitaryPower());
+            selectedCountryAirAttackPowerValue.text = string.Format("{0:#,0}", country.GetArmy().GetAirForces().GetMilitaryPower());
+            selectedCountryNavalAttackPowerValue.text = string.Format("{0:#,0}", country.GetArmy().GetNavalForces().GetMilitaryPower());
 
             foreach (Organization org in OrganizationManager.Instance.GetAllOrganizations())
             {
@@ -225,7 +284,26 @@ namespace WorldMapStrategyKit
             Country myCountry = GameEventHandler.Instance.GetPlayer().GetMyCountry();
             Country selectedCountry = GameEventHandler.Instance.GetPlayer().GetSelectedCountry();
 
-            if(myCountry.GetArmy() != null)
+            if (myCountry == null)
+                return;
+
+            if (selectedCountry == null)
+                return;
+
+            if (myCountry.GetArmy() != null)
+            {
+                myLandAttackPowerValue.text = string.Format("{0:#,0}", myCountry.GetArmy().GetLandForces().GetMilitaryPower());
+                myAirAttackPowerValue.text = string.Format("{0:#,0}", myCountry.GetArmy().GetAirForces().GetMilitaryPower());
+                myNavalAttackPowerValue.text = string.Format("{0:#,0}", myCountry.GetArmy().GetNavalForces().GetMilitaryPower());
+            }
+            else
+            {
+                myLandAttackPowerValue.text = "0";
+                myAirAttackPowerValue.text = "0";
+                myNavalAttackPowerValue.text = "0";
+            }
+
+            if (myCountry.GetArmy() != null)
             {
                 armyChart.GetChartData().DataSets[0].GetEntryAt(0).Value = myCountry.GetArmy().GetLandForces().GetMilitaryPower(); // land
                 armyChart.GetChartData().DataSets[0].GetEntryAt(1).Value = myCountry.GetArmy().GetAirForces().GetMilitaryPower(); // air
@@ -240,17 +318,11 @@ namespace WorldMapStrategyKit
             }
 
             //	Refresh	chart	after	data	change							
-            armyChart.SetDirty();
-            
+            armyChart.SetDirty();          
         }
 
         void ClearAllContents()
         {
-            ClearBuildingContent();
-            ClearDiplomacyContent();
-            ClearMineralContent();
-            ClearOverviewContent();
-            ClearMilitaryContent();
             ClearOrganizationContent();
             ClearRelationContents();
         }
@@ -270,65 +342,7 @@ namespace WorldMapStrategyKit
                 Destroy(child.gameObject);
             }
         }
-        void ClearOverviewContent()
-        {
-            foreach (Transform child in overviewContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-        void ClearMineralContent()
-        {
-            foreach (Transform child in mineralContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-        void ClearMilitaryContent()
-        {
-            foreach (Transform child in myMilitaryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            foreach (Transform child in selectedMilitaryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-        void ClearDiplomacyContent()
-        {
-            foreach (Transform child in politiksCategoryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            foreach (Transform child in intelligenceAgencyCategoryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            foreach (Transform child in tradeCategoryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            foreach (Transform child in militaryCategoryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            foreach (Transform child in supportCategoryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            foreach (Transform child in regionCategoryContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-        void ClearBuildingContent()
-        {
-            foreach (Transform child in buildingContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
-        }
+
         void ClearOrganizationContent()
         {
             foreach (Transform child in founderContent.transform.GetChild(4))
@@ -370,149 +384,106 @@ namespace WorldMapStrategyKit
 
             SelectCountry.Instance.startButton.SetActive(false);
 
-            if (myCountry.GetArmy() != null)
+            mineralTab.GetComponent<UITab>().isOn = false;
+            diplomacyTab.GetComponent<UITab>().isOn = false;
+            armyTab.GetComponent<UITab>().isOn = false;
+
+            if (myCountry == selectedCountry)
             {
-                CreateMilitaryButton("Land Attack Power", string.Format("{0:#,0}", myCountry.GetArmy().GetLandForces().GetMilitaryPower()), myMilitaryContent.transform);
-                CreateMilitaryButton("Air Attack Power", string.Format("{0:#,0}", myCountry.GetArmy().GetAirForces().GetMilitaryPower()), myMilitaryContent.transform);
-                CreateMilitaryButton("Naval Attack Power", string.Format("{0:#,0}", myCountry.GetArmy().GetNavalForces().GetMilitaryPower()), myMilitaryContent.transform);
+                mineralTab.SetActive(false);
+                diplomacyTab.SetActive(false);
+                armyTab.SetActive(false);
             }
             else
             {
-                CreateMilitaryButton("Land Attack Power", "0", myMilitaryContent.transform);
-                CreateMilitaryButton("Air Attack Power", "0", myMilitaryContent.transform);
-                CreateMilitaryButton("Naval Attack Power", "0", myMilitaryContent.transform);
-            }
+                mineralTab.SetActive(true);
+                diplomacyTab.SetActive(true);
+                armyTab.SetActive(true);
 
-            SetArmyBarChart();
+                SetArmyBarChart();
 
-            foreach(Action action in ActionManager.Instance.GetActionList())
-            {
-                GameObject GO = CreateDiplomacyButton(action);
+                HideDiplomacyButtons();
 
-                if(GO != null)
+                List<Country> enemyList = CountryManager.Instance.GetAllEnemies(myCountry);
+
+                if (enemyList.Contains(selectedCountry) == false)
                 {
-                    if (action.ActionType == ACTION_TYPE.Ask_For_Control_Of_Region)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AskForControlOfProvincePanel());
-
-                    if (action.ActionType == ACTION_TYPE.Ask_For_Gun_Support)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AskForGunSupportPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Ask_For_Money_Support)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AskForMoneySupportPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Assassination_Of_President)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.AssassinationOfPresidentPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Begin_Nuclear_War)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.NuclearWarPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Cancel_Military_Access)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.CancelMilitaryAccessPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Declare_War)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.DeclareWarPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Give_Control_Of_Region)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveControlOfStatePanel());
-
-                    if (action.ActionType == ACTION_TYPE.Give_Garrison_Support)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveGarrisonSupportPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Give_Gun_Support)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveGunSupportPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Give_Military_Access)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveMilitaryAccessPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Give_Money_Support)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.GiveMoneySupportPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Make_A_Military_Coup)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.MakeMilitaryCoupPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Place_Arms_Embargo)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.PlaceArmsEmbargoPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Place_Trade_Embargo)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.PlaceTradeEmbargoPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Request_Garrison_Support)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.RequestGarrisonSupportPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Request_License_Production)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.RequestLicenseProductionPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Sign_A_Peace_Treaty)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.SignPeaceTreatyPanel());
-
-                    if (action.ActionType == ACTION_TYPE.Steal_Technology)
-                        GO.GetComponent<Button>().onClick.AddListener(() => ActionManager.Instance.StealTechnologyPanel());
+                    AskForGunSupportButton.SetActive(true);
+                    GiveGarrisonSupportButton.SetActive(true);
+                    AskForMilitaryAccessButton.SetActive(true);
+                    RequestGarrisonSupportButton.SetActive(true);
+                    RequestLicenseProductionButton.SetActive(true);
+                    GiveGunSupportButton.SetActive(true);
+                    GiveMoneySupportButton.SetActive(true);
+                    GiveControlOfStateButton.SetActive(true);
+                    AskForControlOfProvinceButton.SetActive(true);
                 }
-                
-            }           
-        }    
 
-        GameObject CreateOverviewButton(string text, string value)
-        {
-            GameObject GO = Instantiate(governmentItem, overviewContent.transform);
-            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = text;
-            GO.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = value;
+                if (myCountry.Intelligence_Agency != null)
+                {
+                    AssassinationOfPresidentButton.SetActive(true);
+                    MakeMilitaryCoupButton.SetActive(true);
+                    StealTechnologyButton.SetActive(true);
+                }
 
-            return GO;
+                if (CountryManager.Instance.GetLeftMilitaryAccess(myCountry, selectedCountry) > 0)
+                {
+                    CancelMilitaryAccessButton.SetActive(true);
+                }
+
+                if (myCountry.GetTradeEmbargo().Contains(selectedCountry) == false)
+                {
+                    PlaceTradeEmbargoButton.SetActive(true);
+                }
+
+                if (myCountry.GetArmsEmbargo().Contains(selectedCountry) == false)
+                {
+                    PlaceArmsEmbargoButton.SetActive(true);
+                }
+
+                if (CountryManager.Instance.GetAtWarCountryList(myCountry).Contains(selectedCountry))
+                {
+                    NuclearWarButton.SetActive(true);
+                    SignPeaceTreatyButton.SetActive(true);
+                }
+                else
+                {
+                    if (myCountry.GetTradeTreaty().Contains(selectedCountry) != false)
+                    {
+                        SignTradeTreatyButton.SetActive(true);
+                    }
+
+                    DeclareWarButton.SetActive(true);
+                    GiveMilitaryAccessButton.SetActive(true);
+                }
+            }          
         }
 
-        GameObject CreateDiplomacyButton(Action action)
+        void HideDiplomacyButtons()
         {
-            GameObject GO = null;
-
-            bool isPossible = ActionManager.Instance.IsPossibleAction(action, GameEventHandler.Instance.GetPlayer().GetMyCountry(), GameEventHandler.Instance.GetPlayer().GetSelectedCountry());
-
-            if(action.ActionCategory == ACTION_CATEGORY.INTELLIGENCE_AGENCY && isPossible)
-                GO = Instantiate(diplomacyButton, intelligenceAgencyCategoryContent.transform);
-            else if (action.ActionCategory == ACTION_CATEGORY.MILITARY && isPossible)
-                GO = Instantiate(diplomacyButton, militaryCategoryContent.transform);
-            //else if (action.GetActionCategory() == ACTION_CATEGORY.POLITIKS && isPossible)
-                //GO = Instantiate(diplomacyButton, politiksCategoryContent.transform);
-            else if (action.ActionCategory == ACTION_CATEGORY.REGION && isPossible)
-                GO = Instantiate(diplomacyButton, regionCategoryContent.transform);
-            else if (action.ActionCategory == ACTION_CATEGORY.SUPPORT && isPossible)
-                GO = Instantiate(diplomacyButton, supportCategoryContent.transform);
-            else if (action.ActionCategory == ACTION_CATEGORY.TRADE && isPossible)
-                GO = Instantiate(diplomacyButton, tradeCategoryContent.transform);
-
-            if(GO != null)
-                GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = action.ActionName;
-
-            return GO;
+            AskForControlOfProvinceButton.SetActive(false);
+            AskForGunSupportButton.SetActive(false);
+            AssassinationOfPresidentButton.SetActive(false);
+            AssassinationOfPresidentButton.SetActive(false);
+            NuclearWarButton.SetActive(false);
+            CancelMilitaryAccessButton.SetActive(false);
+            DeclareWarButton.SetActive(false);
+            GiveControlOfStateButton.SetActive(false);
+            GiveGarrisonSupportButton.SetActive(false);
+            GiveGunSupportButton.SetActive(false);
+            GiveMilitaryAccessButton.SetActive(false);
+            GiveMoneySupportButton.SetActive(false);
+            MakeMilitaryCoupButton.SetActive(false);
+            PlaceArmsEmbargoButton.SetActive(false);
+            PlaceTradeEmbargoButton.SetActive(false);
+            RequestGarrisonSupportButton.SetActive(false);
+            RequestLicenseProductionButton.SetActive(false);
+            SignPeaceTreatyButton.SetActive(false);
+            StealTechnologyButton.SetActive(false);
+            SignTradeTreatyButton.SetActive(false);
+            AskForMilitaryAccessButton.SetActive(false);
         }
 
-        GameObject CreateMineralButton(string text, string value)
-        {
-            GameObject GO = Instantiate(mineralItem, mineralContent.transform);
-            GO.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = value;
-            GO.transform.GetChild(1).GetComponent<SimpleTooltip>().infoLeft = text;
-            GO.transform.GetChild(1).GetComponent<RawImage>().texture = ResourceManager.Instance.LoadTexture(RESOURCE_TYPE.MINERAL, text);
-
-            return GO;
-        }
-        GameObject CreateBuildingButton(string text, string value)
-        {
-            GameObject GO = Instantiate(buildingItem, buildingContent.transform);
-            GO.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = text;
-            GO.transform.GetChild(1).GetComponent<RawImage>().texture = BuildingManager.Instance.GetBuildingImage(BuildingManager.Instance.GetBuildingTypeByBuildingName(text));
-            GO.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = value;
-
-            return GO;
-        }
-        GameObject CreateMilitaryButton(string text, string value, Transform content)
-        {
-            GameObject GO = Instantiate(governmentItem, content);
-            GO.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = text;
-            GO.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = value;
-
-            return GO;
-        }
-        
         GameObject CreateRelation(Country country, Transform content)
         {
             GameObject temp = Instantiate(relationItem, content);

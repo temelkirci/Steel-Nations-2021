@@ -21,13 +21,10 @@ namespace WorldMapStrategyKit
             leadWar = false;
         }
 
-        public void LeadWar(bool lead)
+        public bool LeadWar
         {
-            leadWar = lead;
-        }
-        public bool IsLeadWar()
-        {
-            return leadWar;
+            get { return leadWar; }
+            set { leadWar = value; }
         }
 
         public Country GetMyCountry()

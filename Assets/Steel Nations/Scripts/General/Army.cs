@@ -9,10 +9,11 @@ namespace WorldMapStrategyKit
         MilitaryForces navalForces; // naval forces in army
 
         int soldierNumber;
-        int defenseBudget;
 
         Person chiefOfGeneralStaff;
         Country country;
+
+        List<Weapon> missileInventory = new List<Weapon>();
 
         public Army()
         {
@@ -20,7 +21,6 @@ namespace WorldMapStrategyKit
             airForces = null;
             navalForces = null;
 
-            defenseBudget = 0;
             soldierNumber = 0;
         }
 
@@ -30,13 +30,14 @@ namespace WorldMapStrategyKit
             set { country = value; }
         }
 
-        #region Defense Budget
-        public int Defense_Budget
+        public void AddMissile(Weapon missile)
         {
-            get { return defenseBudget; }
-            set { defenseBudget = value; }
+            missileInventory.Add(missile);
         }
-        #endregion
+        public List<Weapon> GetMissile()
+        {
+            return missileInventory;
+        }
 
         #region Division
         public List<GameObjectAnimator> GetAllDivisionInArmy()

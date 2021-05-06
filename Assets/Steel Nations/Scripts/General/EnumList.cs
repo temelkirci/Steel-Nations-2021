@@ -64,7 +64,11 @@ public enum TRAIT
     STEEL_PRODUCTION_SPEED,
     URANIUM_PRODUCTION_SPEED,
     CONSTRUCTION_SPEED,
-    GDP_BONUS
+    GDP_BONUS,
+    ENGINEERING_ABILITY,
+    REVERSE_ENGINEERING,
+    MILITARY_COUP,
+    ASSASSINATION
 }
 
 public enum RELIGION
@@ -206,7 +210,9 @@ public enum ACTION_TYPE
     Ask_For_Control_Of_Region,
     Give_Control_Of_Region,
 
-    Buy_Mineral
+    Buy_Mineral,
+
+    Sign_Trade_Treaty
 }
 
 public enum POLICY_TYPE

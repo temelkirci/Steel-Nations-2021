@@ -133,13 +133,15 @@ namespace WorldMapStrategyKit
             steelInCity.text = city.GetMineralResources(MINERAL_TYPE.STEEL).ToString();
             aluminiumInCity.text = city.GetMineralResources(MINERAL_TYPE.ALUMINIUM).ToString();
 
-            foreach (var building in city.GetAllBuildings())
+            foreach (var building in BuildingManager.Instance.GetAllBuildings())
             {
+                BUILDING_TYPE buildingType = BuildingManager.Instance.GetBuildingTypeByBuildingName(building.buildingName);
+
                 GameObject temp = null;
 
-                if (building.Key == BUILDING_TYPE.MINERAL_FACTORY ||
-                    building.Key == BUILDING_TYPE.OIL_RAFINERY ||
-                    building.Key == BUILDING_TYPE.NUCLEAR_FACILITY)
+                if (buildingType == BUILDING_TYPE.MINERAL_FACTORY ||
+                    buildingType == BUILDING_TYPE.OIL_RAFINERY ||
+                    buildingType == BUILDING_TYPE.NUCLEAR_FACILITY)
                 {
                     temp = Instantiate(buildingItem, mineralContent.transform);
                 }
@@ -147,25 +149,25 @@ namespace WorldMapStrategyKit
 
                 if (temp != null)
                 {
-                    Building build = BuildingManager.Instance.GetBuildingByBuildingType(building.Key);
 
-                    temp.gameObject.name = build.buildingName;
-                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = build.buildingName;
-                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = build.buildingImage;
+                    temp.gameObject.name = building.buildingName;
+                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.buildingName;
+                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = building.buildingImage;
+
                     temp.gameObject.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(delegate
                     {
-                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= build.constructionCost)
-                            city.StartConstructionInCity(building.Key);
+                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= building.constructionCost)
+                        {
+                            if(city.GetAllBuildingsInConstruction().ContainsKey(buildingType) == false)
+                                city.StartConstructionInCity(buildingType);
+                        }
                     });
 
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.Value.ToString();
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = build.maxBuildingInCity.ToString();
-
-                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = build.incomeMonthly.ToString();
-                    //temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.Key.expenseMonthly.ToString();
-
-                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = build.constructionCost.ToString();
-                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = build.constructionTime.ToString() + " days";
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = city.GetBuildingNumber(buildingType).ToString();
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = building.maxBuildingInCity.ToString();
+                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = building.incomeMonthly.ToString();
+                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = building.constructionCost.ToString() + " M";
+                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = building.constructionTime.ToString() + " days";
 
                     temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 0.0f;
                 }
@@ -194,40 +196,40 @@ namespace WorldMapStrategyKit
                 Destroy(child.gameObject);
             }
 
-            foreach (var building in city.GetAllBuildings())
+            foreach (var building in BuildingManager.Instance.GetAllBuildings())
             {
+                BUILDING_TYPE buildingType = BuildingManager.Instance.GetBuildingTypeByBuildingName(building.buildingName);
+
                 GameObject temp = null;
 
-                if (building.Key == BUILDING_TYPE.HOSPITAL ||
-                    building.Key == BUILDING_TYPE.FACTORY ||
-                    building.Key == BUILDING_TYPE.TRADE_PORT ||
-                    building.Key == BUILDING_TYPE.UNIVERSITY ||
-                    building.Key == BUILDING_TYPE.MILITARY_FACTORY)
+                if (buildingType == BUILDING_TYPE.HOSPITAL ||
+                    buildingType == BUILDING_TYPE.FACTORY ||
+                    buildingType == BUILDING_TYPE.TRADE_PORT ||
+                    buildingType == BUILDING_TYPE.UNIVERSITY ||
+                    buildingType == BUILDING_TYPE.MILITARY_FACTORY)
                 {
                     temp = Instantiate(buildingItem, buildingContent.transform);
                 }
 
                 if (temp != null)
                 {
-                    Building build = BuildingManager.Instance.GetBuildingByBuildingType(building.Key);
-
-                    temp.gameObject.name = build.buildingName;
-                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = build.buildingName;
-                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = build.buildingImage;
+                    temp.gameObject.name = building.buildingName;
+                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.buildingName;
+                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = building.buildingImage;
                     temp.gameObject.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(delegate
                     {
-                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= build.constructionCost)
-                            GameEventHandler.Instance.GetPlayer().GetSelectedCity().StartConstructionInCity(building.Key);
+                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= building.constructionCost)
+                        {
+                            if (city.GetAllBuildingsInConstruction().ContainsKey(buildingType) == false)
+                                city.StartConstructionInCity(buildingType);
+                        }
                     });
 
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.Value.ToString();
-                    //temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = building.maxBuildingInCity.ToString();
-
-                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = build.incomeMonthly.ToString();
-                    //temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.Key.expenseMonthly.ToString();
-
-                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = build.constructionCost.ToString();
-                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = build.constructionTime.ToString() + " days";
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = city.GetBuildingNumber(buildingType).ToString();
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = building.maxBuildingInCity.ToString();
+                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = building.incomeMonthly.ToString();
+                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = building.constructionCost.ToString() + " M";
+                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = building.constructionTime.ToString() + " days";
 
                     temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 0.0f;
                 }
@@ -260,37 +262,37 @@ namespace WorldMapStrategyKit
                 Destroy(child.gameObject);
             }
 
-            foreach (var building in city.GetAllBuildings())
+            foreach (var building in BuildingManager.Instance.GetAllBuildings())
             {
+                BUILDING_TYPE buildingType = BuildingManager.Instance.GetBuildingTypeByBuildingName(building.buildingName);
+
                 GameObject temp = null;
 
-                if (building.Key == BUILDING_TYPE.GARRISON ||
-                    building.Key == BUILDING_TYPE.MILITARY_BASE)
+                if (buildingType == BUILDING_TYPE.GARRISON ||
+                    buildingType == BUILDING_TYPE.MILITARY_BASE)
                 {
                     temp = Instantiate(buildingItem, garrisonContent.transform);
                 }
 
                 if (temp != null)
                 {
-                    Building build = BuildingManager.Instance.GetBuildingByBuildingType(building.Key);
-
-                    temp.gameObject.name = build.buildingName;
-                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = build.buildingName;
-                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = build.buildingImage;
+                    temp.gameObject.name = building.buildingName;
+                    temp.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.buildingName;
+                    temp.gameObject.transform.GetChild(1).GetComponent<RawImage>().texture = building.buildingImage;
                     temp.gameObject.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(delegate
                     {
-                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= build.constructionCost)
-                            city.StartConstructionInCity(building.Key);
+                        if (GameEventHandler.Instance.GetPlayer().GetSelectedCountry().Budget >= building.constructionCost)
+                        {
+                            if (city.GetAllBuildingsInConstruction().ContainsKey(buildingType) == false)
+                                city.StartConstructionInCity(buildingType);
+                        }
                     });
 
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = building.Value.ToString();
-                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = build.maxBuildingInCity.ToString();
-
-                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = build.incomeMonthly.ToString();
-                    //temp.gameObject.transform.GetChild(8).GetComponent<TextMeshProUGUI>().text = building.Key.expenseMonthly.ToString();
-
-                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = build.constructionCost.ToString();
-                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = build.constructionTime.ToString() + " days";
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = city.GetBuildingNumber(buildingType).ToString();
+                    temp.gameObject.transform.GetChild(4).transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = building.maxBuildingInCity.ToString();
+                    temp.gameObject.transform.GetChild(7).GetComponent<TextMeshProUGUI>().text = building.incomeMonthly.ToString();
+                    temp.gameObject.transform.GetChild(13).GetComponent<TextMeshProUGUI>().text = building.constructionCost.ToString() + " M";
+                    temp.gameObject.transform.GetChild(14).GetComponent<TextMeshProUGUI>().text = building.constructionTime.ToString() + " days";
 
                     temp.gameObject.transform.GetChild(3).GetComponent<Slider>().value = 0.0f;
                 }

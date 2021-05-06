@@ -8,19 +8,35 @@ public class War
 
     DateTime startWarDate;
 
+    GameObjectAnimator[] attackDivisions;
+    GameObjectAnimator[] guardDivisions;
+
     public void CreateWar(Country country1, Country country2)
     {
-        if(country1 == null || country2 == null)
-        {
+        attackCountry = country1;
+        guardCountry = country2;
 
-        }
-        else
-        {
-            attackCountry = country1;
-            guardCountry = country2;
+        if (attackCountry.IsAllDivisionsCreated() == false)
+            attackCountry.CreateAllDivisions();
 
-            startWarDate = GameEventHandler.Instance.GetToday();
-        }
+        if (guardCountry.IsAllDivisionsCreated() == false)
+            guardCountry.CreateAllDivisions();
+
+        WarManager.Instance.UpdateDivisions(attackCountry);
+        WarManager.Instance.UpdateDivisions(guardCountry);
+
+
+        startWarDate = GameEventHandler.Instance.GetToday();
+    }
+
+    public GameObjectAnimator[] GetDivisionsInAttackCountry()
+    {
+        return attackDivisions;
+    }
+
+    public GameObjectAnimator[] GetDivisionsInGuardCountry()
+    {
+        return guardDivisions;
     }
 
     public Country GetEnemyCountry(Country country)
@@ -33,7 +49,6 @@ public class War
 
     public War()
     {
-        attackCountry = null;
-        guardCountry = null;
+
     }
 }
